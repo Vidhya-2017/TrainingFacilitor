@@ -6,6 +6,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import '../scss/Login.scss'
+
 class Login extends React.Component{
 
     render() {
