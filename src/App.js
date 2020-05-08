@@ -10,6 +10,8 @@ import combineReducers from "./reducers/index";
 import { PersistGate } from 'redux-persist/integration/react';
 import RegisterContainer from './pages/Registration/container/RegisterContainer';
 import LoginContainer from './pages/Login/container/LoginContainer';
+import Header from './components/Header/Header';
+import Footer from './components/Footer/Footer';
 import './App.scss';
 
 
@@ -40,12 +42,13 @@ class App extends React.Component {
       <div className='appContainer'>
         <Provider store={store}>
           <PersistGate loading={null} persistor={persistor}>
+            <Header />
             <Switch>
               <Route path="/register" exact component={RegisterContainer} />
               <Route path="/login" component={LoginContainer} />
               <Route exact path="/" render={() => <Redirect to="/login" />} />
-
             </Switch>
+            <Footer />
           </PersistGate>
         </Provider>
       </div>
