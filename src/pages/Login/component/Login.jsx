@@ -5,7 +5,8 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import Button from 'react-bootstrap/Button';
+import Buttons from '../../../components/UI_Component/Buttons/Buttons';
+import Textbox from '../../../components/UI_Component/Textbox/Textbox';
 import '../scss/Login.scss'
 
 class Login extends React.Component{
@@ -13,14 +14,14 @@ class Login extends React.Component{
     constructor(props) {
         super(props)
         this.state = {
-            password: '', userName: '', errors: {}
+            password: '', username: '', errors: {}
         }}
     
         //Validation
         validateform() {
             let errors = {};
             let formIsValid = true;
-            if (this.state.userName.length === 0) {
+            if (this.state.username.length === 0) {
                 formIsValid = false;
                 errors["username"] = "Enter Valid User Name"
             }
@@ -30,6 +31,7 @@ class Login extends React.Component{
             }
     
             this.setState({ errors: errors });
+           
             return formIsValid;
         }
     
@@ -40,12 +42,8 @@ class Login extends React.Component{
                 localStorage.setItem("token", 1)
                 this.props.history.push('/home')
             }
-        }
-    
-        handleChange = e => {
-            this.setState({ [e.target.name]: e.target.value, errors: {} });
-        };
-    
+        }      
+       
     
 
     render() {
@@ -58,39 +56,46 @@ class Login extends React.Component{
                     <Col xs ={12} md = {6} lg="4" className="login-sec">
                     <h2 className="text-center">Login Now</h2>
                     <form className="login-form">
-                    <Col>
-                        <label className="text-uppercase">Username</label>
-                        <InputGroup className="mb-3">                           
-                        <FormControl
-                         onChange={this.handleChange}
-                         name="userName"
-                        placeholder="Username"
-                        aria-label="Username"
-                        aria-describedby="basic-addon1"
-                        type = "text"
-                        />
-                        </InputGroup>
-                        <div className="errorMsg">{this.state.errors.username}</div>
-                    </Col>
-                    <Col>
-                        <label className="text-uppercase">Password</label>
-                        <InputGroup className="mb-3">               
-                        <FormControl
-                         onChange={this.handleChange}
-                        placeholder="Password"
-                        aria-label="Password"
-                        aria-describedby="basic-addon1"
-                        type = "password"
-                        name="password"
-                        />
-                        </InputGroup>
-                        <div className="errorMsg">{this.state.errors.password}</div>
-                    </Col>            
+                    <Textbox 
+                    value = {this.state.value}
+                    fieldLabel ="username"
+                    id="username"
+                    type="text"
+                    placeholder = "Username"                    
+                    errorMessage = {this.state.errors.username === "" ? null : this.state.errors.username }
+                    name ="username"
+                    aria-label="USERNAME"
+                    aria-describedby="USERNAME"
+                    onChange={(val) => {        
+                        this.setState({ username: val });
+                      
+                   }}
+                    />
+                    <Textbox 
+                    fieldLabel ="Password"
+                    value = {this.state.password}
+                    id="password"
+                    type="password"
+                    placeholder = "Password"                    
+                    errorMessage = {this.state.errors.password === "" ? null : this.state.errors.password }
+                    name ="password"
+                    aria-label="Password"
+                    aria-describedby="Password"
+                    onChange={(val) => {        
+                        this.setState({ password: val });
+                      
+                   }}
+                    />                   
+                            
                 <Col>
                 <label className="form-check-label">                
                 <a href="#"><small>Forget Password ?</small></a>
                 </label>
-                <Button onClick={this.login} className="btn-login float-right">Submit</Button>
+                <Buttons
+                className = "btn-login float-right"                
+                value="Login" 
+                onClick={this.login}/>
+               
              </Col>            
             </form>
 
