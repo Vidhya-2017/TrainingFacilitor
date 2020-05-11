@@ -40,8 +40,8 @@ class Textbox extends React.Component{
                     aria-describedby={this.props.ariaDescribedBy}
                     type = {this.props.type}
                     disabled = {this.props.isDisabled}
-                    maxlength = {this.props.maxlength}
-                    minlength ={this.props.minlength}
+                    maxLength = {this.props.maxlength}
+                    minLength ={this.props.minlength}
                 />
                 </InputGroup>
                 <div className="errorMsg">{this.props.errorMessage}</div>
