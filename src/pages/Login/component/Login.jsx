@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from "react-router-dom";
 import FormControl from 'react-bootstrap/FormControl';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Container from 'react-bootstrap/Container';
@@ -93,7 +94,7 @@ class Login extends React.Component{
              </Col>            
             </form>
 
-            <Col className="copy-text">Not Registerd ? <a href="#">Click Here</a></Col>
+            <Col className="copy-text">Not Registerd ? <Link to="/register" href="javascript:void(0)">Click Here</Link></Col>
             </Col>
 
             <Col xs ={12} md = {6} lg="8" className=" banner-sec">

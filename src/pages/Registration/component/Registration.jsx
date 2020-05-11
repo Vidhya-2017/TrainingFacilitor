@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from "react-router-dom";
 import FormControl from 'react-bootstrap/FormControl';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Container from 'react-bootstrap/Container';
@@ -85,7 +86,7 @@ class Registration extends React.Component{
              </Col>            
             </form>
 
-            <Col className="copy-text">Already Have an account <i className="fa fa-heart"></i>  <a href="#">Login Here</a></Col>
+            <Col className="copy-text">Already Have an account <i className="fa fa-heart"></i>  <Link to="/login" href="javascript:void(0)">Login Here</Link></Col>
             </Col>    
                   
             </Row>
