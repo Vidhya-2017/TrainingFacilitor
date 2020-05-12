@@ -11,7 +11,7 @@ class Buttons extends React.Component{
         return (
         <>            
         <Button  
-        className={this.props.className}   
+        className={`btn btn-primary ${this.props.className}`}   
         value={this.props.value}
         onClick={this.props.onClick}
         >

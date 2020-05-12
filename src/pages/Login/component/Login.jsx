@@ -1,7 +1,5 @@
 import React from 'react';
 import { Link } from "react-router-dom";
-import FormControl from 'react-bootstrap/FormControl';
-import InputGroup from 'react-bootstrap/InputGroup';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -48,12 +46,11 @@ class Login extends React.Component{
 
     render() {
         return (
-            <div className="login_container">
-           
-            <section className="login-block">
+            <div className="login_container">           
+            <section className="blue_theme">
                 <Container>
                 <Row>
-                    <Col xs ={12} md = {6} lg="4" className="login-sec">
+                    <Col xs ={12} md = {6} lg="4" >
                     <h2 className="text-center">Login Now</h2>
                     <form className="login-form">
                     <Textbox 
@@ -92,7 +89,7 @@ class Login extends React.Component{
                 <a href="../forgetPassword"><small>Forget Password ?</small></a>
                 </label>
                 <Buttons
-                className = "btn-login float-right"                
+                className = "float-right"                
                 value="Login" 
                 onClick={this.login}/>
                
@@ -108,7 +105,7 @@ class Login extends React.Component{
                 <img className="" src="https://static.pexels.com/photos/33972/pexels-photo.jpg" alt="" />
                 <Col className="d-md-block">
                     <Col className="banner-text">
-                        <h2>Welcome</h2>
+                        <h3>Welcome</h3>
                         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation</p>
                     </Col>	
                

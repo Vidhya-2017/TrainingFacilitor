@@ -1,18 +1,12 @@
 /* Made with love by Mutiullah Samim*/
 
-.login_container{
-    
-    .banner-sec img{ width: 100%; height: 500px;}
-    
-   
-    .banner-text{width:70%; position:absolute; bottom:40px; padding-left:20px; color:#fff}
-    .banner-text h2:after{content:" "; width:100px; height:5px; background:#FFF; display:block; margin-top:20px; border-radius:3px;}
-    a {
-        color: #0066ae;
+.sme_container{
+    .container{
+        width: 40%;
     }
     $breakpoint-tablet: 775px;
     @media (max-width: $breakpoint-tablet) {
-        .container{height: auto; }
+        .container{width: 100%; height: auto; }
         .login-block{
             height: auto !important;
             position: relative;

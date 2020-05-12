@@ -12,6 +12,8 @@ import PrivateRoute from './PrivateRoute'
 import RegisterContainer from './pages/Registration/container/RegisterContainer';
 import LoginContainer from './pages/Login/container/LoginContainer';
 import ForgetPassword from './pages/ForgetPassword/ForgetPassword';
+import SMEListContainer from './pages/SME/container/SMEListContainer';
+import SkillListContainer from './pages/Skill/container/SkillListContainer';
 import Home from './pages/Home/Home'
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
@@ -50,6 +52,8 @@ class App extends React.Component {
               <Route path="/register" exact component={RegisterContainer} />
               <Route path="/login" component={LoginContainer} />
               <Route path="/forgetPassword" component={ForgetPassword} />
+              <Route path="/sme" component={SMEListContainer} />
+              <Route path="/skill" component={SkillListContainer} />
               <PrivateRoute component={Home} path="/home"  />
             </Switch>
             <Footer />

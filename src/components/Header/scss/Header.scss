@@ -1,17 +1,22 @@
 .header{
-    .navLinks_logo{margin-bottom:30px;
+    background-color:rgb(27, 145, 229)!important;
+    color: #fff;
+    
+    a.navLinks_logo{
+        margin-bottom:30px;
         font-weight:700; color: rgb(255, 255, 255);
         margin: 0px;
         font-size: 32px;
         font-style: italic;
     }
-        .navLinks{
-            margin-bottom:30px; 
-            color: rgb(255, 255, 255);
-            margin: 0px;
-        }
-       
+    a#collasible-nav-dropdown.dropdown-toggle.nav-link, a.nav-link, a {
+        color: rgba(255, 255, 255, 0.64) !important;
+        text-decoration: none;
+    }
+    a#collasible-nav-dropdown.dropdown-toggle.nav-link:hover, a.nav-link:hover, a:hover{
+        color: rgba(255, 255, 255, 0.94) !important;
+    }   
 }
-.navbar-dark{
-    background-color: rgb(27, 145, 229);
-  }
+div.dropdown-menu.show, .dropdown-menu{
+    left:-50% !important;
+}

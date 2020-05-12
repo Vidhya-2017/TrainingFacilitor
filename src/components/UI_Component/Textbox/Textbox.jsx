@@ -22,12 +22,11 @@ class Textbox extends React.Component{
       }
 
     render() {
-       // console.log(this.state.value);
         return (
             <>
             <Col>
                 <label className="text-uppercase">{this.props.fieldLabel}</label>
-                <InputGroup className="mb-3">                           
+                <InputGroup className= {this.props.errorMessage === undefined ? "mb-3" : "mb-1" }>                           
                 <FormControl
                     id={this.props.id}
                     className = {this.props.className}
@@ -40,12 +39,12 @@ class Textbox extends React.Component{
                     aria-describedby={this.props.ariaDescribedBy}
                     type = {this.props.type}
                     disabled = {this.props.isDisabled}
-                    maxLength = {this.props.maxlength}
+                    maxlength = {this.props.maxlength}
                     minLength ={this.props.minlength}
-                />                
-                <div className="errorMsg">{this.props.errorMessage}</div>
+                />         
+               
                 </InputGroup>
-                
+                <div className="errorMsg">{this.props.errorMessage}</div>
             </Col>
          
           
