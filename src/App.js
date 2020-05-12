@@ -11,7 +11,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 import PrivateRoute from './PrivateRoute'
 import RegisterContainer from './pages/Registration/container/RegisterContainer';
 import LoginContainer from './pages/Login/container/LoginContainer';
-import ForgetPassword from './pages/ForgetPassword/ForgetPassword';
+// import ForgetPassword from './pages/ForgetPassword/ForgetPassword';
 import SMEListContainer from './pages/SME/container/SMEListContainer';
 import SkillListContainer from './pages/Skill/container/SkillListContainer';
 import ForgetPasswordContainer from './pages/ForgetPassword/container/ForgetPasswordContainer';
@@ -49,7 +49,8 @@ class App extends React.Component {
         <Provider store={store}>
           <PersistGate loading={null} persistor={persistor}>
             <Header />
-            <Switch>
+            <div className='routerContent'>
+               <Switch>
               <Route path="/register" exact component={RegisterContainer} />
               <Route path="/login" component={LoginContainer} />
               <Route path="/forgetPassword" component={ForgetPasswordContainer} />
@@ -57,6 +58,7 @@ class App extends React.Component {
               <Route path="/skill" component={SkillListContainer} />
               <PrivateRoute component={Home} path="/home"  />
             </Switch>
+            </div>
             <Footer />
           </PersistGate>
         </Provider>
