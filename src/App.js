@@ -14,6 +14,7 @@ import LoginContainer from './pages/Login/container/LoginContainer';
 import ForgetPassword from './pages/ForgetPassword/ForgetPassword';
 import SMEListContainer from './pages/SME/container/SMEListContainer';
 import SkillListContainer from './pages/Skill/container/SkillListContainer';
+import ForgetPasswordContainer from './pages/ForgetPassword/container/ForgetPasswordContainer';
 import Home from './pages/Home/Home'
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
@@ -51,7 +52,7 @@ class App extends React.Component {
             <Switch>
               <Route path="/register" exact component={RegisterContainer} />
               <Route path="/login" component={LoginContainer} />
-              <Route path="/forgetPassword" component={ForgetPassword} />
+              <Route path="/forgetPassword" component={ForgetPasswordContainer} />
               <Route path="/sme" component={SMEListContainer} />
               <Route path="/skill" component={SkillListContainer} />
               <PrivateRoute component={Home} path="/home"  />
