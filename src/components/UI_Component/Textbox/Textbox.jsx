@@ -42,9 +42,10 @@ class Textbox extends React.Component{
                     disabled = {this.props.isDisabled}
                     maxLength = {this.props.maxlength}
                     minLength ={this.props.minlength}
-                />
-                </InputGroup>
+                />                
                 <div className="errorMsg">{this.props.errorMessage}</div>
+                </InputGroup>
+                
             </Col>
          
           

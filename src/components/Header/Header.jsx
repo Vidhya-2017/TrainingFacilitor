@@ -3,21 +3,22 @@ import './scss/Header.scss'
 class Header extends React.Component {
   constructor(props) {
     super(props)
-    console.log(props);
   }
   logout(){
-    console.log('sdfs');
-    localStorage.clear();
+   localStorage.clear();
     
   }
+ 
   render() {
     return (
-      <nav class="navbar navbar-dark" style={{backgroundColor: 'rgb(27, 145, 229)'}}>
-        <p class="navbar-brand navLinks" style={{color: '#fff', margin: 0}}>Training Facilitor</p>
+      <nav className="header navbar navbar-dark">
+        <div className="container">
+        <h2 className="navbar-brand navLinks_logo">HCL</h2>
         {localStorage.getItem('token') === "1" ?
-         <a class="navbar-brand navLinks" style={{color: '#fff', margin: 0}} onClick = {this.logout}>Logout</a> : null
+         <a className="navbar-brand navLinks" style={{color: '#fff', margin: 0}} onClick = {this.logout}>Logout</a> : null
       
       }
+      </div>
       </nav>
     )
   }

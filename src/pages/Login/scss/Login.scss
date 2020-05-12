@@ -16,9 +16,9 @@
     
     .login-sec{padding: 50px 30px; position:relative;}
     .login-sec .copy-text{position:absolute; width:80%; bottom:20px; font-size:13px; text-align:center;}
-    .login-sec .copy-text i{color:#1e95ea;}
-    .login-sec .copy-text a{color:#1e95ea;}
-    .login-sec h2{margin-bottom:30px; font-weight:800; font-size:30px; color: #0066ae;}
+    .login-sec .copy-text i{color:#898f94;}
+    .login-sec .copy-text a{color:#38a92b;}
+    .login-sec h2{margin-bottom:30px; font-weight:800; font-size:30px; color: #1485d6;}
     .login-sec h2:after{content:" "; width:100px; height:5px;  background: linear-gradient(to right, #26a2fa 0%, #0066ae 64%); display:block; margin-top:20px; border-radius:3px; margin-left:auto;margin-right:auto}
     .btn-login, .btn-primary {background: linear-gradient(to right, #26a2fa 0%, #0066ae 94%); color:#fff; font-weight:600; border-color: #2199ef;} 
     .btn-primary:not(:disabled):not(.disabled).active:focus, .btn-primary:not(:disabled):not(.disabled):active:focus, .show>.btn-primary.dropdown-toggle:focus{
@@ -28,7 +28,7 @@
     .banner-text{width:70%; position:absolute; bottom:40px; padding-left:20px; color:#fff}
     .banner-text h2:after{content:" "; width:100px; height:5px; background:#FFF; display:block; margin-top:20px; border-radius:3px;}
     a {
-        color: #1282d1;
+        color: #0066ae;
     }
     $breakpoint-tablet: 775px;
     @media (max-width: $breakpoint-tablet) {

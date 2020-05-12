@@ -29,9 +29,17 @@
 .App-link {
   color: #61dafb;
 }
-.errorMsg{
-  color: red;
+.input-group>.custom-select:not(:last-child), .input-group>.form-control:not(:last-child){
+  border-top-right-radius: 0.3rem !important;
+    border-bottom-right-radius: 0.3rem !important;
 }
+.errorMsg {
+  color: red;
+  width: 100%;
+  font-size: 13px;
+  padding: 5px 0px 0px 0px;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

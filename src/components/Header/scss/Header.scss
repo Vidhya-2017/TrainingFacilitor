@@ -1,1 +1,17 @@
-.navLinks{margin-bottom:30px; font-weight:700; font-size:30px; color: #0066ae;}
+.header{
+    .navLinks_logo{margin-bottom:30px;
+        font-weight:700; color: rgb(255, 255, 255);
+        margin: 0px;
+        font-size: 32px;
+        font-style: italic;
+    }
+        .navLinks{
+            margin-bottom:30px; 
+            color: rgb(255, 255, 255);
+            margin: 0px;
+        }
+       
+}
+.navbar-dark{
+    background-color: rgb(27, 145, 229);
+  }

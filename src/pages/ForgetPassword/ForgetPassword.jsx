@@ -5,11 +5,11 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import Buttons from '../../../components/UI_Component/Buttons/Buttons';
-import Textbox from '../../../components/UI_Component/Textbox/Textbox';
-import '../scss/Login.scss'
+import Buttons from '../../components/UI_Component/Buttons/Buttons';
+import Textbox from '../../components/UI_Component/Textbox/Textbox';
+import './ForgetPassword.scss'
 
-class Login extends React.Component{
+class ForgetPassword extends React.Component{
 
     constructor(props) {
         super(props)
@@ -54,7 +54,7 @@ class Login extends React.Component{
                 <Container>
                 <Row>
                     <Col xs ={12} md = {6} lg="4" className="login-sec">
-                    <h2 className="text-center">Login Now</h2>
+                    <h2 className="text-center">Forget Password</h2>
                     <form className="login-form">
                     <Textbox 
                     value = {this.state.value}
@@ -72,11 +72,11 @@ class Login extends React.Component{
                    }}
                     />
                     <Textbox 
-                    fieldLabel ="Password"
+                    fieldLabel ="New Password"
                     value = {this.state.password}
                     id="password"
                     type="password"
-                    placeholder = "Password"                    
+                    placeholder = "New Password"                    
                     errorMessage = {this.state.errors.password === "" ? null : this.state.errors.password }
                     name ="password"
                     aria-label="Password"
@@ -85,15 +85,30 @@ class Login extends React.Component{
                         this.setState({ password: val });
                       
                    }}
-                    />                   
+                    />  
+                     <Textbox 
+                    fieldLabel ="Confirm Password"
+                    value = {this.state.password}
+                    id="password"
+                    type="password"
+                    placeholder = "Confirm Password"                    
+                    errorMessage = {this.state.errors.password === "" ? null : this.state.errors.password }
+                    name ="password"
+                    aria-label="Password"
+                    aria-describedby="Password"
+                    onChange={(val) => {        
+                        this.setState({ password: val });
+                      
+                   }}
+                    />                  
                             
                 <Col>
                 <label className="form-check-label">                
-                <a href="../forgetPassword"><small>Forget Password ?</small></a>
+                <a href="../login"><small>Login Here </small></a>
                 </label>
                 <Buttons
                 className = "btn-login float-right"                
-                value="Login" 
+                value="Submit" 
                 onClick={this.login}/>
                
              </Col>            
@@ -124,4 +139,4 @@ class Login extends React.Component{
 }
   
 
-export default Login;
+export default ForgetPassword;
