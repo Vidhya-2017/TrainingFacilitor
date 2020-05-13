@@ -28,7 +28,7 @@ class Home extends Component {
     }
   }
 
-  handleFile(file, sheet = 0) {
+  handleFile(file, sheet = 4) {
     const reader = new FileReader();
     const rABS = !!reader.readAsBinaryString;
     reader.onload = (e) => {
@@ -51,14 +51,14 @@ class Home extends Component {
       });
       if (sheetData.length > 0) {
         columns = sheetData[0].map(col => {
-            return {
-              dataField: col.toString().trim(),
-              text: col
-            }
+          return {
+            dataField: col.toString().trim(),
+            text: col
+          }
         });
       }
       const data = XLSX.utils.sheet_to_json(ws, { raw: false });
-      this.setState({ data: data, cols: columns, sheetOptions });
+      this.setState({ sheetOptions });
     };
     if (rABS) {
       reader.readAsBinaryString(file);
@@ -80,6 +80,7 @@ class Home extends Component {
 
   handleChange = selectedSheet => {
     const { file } = this.state;
+    this.setState({ selectedSheet: selectedSheet, data: [], cols: [] });
     const reader = new FileReader();
     const rABS = !!reader.readAsBinaryString;
     reader.onload = (e) => {
@@ -95,13 +96,12 @@ class Home extends Component {
       });
       if (sheetData.length > 0) {
         columns = sheetData[0].map(col => {
-            return {
-              dataField: col.toString().trim(),
-              text: col
-            }
+          return {
+            dataField: col.toString().trim(),
+            text: col
+          }
         });
       }
-      console.log(sheetData, '---', columns);
       const data = XLSX.utils.sheet_to_json(ws, { raw: false });
       this.setState({ data: data, cols: columns });
     };
@@ -110,27 +110,23 @@ class Home extends Component {
     } else {
       reader.readAsArrayBuffer(file);
     }
-    this.setState({ selectedSheet: selectedSheet });
   };
 
   render() {
     const { file, data, cols, selectedSheet, sheetOptions } = this.state;
-    console.log('--data--', data.length);
     const recordPerPageVal = Math.ceil(data.length / 10) * 10;
     const recordPerPageOptions = [
-      {text: "10", page: 10},
-      {text: "20", page: 20},
-      {text: "30", page: 30},
-      {text: "50", page: 50}
+      { text: "10", page: 10 },
+      { text: "20", page: 20 },
+      { text: "30", page: 30 },
+      { text: "50", page: 50 }
     ];
     const options = [];
     recordPerPageOptions.forEach(item => {
-      if(recordPerPageVal >= item.page) {
+      if (recordPerPageVal >= item.page) {
         options.push(item);
       }
     });
-    console.log('--data--', options);
-
     const sizePerPageRenderer = ({
       // options,
       currSizePerPage,
@@ -189,49 +185,49 @@ class Home extends Component {
       pageButtonRenderer
     };
 
-    // const selectStyles = {
-    //   control: styles => ({
-    //     ...styles,
-    //     backgroundColor: 'rgba(255, 255, 255, 0.12)',
-    //     minWidth: 200,
-    //     minHeight: 40,
-    //     borderColor: '#000',
-    //     borderRadius: '5px',
-    //     marginBottom: '3px',
-    //     outline: 'transparent',
-    //     boxShadow: 'none',
-    //     ':hover': {
-    //       borderColor: '#000000',
-    //       boxShadow: '0 0 0 1px #000000',
-    //     },
-    //     ':active': {
-    //       borderColor: '#000000',
-    //       boxShadow: '0 0 0 1px #000000',
-    //     },
-    //     ':focus': {
-    //       borderColor: '#000000',
-    //       boxShadow: '0 0 0 1px #000000'
-    //     }
-    //   }),
-    //   menu: styles => ({ ...styles, backgroundColor: '#fff', border: '1px solid #999' }),
-    //   indicatorSeparator: styles => ({ ...styles, backgroundColor: 'none' }),
-    //   option: (styles, { isFocused, isSelected }) => {
-    //     return {
-    //       ...styles,
-    //       backgroundColor: '#fff',
-    //       ':active': {
-    //         backgroundColor: '#eee',
-    //       },
-    //       ':hover': {
-    //         backgroundColor: '#dadada',
-    //       },
-    //       ':focus': {
-    //         backgroundColor: '#eee',
-    //       },
-    //       color: isSelected ? '#000' : '#333'
-    //     }
-    //   }
-    // }
+    const selectStyles = {
+      control: styles => ({
+        ...styles,
+        backgroundColor: 'rgba(255, 255, 255, 0.12)',
+        minWidth: 200,
+        minHeight: 40,
+        borderColor: '#000',
+        borderRadius: '5px',
+        marginBottom: '3px',
+        outline: 'transparent',
+        boxShadow: 'none',
+        ':hover': {
+          borderColor: '#000000',
+          boxShadow: '0 0 0 1px #000000',
+        },
+        ':active': {
+          borderColor: '#000000',
+          boxShadow: '0 0 0 1px #000000',
+        },
+        ':focus': {
+          borderColor: '#000000',
+          boxShadow: '0 0 0 1px #000000'
+        }
+      }),
+      menu: styles => ({ ...styles, backgroundColor: '#fff', border: '1px solid #999' }),
+      indicatorSeparator: styles => ({ ...styles, backgroundColor: 'none' }),
+      option: (styles, { isFocused, isSelected }) => {
+        return {
+          ...styles,
+          backgroundColor: '#fff',
+          ':active': {
+            backgroundColor: '#eee',
+          },
+          ':hover': {
+            backgroundColor: '#dadada',
+          },
+          ':focus': {
+            backgroundColor: '#eee',
+          },
+          color: isSelected ? '#000' : '#333'
+        }
+      }
+    }
     return (
       <div>
         <h3 className='pageTitle'>Candidate List</h3>
@@ -244,15 +240,15 @@ class Home extends Component {
             </label>
             {file && file.name && <span className='fileName'>{file.name}</span>}
           </div>
-          {/* {sheetOptions.length > 0 && <Select
+          {sheetOptions.length > 0 && <Select
             value={selectedSheet}
             onChange={this.handleChange}
             options={sheetOptions}
             styles={selectStyles}
             placeholder='Select the Sheet'
-          />} */}
+          />} 
 
-          {data.length > 0 && <div className='uploadBtn'>
+          {sheetOptions.length > 0 && <div className='uploadBtn'>
             <Button disabled={data.length === 0} className='file-upload fileUploadBtn btn shadow' onClick={this.submitSheet}>Submit</Button>
           </div>
           }
@@ -262,7 +258,7 @@ class Home extends Component {
         {data.length > 0 &&
           <div className='candidateListTable'>
             <BootstrapTable
-              keyField='id'
+              keyField={new Date().getTime()}
               data={data}
               columns={cols}
               wrapperClasses='listTable'
