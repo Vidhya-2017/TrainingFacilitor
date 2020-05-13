@@ -38,6 +38,7 @@ class Login extends React.Component{
         login = () => {
             if (this.validateform()) {
                 localStorage.setItem("token", 1)
+                localStorage.setItem("user", this.state.username)
                 this.props.history.push('/home')
             }
         }      
@@ -54,7 +55,7 @@ class Login extends React.Component{
                     <h2 className="text-center">Login Now</h2>
                     <form className="login-form">
                     <Textbox 
-                    value = {this.state.value}
+                    value = {this.state.username}
                     fieldLabel ="username"
                     id="username"
                     type="text"

@@ -25,8 +25,8 @@ class Textbox extends React.Component{
         return (
             <>
             <Col>
-                <label className="text-uppercase">{this.props.fieldLabel}</label>
-                <InputGroup className= {this.props.errorMessage === undefined ? "mb-3" : "mb-1" }>                           
+                <label className="text-capitalize">{this.props.fieldLabel}</label>
+                <InputGroup className= {this.props.errorMessage === undefined ? "mb-2" : "mb-1" }>                           
                 <FormControl
                     id={this.props.id}
                     className = {this.props.className}
@@ -41,8 +41,7 @@ class Textbox extends React.Component{
                     disabled = {this.props.isDisabled}
                     maxlength = {this.props.maxlength}
                     minLength ={this.props.minlength}
-                />         
-               
+                />               
                 </InputGroup>
                 <div className="errorMsg">{this.props.errorMessage}</div>
             </Col>

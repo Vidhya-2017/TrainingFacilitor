@@ -15,6 +15,9 @@ import LoginContainer from './pages/Login/container/LoginContainer';
 import SMEListContainer from './pages/SME/container/SMEListContainer';
 import SkillListContainer from './pages/Skill/container/SkillListContainer';
 import ForgetPasswordContainer from './pages/ForgetPassword/container/ForgetPasswordContainer';
+import ExternalTrainingContainer from './pages/ExternalTraining/container/ExternalTrainingContainer';
+import TrainingTypeContainer from './pages/TrainingType/container/TrainingTypeContainer';
+import BatchMasterContainer from './pages/BatchMaster/container/BatchMasterContainer';
 import Home from './pages/Home/Home'
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
@@ -54,8 +57,11 @@ class App extends React.Component {
               <Route path="/register" exact component={RegisterContainer} />
               <Route path="/login" component={LoginContainer} />
               <Route path="/forgetPassword" component={ForgetPasswordContainer} />
-              <Route path="/sme" component={SMEListContainer} />
-              <Route path="/skill" component={SkillListContainer} />
+              <Route path="/sme" component={SMEListContainer} /> 
+              <Route path="/skill" component={SkillListContainer} />             
+              <Route path="/externalTraining" component={ExternalTrainingContainer} />
+              <Route path="/trainingType" component={TrainingTypeContainer} />
+              <Route path="/batchMaster" component={BatchMasterContainer} />
               <PrivateRoute component={Home} path="/home"  />
             </Switch>
             </div>

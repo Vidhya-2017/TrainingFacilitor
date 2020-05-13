@@ -26,8 +26,8 @@ class SelectOne extends React.Component{
         return (
             <>
             <Col>
-                <label className="text-uppercase">{this.props.fieldLabel}</label>
-                <InputGroup className="mb-3">                           
+                <label className="text-capitalize">{this.props.fieldLabel}</label>
+                <InputGroup className= {this.props.errorMessage === undefined ? "mb-2" : "mb-1" }>                          
                 <FormControl as="select" 
                  id={this.props.id}
                  className = {this.props.className}
@@ -42,7 +42,7 @@ class SelectOne extends React.Component{
                     <option value=''>{this.props.placeholder}</option>
                     {selectionList.length !== 0 && selectionList.length !== undefined ? 
                     selectionList.map((item) => {
-                        return(<option value ={item.id}>{item.Duration}</option>);
+                        return(<option value ={item.id}>{item.locationName}</option>);
                     }) : null}
                    
                    
