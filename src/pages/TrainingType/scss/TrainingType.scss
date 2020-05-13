@@ -1,8 +1,10 @@
 /* Made with love by Mutiullah Samim*/
 
-.extTrng_container{
+.training_type_container{
     .container{
-        width: 40%;
+        width: 30%;
+        min-height: 200px;
+        padding-bottom: 20px;
     }
     $breakpoint-tablet: 775px;
     @media (max-width: $breakpoint-tablet) {

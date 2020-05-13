@@ -5,118 +5,211 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Buttons from '../../../components/UI_Component/Buttons/Buttons';
 import Textbox from '../../../components/UI_Component/Textbox/Textbox';
+import DateTimePicker from '../../../components/UI_Component/DateTimePicker/DateTimePicker';
 import '../scss/ExternalTraining.scss'
 
 class ExternalTraining extends React.Component{
     constructor(props) {
         super(props)
         this.state = {
-            name: '', sapID: '',phone_no:'', errors: {}
+            startDate: new Date(),
+            batchName: '', location: '',batchNM:'', sme:'', startDate: new Date(), endDate: new Date(), errors: {}
         }}
     
         //Validation
         validateform() {
             let errors = {};
             let formIsValid = true;
-            if (this.state.sapID.length === 0) {
+            if (this.state.batchName.length === 0) {
                 formIsValid = false;
-                errors["sapID"] = "Enter Valid sap ID"
+                errors["batchName"] = "Enter Valid batch name"
             }
-            if (this.state.name.length === 0) {
+            if (this.state.location.length === 0) {
                 formIsValid = false;
-                errors["name"] = "Enter Valid name"
+                errors["location"] = "Enter Valid location"
             }
-            if (this.state.phone_no.length !== 10 ) {
+            if (this.state.batchNM.length !== 10 ) {
                 formIsValid = false;
-                errors["phone_no"] = "Enter Valid phone no"
-            }
-            
-    
-            this.setState({ errors: errors });
-           
+                errors["batchNM"] = "Enter Valid Batch NM"
+            }    
+            this.setState({ errors: errors });           
             return formIsValid;
         }
     
     
     
         submitForm = () => {
-            if (this.validateform()) {
+            /* if (this.validateform()) {
                 localStorage.setItem("token", 1)
                 this.props.history.push('/home')
-            }
+            } */
+            console.log("------------");
         }      
        
-    
+       
 
     render() {
         return (
-            <div className="extTrng_container">           
+            <div className="exTraining_container">           
             <section className="blue_theme">
                 <Container>
                 <Row>
-                    <Col xs ={12} md = {12} lg="12" >
-                    <h2 className="text-center">External Training</h2>
-                    <form className="login-form">
-                    <Textbox 
-                    value = {this.state.value}
-                    fieldLabel ="SAP ID"
-                    id="sapID"
+                <Col xs ={12} md = {12} lg="12" >
+                    <h2 className="text-center">External Training</h2>                   
+                </Col>
+                </Row>
+                <Col xs ={12} md = {12} lg="12" >
+                <form className="">
+                <Row>
+                <Col xs ={12} md = {12} lg="6" >
+                <Textbox 
+                    value = {this.state.batchName}
+                    fieldLabel ="Training Name"
+                    id="batchName"
                     type="text"
-                    placeholder = "SAP ID"                    
-                    errorMessage = {this.state.errors.sapID === "" ? null : this.state.errors.sapID }
-                    name ="sapID"
-                    aria-label="SAP ID"
-                    aria-describedby="SAP ID"
+                    placeholder = "Training Name"                    
+                    errorMessage = {this.state.errors.batchName === "" ? null : this.state.errors.batchName }
+                    name ="batchName"
+                    aria-label="Batch Name"
+                    aria-describedby="Batch Name"
                     onChange={(val) => {        
-                        this.setState({ sapID: val });
-                      
+                        this.setState({ batchName: val });                      
                    }}
                     />
+                   
                     <Textbox 
-                    fieldLabel ="Name"
-                    value = {this.state.name}
-                    id="name"
+                    fieldLabel ="External Trainer Name "
+                    value = {this.state.batchNM}
+                    id="batchNM"
                     type="text"
-                    placeholder = "Name"                    
-                    errorMessage = {this.state.errors.name === "" ? null : this.state.errors.name }
-                    name ="name"
-                    aria-label="name"
-                    aria-describedby="name"
-                    onChange={(val) => {        
-                        this.setState({ name: val });
-                      
+                    placeholder = "External Trainer Name "                    
+                    errorMessage = {this.state.errors.batchNM === "" ? null : this.state.errors.batchNM }
+                    name ="batchNM"
+                    aria-label="Batch NM"
+                    aria-describedby="Batch NM"
+                    onChange = {(val) => {        
+                        this.setState({ batchNM: val });                      
                    }}
                     />  
                     <Textbox 
-                    fieldLabel ="Phone No"
-                    value = {this.state.phone_no}
-                    id="phone_no"
+                    fieldLabel ="Contact No"
+                    value = {this.state.sme}
+                    id="sme"
                     type="number"
-                    placeholder = "Phone No"                    
-                    errorMessage = {this.state.errors.phone_no === "" ? null : this.state.errors.phone_no }
-                    name ="phone_no"
-                    aria-label="phone_no"
-                    aria-describedby="phone_no"
+                    placeholder = "Contact No"                    
+                    errorMessage = {this.state.errors.sme === "" ? null : this.state.errors.sme }
+                    name ="sme"
+                    aria-label="sme"
+                    aria-describedby="psmehone_no"
                     maxlength = {10}
                     onChange={(val) => {        
-                        this.setState({ phone_no: val });                      
+                        this.setState({ sme: val });                      
                    }}
-                    />                   
-                            
+                    /> 
+                    <Textbox 
+                    fieldLabel ="Email ID"
+                    value = {this.state.sme}
+                    id="sme"
+                    type="email"
+                    placeholder = "Email ID"                    
+                    errorMessage = {this.state.errors.sme === "" ? null : this.state.errors.sme }
+                    name ="sme"
+                    aria-label="sme"
+                    aria-describedby="psmehone_no"
+                    maxlength = {10}
+                    onChange={(val) => {        
+                        this.setState({ sme: val });                      
+                   }}
+                    />  
+                <Textbox 
+                    fieldLabel ="Duration ID"
+                    value = {this.state.sme}
+                    id="sme"
+                    type="text"
+                    placeholder = "Duration ID"                    
+                    errorMessage = {this.state.errors.sme === "" ? null : this.state.errors.sme }
+                    name ="sme"
+                    aria-label="sme"
+                    aria-describedby="psmehone_no"
+                    maxlength = {10}
+                    onChange={(val) => {        
+                        this.setState({ sme: val });                      
+                   }}
+                    />                
+                 
+                </Col>
+                <Col xs ={12} md = {12} lg="6" >
+                  
+                <DateTimePicker 
+                  fieldLabel="Start Date"
+                  isdisabled ="true"
+                  showDate= {this.state.startDate}
+                  onChange = {(val) => {        
+                    this.setState({ startDate: val });                      
+                  }}
+                  />
+                <DateTimePicker 
+                  fieldLabel="End Date	"
+                  isdisabled ="false"
+                  minDate ={new Date()}
+                  maxDays ={8}
+                  showDate= {this.state.endDate}
+                  onChange = {(val) => {        
+                    this.setState({ endDate: val });                      
+                  }}
+                  />                  
+                 
+                   
+                   <Textbox 
+                    fieldLabel ="Account"
+                    value = {this.state.sme}
+                    id="sme"
+                    type="text"
+                    placeholder = "Account"                    
+                    errorMessage = {this.state.errors.sme === "" ? null : this.state.errors.sme }
+                    name ="sme"
+                    aria-label="sme"
+                    aria-describedby="psmehone_no"
+                    maxlength = {10}
+                    onChange={(val) => {        
+                        this.setState({ sme: val });                      
+                   }}
+                    />  
+                   
+                    <Textbox 
+                    fieldLabel ="Request BY	"
+                    value = {this.state.sme}
+                    id="sme"
+                    type="text"
+                    placeholder = "Request BY"                    
+                    errorMessage = {this.state.errors.sme === "" ? null : this.state.errors.sme }
+                    name ="sme"
+                    aria-label="sme"
+                    aria-describedby="psmehone_no"
+                    maxlength = {10}
+                    onChange={(val) => {        
+                        this.setState({ sme: val });                      
+                   }}
+                    />
+                </Col>
+                </Row>
+                <Row>
                 <Col>
-               
+                <Col>
                 <Buttons
                 className = "float-right"                
                 value="Submit" 
                 onClick={this.submitForm}/>
-               
-             </Col>            
-            </form>
-
-            </Col>
-
+                </Col>
+                </Col>
+                </Row>
+                </form>
+                </Col>  
+                          
            
-            </Row>
+                  
+           
+            
             </Container>
             </section>
           </div>

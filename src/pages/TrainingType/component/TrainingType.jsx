@@ -40,17 +40,18 @@ class TrainingType extends React.Component{
     
     
         submitForm = () => {
-            if (this.validateform()) {
+           {/* if (this.validateform()) {
                 localStorage.setItem("token", 1)
                 this.props.history.push('/home')
-            }
+            }*/}
+            console.log("-----------");
         }      
        
     
 
     render() {
         return (
-            <div className="extTrng_container">           
+            <div className="training_type_container">           
             <section className="blue_theme">
                 <Container>
                 <Row>
@@ -59,10 +60,10 @@ class TrainingType extends React.Component{
                     <form className="login-form">
                     <Textbox 
                     value = {this.state.value}
-                    fieldLabel ="SAP ID"
+                    fieldLabel ="Type"
                     id="sapID"
                     type="text"
-                    placeholder = "SAP ID"                    
+                    placeholder = "Type"                    
                     errorMessage = {this.state.errors.sapID === "" ? null : this.state.errors.sapID }
                     name ="sapID"
                     aria-label="SAP ID"
@@ -72,36 +73,7 @@ class TrainingType extends React.Component{
                       
                    }}
                     />
-                    <Textbox 
-                    fieldLabel ="Name"
-                    value = {this.state.name}
-                    id="name"
-                    type="text"
-                    placeholder = "Name"                    
-                    errorMessage = {this.state.errors.name === "" ? null : this.state.errors.name }
-                    name ="name"
-                    aria-label="name"
-                    aria-describedby="name"
-                    onChange={(val) => {        
-                        this.setState({ name: val });
-                      
-                   }}
-                    />  
-                    <Textbox 
-                    fieldLabel ="Phone No"
-                    value = {this.state.phone_no}
-                    id="phone_no"
-                    type="number"
-                    placeholder = "Phone No"                    
-                    errorMessage = {this.state.errors.phone_no === "" ? null : this.state.errors.phone_no }
-                    name ="phone_no"
-                    aria-label="phone_no"
-                    aria-describedby="phone_no"
-                    maxlength = {10}
-                    onChange={(val) => {        
-                        this.setState({ phone_no: val });                      
-                   }}
-                    />                   
+                                  
                             
                 <Col>
                
