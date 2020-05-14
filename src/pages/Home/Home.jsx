@@ -175,7 +175,7 @@ class Home extends Component {
         activeStyle.backgroundColor = '#1b91e5';
       }
       return (
-        <li className="page-item">
+        <li key={page} className="page-item">
           <button key={page} onClick={handleClick} style={activeStyle}>{page}</button>
         </li>
       );
@@ -258,7 +258,7 @@ class Home extends Component {
         {data.length > 0 &&
           <div className='candidateListTable'>
             <BootstrapTable
-              keyField={new Date().getTime()}
+              keyField='id'
               data={data}
               columns={cols}
               wrapperClasses='listTable'
