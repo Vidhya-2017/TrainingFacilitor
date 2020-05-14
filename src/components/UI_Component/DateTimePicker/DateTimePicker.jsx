@@ -1,10 +1,8 @@
 import React from 'react';
-import DatePicker from "react-datepicker";
+import DatePicker from "react-datepicker"; //for more https://reactdatepicker.com/
 import addDays from 'date-fns/addDays';
 import "react-datepicker/dist/react-datepicker.css";
-import FormControl from 'react-bootstrap/FormControl';
 import InputGroup from 'react-bootstrap/InputGroup';
-import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import './DateTimePicker.scss'
 
@@ -41,7 +39,7 @@ class DateTimePicker extends React.Component{
                     maxDate={addDays(new Date(), 5)}
                     onChange={(e) => this.handleChange(e)}                    
                     disabled
-                        />       
+                    />       
                     : 
                     <DatePicker
                     className="form-control"
@@ -49,8 +47,7 @@ class DateTimePicker extends React.Component{
                     selected={this.state.value}
                     minDate={ this.props.minDate}
                     maxDate={addDays(new Date(), this.props.maxDays)}
-                    onChange={(e) => this.handleChange(e)}
-                    
+                    onChange={(e) => this.handleChange(e)}                    
                     />
                 }             
                

@@ -15,10 +15,10 @@ class Header extends React.Component {
     return (
       <>
       {localStorage.getItem('token') === "1"  && this.props !== undefined ? 
-      <div className="welcomeDiv">Welcome <b><i>{localStorage.getItem('user') }</i></b> !</div>
+      <div className="welcomeDiv">Signed in as : <b><i>{localStorage.getItem('user') }</i></b> </div>
 
 : null }
-  <Navbar collapseOnSelect className="header" expand="lg"  variant="dark">
+  <Navbar className="header" expand="lg"  variant="dark">
   <Navbar.Brand href="/home"className="navLinks_logo" ><Link to="/home" className="navLinks_logo"> HCL</Link></Navbar.Brand>
   {localStorage.getItem('token') === "1"  && this.props !== undefined? 
   <>
@@ -27,7 +27,8 @@ class Header extends React.Component {
     <Nav className="mr-auto">
    {/* <Nav.Link href="#deets">More deets</Nav.Link> */}
     </Nav>
-    <Nav>
+    <Nav className="onCollapse">
+    <div class="bottom"></div>
     <Nav.Link><Link to="/sme"> SME List </Link></Nav.Link>
     <Nav.Link><Link to="/skill"> Skill List </Link></Nav.Link>
     <Nav.Link><Link to="/externalTraining"> External Training </Link></Nav.Link>
