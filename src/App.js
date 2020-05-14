@@ -18,6 +18,7 @@ import ForgetPasswordContainer from './pages/ForgetPassword/container/ForgetPass
 import ExternalTrainingContainer from './pages/ExternalTraining/container/ExternalTrainingContainer';
 import TrainingTypeContainer from './pages/TrainingType/container/TrainingTypeContainer';
 import BatchMasterContainer from './pages/BatchMaster/container/BatchMasterContainer';
+import DurationMasterContainer from './pages/DurationMaster/container/DurationMasterContainer';
 import Home from './pages/Home/Home'
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
@@ -61,7 +62,8 @@ class App extends React.Component {
               <Route path="/skill" component={SkillListContainer} />             
               <Route path="/externalTraining" component={ExternalTrainingContainer} />
               <Route path="/trainingType" component={TrainingTypeContainer} />
-              <Route path="/batchMaster" component={BatchMasterContainer} />
+              <Route path="/batchMaster" component={BatchMasterContainer} />              
+              <Route path="/durationMaster" component={DurationMasterContainer} />   
               <PrivateRoute component={Home} path="/home"  />
             </Switch>
             </div>

@@ -20,7 +20,7 @@ class Registration extends React.Component{
             let formIsValid = true;
             if (this.state.fName.length === 0) {
                 formIsValid = false;
-                errors["sapID"] = "Enter Valid first Name"
+                errors["fName"] = "Enter Valid first Name"
             }
             if (this.state.lName.length === 0) {
                 formIsValid = false;

@@ -1,5 +1,5 @@
 .header{
-    background-color:rgb(27, 145, 229)!important;
+    background-color:rgb(27, 145, 229);
     color: #fff;
     height: 50px;
     z-index: 1;
@@ -11,15 +11,23 @@
         font-style: italic;
     }
     a#collasible-nav-dropdown.dropdown-toggle.nav-link, a.nav-link, a {
-        color: rgba(255, 255, 255, 0.64) !important;
+        color: rgba(255, 255, 255, 0.64) ;
         text-decoration: none;
+        padding: 7px;
+        text-transform: capitalize;
     }
     a#collasible-nav-dropdown.dropdown-toggle.nav-link:hover, a.nav-link:hover, a:hover{
-        color: rgba(255, 255, 255, 0.94) !important;
+        color: rgba(255, 255, 255, 0.94) ;
     }
     .navbar-expand-lg .navbar-collapse{
-        background-color:rgb(27, 145, 229)!important;
+        background-color:rgb(27, 145, 229);
     } 
+    .clr_black{
+        color:#000
+    }
+    .clr_black:hover{
+        color:#047bcf
+    }
 
     @media (max-width: "990px") {
         .onCollapse.navbar-nav{
@@ -28,7 +36,11 @@
             float: right;
             padding: 0px 20px;
             border-radius: 5px;
-            margin-top: 10px;
+            margin-top: 5px;
+            }
+            .navbar-toggler:hover, .navbar-toggler:focus{
+                background: #047bcf;
+                border: 2px solid #047bcf;
             }
             .bottom:before {
                 content: '';

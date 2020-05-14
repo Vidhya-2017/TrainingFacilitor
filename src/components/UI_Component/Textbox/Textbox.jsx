@@ -13,15 +13,26 @@ class Textbox extends React.Component{
         this.state= {value:'', errorMessage: false}
             this.state = {
                 value:''
-            }
-       
+            }      
     }
+
+   
      handleChange(e) {       
         this.setState({value: e.target.value});    
         this.onChange(e.target.value);
+       /* let errors = {};
+        if (e.target.value.length === 0) {
+            errors[this.props.name] = this.props.errorMessage
+            errors['type'] = this.props.name
+        }
+        else{
+            errors[this.props.name] = ""
+            errors['type'] = ""
+        }      
+        this.setState({ errors: errors});*/
       }
 
-    render() {
+    render() {      
         return (
             <>
             <Col>
@@ -42,8 +53,9 @@ class Textbox extends React.Component{
                     maxlength = {this.props.maxlength}
                     minLength ={this.props.minlength}
                 />               
-                </InputGroup>
-                <div className="errorMsg">{this.props.errorMessage}</div>
+                </InputGroup>       
+                {this.props.errorMessage !== undefined ? <div className="errorMsg">{this.props.errorMessage}</div> : null }
+                {/*this.state.errors !== undefined && this.state.errors.type !== "" ? <div className="errorMsg">{this.props.errorMessage}</div> : null */}
             </Col>
          
           
