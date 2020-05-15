@@ -5,30 +5,31 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Buttons from '../../../components/UI_Component/Buttons/Buttons';
 import Textbox from '../../../components/UI_Component/Textbox/Textbox';
-import '../scss/SMEList.scss'
+import '../scss/SMEList.scss';
+import PropTypes from 'prop-types';
 
 class SMEList extends React.Component{
     constructor(props) {
         super(props)
         this.state = {
-            name: '', sapID: '',phone_no:'', errors: {}
+            name: '', sapid: '',phone_number:'', SMEList:[],  errors: {}
         }}
     
         //Validation
         validateform() {
             let errors = {};
             let formIsValid = true;
-            if (this.state.sapID.length === 0) {
+            if (this.state.sapid.length === 0) {
                 formIsValid = false;
-                errors["sapID"] = "Enter Valid sap ID"
+                errors["sapid"] = "Enter Valid sap ID"
             }
             if (this.state.name.length === 0) {
                 formIsValid = false;
                 errors["name"] = "Enter Valid name"
             }
-            if (this.state.phone_no.length !== 10 ) {
+            if (this.state.phone_number.length === 0 ) {
                 formIsValid = false;
-                errors["phone_no"] = "Enter Valid phone no"
+                errors["phone_number"] = "Enter Valid phone no"
             }
             
     
@@ -41,14 +42,24 @@ class SMEList extends React.Component{
     
         submitSMEList = () => {
             if (this.validateform()) {
-                localStorage.setItem("token", 1)
-                this.props.history.push('/home')
+            var date = new Date().toJSON().slice(0,10).replace(/-/g,'/');
+            const details ={
+                sapid: this.state.sapid,
+                name: this.state.name,
+                phone_number: this.state.phone_number,
+                created_by: 1,
+                created_date : date
             }
-        }      
+           
+              console.log(details);
+              this.props.setAddSMEList(details);
+        }  
+    }    
        
     
 
     render() {
+       
         return (
             <div className="sme_container">           
             <section className="blue_theme">
@@ -60,15 +71,15 @@ class SMEList extends React.Component{
                     <Textbox 
                     value = {this.state.value}
                     fieldLabel ="SAP ID"
-                    id="sapID"
+                    id="sapid"
                     type="text"
                     placeholder = "SAP ID"                    
-                    errorMessage = {this.state.errors.sapID === "" ? null : this.state.errors.sapID }
-                    name ="sapID"
+                    errorMessage = {this.state.errors.sapid === "" ? null : this.state.errors.sapid }
+                    name ="sapid"
                     aria-label="SAP ID"
                     aria-describedby="SAP ID"
                     onChange={(val) => {        
-                        this.setState({ sapID: val });
+                        this.setState({ sapid: val });
                       
                    }}
                     />
@@ -89,17 +100,17 @@ class SMEList extends React.Component{
                     />  
                     <Textbox 
                     fieldLabel ="Phone No"
-                    value = {this.state.phone_no}
-                    id="phone_no"
+                    value = {this.state.phone_number}
+                    id="phone_number"
                     type="number"
                     placeholder = "Phone No"                    
-                    errorMessage = {this.state.errors.phone_no === "" ? null : this.state.errors.phone_no }
-                    name ="phone_no"
-                    aria-label="phone_no"
-                    aria-describedby="phone_no"
+                    errorMessage = {this.state.errors.phone_number === "" ? null : this.state.errors.phone_number }
+                    name ="phone_number"
+                    aria-label="phone number"
+                    aria-describedby="phone number"
                     maxlength = {10}
                     onChange={(val) => {        
-                        this.setState({ phone_no: val });                      
+                        this.setState({ phone_number: val });                      
                    }}
                     />                   
                             
@@ -123,6 +134,5 @@ class SMEList extends React.Component{
         )
     }
 }
-  
 
 export default SMEList;

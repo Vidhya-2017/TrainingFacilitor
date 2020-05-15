@@ -39,6 +39,7 @@ const composeEnhancers = compose;
 // );
 
 let store = createStore(persistedReducer, composeEnhancers(
+  (state = {})=> state,
   applyMiddleware(thunk)
 ));
 
