@@ -263,9 +263,9 @@ class Home extends Component {
             placeholder='Select the Sheet'
           />} 
           {data.length > 0 &&
-            <div class="custom-control custom-switch filterSwitch">
-            <input type="checkbox" class="custom-control-input" onChange={this.showFilter} id="customSwitch1" />
-            <label class="custom-control-label" for="customSwitch1">Show Filter Options</label>
+            <div className="custom-control custom-switch filterSwitch">
+            <input type="checkbox" className="custom-control-input" onChange={this.showFilter} id="customSwitch1" />
+            <label className="custom-control-label" for="customSwitch1">Show Filter Options</label>
           </div>
           }
           {sheetOptions.length > 0 && <div className='uploadBtn'>

@@ -28,7 +28,7 @@ class Header extends React.Component {
    {/* <Nav.Link href="#deets">More deets</Nav.Link> */}
     </Nav>
     <Nav className="onCollapse">
-    <div class="bottom"></div>
+    <div className="bottom"></div>
     <Nav><Link to="/sme"> SME List </Link></Nav>
     <Nav><Link to="/skill"> Skill List </Link></Nav>
    
