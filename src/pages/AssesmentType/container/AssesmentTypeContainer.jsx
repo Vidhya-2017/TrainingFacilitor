@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import AssesmentTrainingMapping from '../component/AssesmentTrainingMapping';
+import AssesmentType from '../component/AssesmentType';
 
 const mapDispatchToProps = {
 };
@@ -9,5 +9,5 @@ const mapStateToProps = state => (
   }
 );
 
-export default connect(mapStateToProps, mapDispatchToProps)(AssesmentTrainingMapping);
+export default connect(mapStateToProps, mapDispatchToProps)(AssesmentType);
  
