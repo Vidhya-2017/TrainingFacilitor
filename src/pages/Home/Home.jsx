@@ -3,8 +3,11 @@ import { Container, Button, Alert } from 'react-bootstrap';
 import XLSX from 'xlsx';
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
+import filterFactory, { textFilter } from 'react-bootstrap-table2-filter';
 import Select from 'react-select';
 import { MakeColumns } from './MakeColumns';
+import ArrowDown from '../../common/icons/ArrowDown';
+import ArrowUp from '../../common/icons/ArrowUp';
 import './scss/Home.scss';
 
 class Home extends Component {
@@ -40,24 +43,6 @@ class Home extends Component {
           label: sheet
         }
       });
-
-      const wsname = wb.SheetNames[sheet];
-      const ws = wb.Sheets[wsname];
-      let columns = [];
-      let sheetData = XLSX.utils.sheet_to_json(ws, {
-        header: 1,
-        defval: '',
-        blankrows: false
-      });
-      if (sheetData.length > 0) {
-        columns = sheetData[0].map(col => {
-          return {
-            dataField: col.toString().trim(),
-            text: col
-          }
-        });
-      }
-      const data = XLSX.utils.sheet_to_json(ws, { raw: false });
       this.setState({ sheetOptions });
     };
     if (rABS) {
@@ -98,7 +83,15 @@ class Home extends Component {
         columns = sheetData[0].map(col => {
           return {
             dataField: col.toString().trim(),
-            text: col
+            text: col,
+            sort: true,
+            filter: false,
+            sortCaret: (order, column) => {
+              if (!order) return (<span><ArrowUp/><ArrowDown/></span>);
+              else if (order === 'asc') return (<span><ArrowUp/></span>);
+              else if (order === 'desc') return (<span><ArrowDown/></span>);
+              return null;
+            }
           }
         });
       }
@@ -112,6 +105,28 @@ class Home extends Component {
     }
   };
 
+  showFilter = (e) => {
+    const { cols } = this.state;
+    console.log('----e---', cols);
+    let filterOptions = [...cols];
+    if(e.target.checked) {
+      filterOptions = filterOptions.map(item => {
+        item.filter = textFilter({
+            delay: 1000,
+            className: 'filterTextField',
+            placeholder: item.dataField,
+            onClick: e => console.log(e)
+          });
+          return item;
+      });
+    } else {
+      filterOptions = filterOptions.map(item => {
+        item.filter = '';
+        return item;
+      });
+    }
+    this.setState({ cols: filterOptions });
+  }
   render() {
     const { file, data, cols, selectedSheet, sheetOptions } = this.state;
     const recordPerPageVal = Math.ceil(data.length / 10) * 10;
@@ -247,7 +262,12 @@ class Home extends Component {
             styles={selectStyles}
             placeholder='Select the Sheet'
           />} 
-
+          {data.length > 0 &&
+            <div class="custom-control custom-switch filterSwitch">
+            <input type="checkbox" class="custom-control-input" onChange={this.showFilter} id="customSwitch1" />
+            <label class="custom-control-label" for="customSwitch1">Show Filter Options</label>
+          </div>
+          }
           {sheetOptions.length > 0 && <div className='uploadBtn'>
             <Button disabled={data.length === 0} className='file-upload fileUploadBtn btn shadow' onClick={this.submitSheet}>Submit</Button>
           </div>
@@ -262,10 +282,12 @@ class Home extends Component {
               data={data}
               columns={cols}
               wrapperClasses='listTable'
-              striped
-              hover
+              // striped
+              // hover
+              rowClasses='rowlist'
               headerClasses="listHeader"
               pagination={paginationFactory(paginationOptions)}
+              filter={ filterFactory() }
             />
           </div>
         }

@@ -35,6 +35,10 @@
             font-weight: 500;
         }
     }
+    .filterSwitch{
+        height: 40px;
+        padding-top: 8px;
+    }
 }
 
 .candidateListTable{
@@ -44,9 +48,27 @@
         overflow: scroll;
         border: solid 1px grey;
         margin-bottom: 10px;
+        .rowlist{
+            &:hover{
+                background: #b3d7ff70;
+            }
+        }
         .listHeader{
             background: #1b91e5;
             color: white;
+            th {
+                font-weight: 500;
+                &:focus{
+                    outline: none;
+                }
+                .filterTextField{
+                    background-color: #ddebfb !important;
+                    padding: 5px;
+                    height: 30px;
+                    font-size: 15px;
+                    font-weight: 500;
+                }
+            }
         }
     }
     .table td, .table th{
