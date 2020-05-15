@@ -50,8 +50,6 @@ class SMEList extends React.Component{
                 created_by: 1,
                 created_date : date
             }
-           
-              console.log(details);
               this.props.setAddSMEList(details);
         }  
     }    

@@ -39,12 +39,10 @@ const composeEnhancers = compose;
 // );
 
 let store = createStore(persistedReducer, composeEnhancers(
-  (state = {})=> state,
   applyMiddleware(thunk)
 ));
 
-let persistor = persistStore(store)
-
+let persistor = persistStore(store);
 
 
 class App extends React.Component {

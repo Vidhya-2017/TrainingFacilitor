@@ -2,18 +2,21 @@ import clients from '../../../common/clients';
 import * as actionTypes from "../../../common/actionTypes/SME.actiontype";
 
 export const SMEAction = {
-    setAddSMEList: async (data) => {
-        try {
-            const response = await clients.AddSMEList.post('', data);           
-            return (dispatch) => dispatch({
+    setAddSMEList: (data) => {
+        return async (dispatch) => {
+          return clients.AddSMEList.post('', data).then(res =>{
+            dispatch({
                 type : actionTypes.ADD_SME,
-                payload : response.data
+                payload : res.data
             });
         }
-        catch (error) {
-            return (error.response);
-        }
-    },
+            ).catch(
+              error => {
+              return (error.response.data);   
+            }
+            );
+          }
+      },
     
     
 }
