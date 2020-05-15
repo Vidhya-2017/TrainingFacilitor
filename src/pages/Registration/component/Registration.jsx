@@ -5,8 +5,13 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Buttons from '../../../components/UI_Component/Buttons/Buttons';
 import Textbox from '../../../components/UI_Component/Textbox/Textbox';
+import Gender from '../../../components/UI_Component/Select/Gender';
+import DateTimePicker from '../../../components/UI_Component/DateTimePicker/DateTimePicker';
 import '../scss/Registration.scss'
-
+const genderList = [
+    {"id":"1","gender":"Male"},
+    {"id":"2","gender":"Female"},
+   ]
 class Registration extends React.Component{
     constructor(props) {
         super(props)
@@ -63,6 +68,21 @@ class Registration extends React.Component{
                     <form className="login-form">
                     <Textbox 
                     value = {this.state.fName}
+                    fieldLabel ="SAP ID"
+                    id="fName"
+                    type="text"
+                    placeholder = "SAP ID"                    
+                    errorMessage = {this.state.errors.fName === "" ? null : this.state.errors.fName }
+                    name ="fName"
+                    aria-label="SAP ID"
+                    aria-describedby="SAP ID"
+                    onChange={(val) => {        
+                        this.setState({ fName: val });
+                      
+                   }}
+                    />
+                    <Textbox 
+                    value = {this.state.fName}
                     fieldLabel ="First Name"
                     id="fName"
                     type="text"
@@ -91,6 +111,30 @@ class Registration extends React.Component{
                       
                    }}
                     />  
+                     <Gender 
+                     fieldLabel ="Gender"
+                    id="gender"             
+                    name="gender"                
+                    placeholder="Gender"
+                    aria-label="Gender"
+                    aria-describedby="Gender"               
+                    size = "1"
+                    list = {genderList}
+                    onChange={(val) => {        
+                        this.setState({ gender: val });
+                      
+                   }}
+                   errorMessage = {this.state.errors.location === "" ? null : this.state.errors.location }
+                   />
+                    <DateTimePicker 
+                    fieldLabel="DOB"
+                    maxDays = {0}
+                    minDays = {9000}
+                    showDate= {new Date()}
+                    onChange = {(val) => {        
+                        this.setState({ dob: val });                      
+                    }}
+                  />
                     <Textbox 
                     fieldLabel ="Email ID"
                     value = {this.state.email_id}
@@ -121,6 +165,7 @@ class Registration extends React.Component{
                         this.setState({ phone_no: val });                      
                    }}
                     />  
+                    
                      <Textbox 
                     fieldLabel ="Password"
                     value = {this.state.phone_no}

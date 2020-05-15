@@ -19,6 +19,7 @@ import ExternalTrainingContainer from './pages/ExternalTraining/container/Extern
 import TrainingTypeContainer from './pages/TrainingType/container/TrainingTypeContainer';
 import BatchMasterContainer from './pages/BatchMaster/container/BatchMasterContainer';
 import DurationMasterContainer from './pages/DurationMaster/container/DurationMasterContainer';
+import AssesmentTypeContainer from './pages/AssesmentType/container/AssesmentTypeContainer';
 import Home from './pages/Home/Home'
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
@@ -63,7 +64,8 @@ class App extends React.Component {
               <Route path="/externalTraining" component={ExternalTrainingContainer} />
               <Route path="/trainingType" component={TrainingTypeContainer} />
               <Route path="/batchMaster" component={BatchMasterContainer} />              
-              <Route path="/durationMaster" component={DurationMasterContainer} />   
+              <Route path="/durationMaster" component={DurationMasterContainer} />  assesmentType
+              <Route path="/assesmentType" component={AssesmentTypeContainer} />   
               <PrivateRoute component={Home} path="/home"  />
             </Switch>
             </div>
