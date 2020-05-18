@@ -1,6 +1,7 @@
 import { connect } from 'react-redux';
-import SkillList from '../component/SkillList';
 import { SkillAction } from '../modules/SkillAction';
+import SkillList from '../component/SkillList';
+
 
 const mapDispatchToProps = (dispatch) => {
   return {
@@ -10,8 +11,11 @@ const mapDispatchToProps = (dispatch) => {
 
 
 const mapStateToProps = (state) => {
-  return {}
+  return {
+    SkillDetails: state.SkillReducer
+  }
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SkillList);
+ 
  

@@ -1,16 +1,17 @@
 import * as actionTypes from "../../../common/actionTypes/Skill.actiontype";
 
 export const initialState = {
-      SkillList : [],
+      SkillDetails : [],
 };
 
 
 export const SkillReducer = (state = initialState, action) => {
+    console.log(action);
     switch(action.type){
         case actionTypes.ADD_SKILL:
         return {
             ...state,
-            SkillList : action.payload.SkillList,
+            SkillDetails : action.payload,
         };
         default:
         return state;

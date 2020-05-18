@@ -45,13 +45,34 @@ class BatchMaster extends React.Component{
     
     
     
-        submitForm = () => {
-            /* if (this.validateform()) {
-                localStorage.setItem("token", 1)
-                this.props.history.push('/home')
-            } */
-            console.log("------------");
-        }      
+        submitForm = (e) => {
+            e.preventDefault();
+            if (this.validateform()) {
+            var date = new Date().toJSON().slice(0,10).replace(/-/g,'/');
+            const details ={
+                assesment_type_name: this.state.assType,
+                created_by: 1, 
+                updated_by: 1,
+                created_date: date
+            }
+              this.props.setAddBatchMasterList(details);   
+              setTimeout(
+                function() {
+                    this.setState({               
+                        sucessMessage: "Data saved sucessfully!",
+                        assType: '',
+                        }) 
+                }.bind(this),1500);              
+                this.dissmissModel();
+            }  
+        }
+        dissmissModel = () =>{
+            setTimeout(
+                function() {
+                    this.setState({sucessMessage: ""});
+                }.bind(this),
+            4000);
+        }     
        
        
 

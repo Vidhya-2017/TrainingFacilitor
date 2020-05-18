@@ -10,7 +10,7 @@ export const AssesmentTypeReducer = (state = initialState, action) => {
         case actionTypes.ADD_ASSESSMENT_TYPE:
         return {
             ...state,
-            AssesmentTypeList : action.payload.AssesmentTypeList,
+            AssesmentTypeList : action.payload,
         };
         default:
         return state;

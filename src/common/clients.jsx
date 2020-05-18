@@ -21,10 +21,18 @@ const AddAssesmentTypeList = axios.create({
         'Content-Type' : 'application/json'
     }
 });
+const AddBatchMaster = axios.create({
+    baseURL: 'http://proctor.eastus.cloudapp.azure.com/training-facilitator/AddBatchMaster.php',
+    headers : {
+        'Accept' : 'application/json',
+        'Content-Type' : 'application/json'
+    }
+});
 const clients = {
     AddSMEList: AddSMEList,
     AddSkillList:AddSkillList,
-    AddAssesmentTypeList: AddAssesmentTypeList
+    AddAssesmentTypeList: AddAssesmentTypeList,
+    AddBatchMaster: AddBatchMaster
     
 }
 

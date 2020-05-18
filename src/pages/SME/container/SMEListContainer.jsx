@@ -11,7 +11,9 @@ const mapDispatchToProps = (dispatch) => {
 
 
 const mapStateToProps = (state) => {
-  return {}
+  return {
+    SMEList: state.SMEReducer.SMEList
+  }
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SMEList);

@@ -9,7 +9,9 @@ const mapDispatchToProps = (dispatch) => {
 };
 
 const mapStateToProps = (state) => {
-  return{}
+  return{
+    AssesmentTypeList: state.AssesmentTypeReducer
+  }
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(AssesmentType);

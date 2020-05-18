@@ -10,7 +10,7 @@ export const SMEReducer = (state = initialState, action) => {
         case actionTypes.ADD_SME:
         return {
             ...state,
-            SMEList : action.payload.SMEList,
+            SMEList : action.payload,
         };
         default:
         return state;
