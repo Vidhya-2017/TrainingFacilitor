@@ -10,7 +10,7 @@ class SkillList extends React.Component{
     constructor(props) {
         super(props)
         this.state = {
-            skillName: '', errors: {}
+            skillName: '', sucessMessage: '', errors: {}
         }}
     
         //Validation
@@ -21,20 +21,35 @@ class SkillList extends React.Component{
                 formIsValid = false;
                 errors["skillName"] = "Enter Valid Skill Name"
             }
-            
-    
             this.setState({ errors: errors });
-           
             return formIsValid;
-        }
-    
-    
-    
-        submitSkillList = () => {
+        }    
+        submitSkillList = (e) => {
+            e.preventDefault();
             if (this.validateform()) {
-                localStorage.setItem("token", 1)
-                this.props.history.push('/home')
+            var date = new Date().toJSON().slice(0,10).replace(/-/g,'/');
+            const details ={
+                skill_name: this.state.skillName,
+                created_by: 1, 
+                created_date: date
             }
+              this.props.setAddSkillList(details);   
+              setTimeout(
+                function() {
+                    this.setState({               
+                        sucessMessage: "Data saved sucessfully!",
+                        skillName: '',
+                        }) 
+                }.bind(this),1500);              
+                this.dissmissModel();
+            }  
+        }
+        dissmissModel = () =>{
+            setTimeout(
+                function() {
+                    this.setState({sucessMessage: ""});
+                }.bind(this),
+            4000);
         }      
        
     
@@ -47,9 +62,10 @@ class SkillList extends React.Component{
                 <Row>
                     <Col xs ={12} md = {12} lg="12" >
                     <h2 className="text-center">Skill List</h2>
+                    {this.state.sucessMessage !== "" ? <p className="sucessMessage">{this.state.sucessMessage}</p> : null }
                     <form className="login-form">
                     <Textbox 
-                    value = {this.state.value}
+                    value = {this.state.skillName}
                     fieldLabel ="Skill Name"
                     id="skillName"
                     type="text"
