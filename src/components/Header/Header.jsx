@@ -19,7 +19,7 @@ class Header extends React.Component {
 
 : null }
   <Navbar className="header" expand="lg"  variant="dark">
-  <Navbar.Brand href="/home"className="navLinks_logo" ><Link to="/home" className="navLinks_logo"> HCL</Link></Navbar.Brand>
+  <Navbar className="navbar-brand"><Link to="/home" className="navLinks_logo"> HCL</Link></Navbar>
   {localStorage.getItem('token') === "1"  && this.props !== undefined? 
   <>
   <Navbar.Toggle aria-controls="responsive-navbar-nav" />
@@ -43,7 +43,7 @@ class Header extends React.Component {
     <Nav><Link className="clr_black" to="/batchMaster"> Batch Master</Link></Nav>
     <Nav><Link className="clr_black" to="/durationMaster"> duration master </Link></Nav>
     </NavDropdown> 
-      <Nav.Link  onClick ={this.logout}><Link to="/login"> Logout </Link></Nav.Link>
+      <Nav><Link  to="/login" onClick ={this.logout}>Logout </Link></Nav>
     </Nav>
   </Navbar.Collapse>
   </>

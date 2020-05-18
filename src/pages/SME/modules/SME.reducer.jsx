@@ -6,7 +6,6 @@ export const initialState = {
 
 
 export const SMEReducer = (state = initialState, action) => {
-    console.log(action);
     switch(action.type){
         case actionTypes.ADD_SME:
         return {

@@ -12,7 +12,7 @@ class Textbox extends React.Component{
         this.onChange = this.props.onChange;
         this.state= {value:'', errorMessage: false}
             this.state = {
-                value:''
+                value: this.props.value
             }      
     }
 
@@ -31,7 +31,12 @@ class Textbox extends React.Component{
         }      
         this.setState({ errors: errors});*/
       }
-
+      componentWillReceiveProps(nextProps) {
+        if (nextProps.value !== this.state.value) {
+          this.setState({value : nextProps.value});
+        }
+      
+    }
     render() {      
         return (
             <>
@@ -44,13 +49,13 @@ class Textbox extends React.Component{
                     style={this.props.style}
                     onChange={(e) => this.handleChange(e)}
                     name={this.props.name}
-                    value={this.props.value ? this.props.value : this.state.value}
+                    value={ this.state.value}
                     placeholder={this.props.placeholder}
                     aria-label={this.props.ariaLabel}
                     aria-describedby={this.props.ariaDescribedBy}
                     type = {this.props.type}
                     disabled = {this.props.isDisabled}
-                    maxlength = {this.props.maxlength}
+                    maxLength = {this.props.maxlength}
                     minLength ={this.props.minlength}
                 />               
                 </InputGroup>       
