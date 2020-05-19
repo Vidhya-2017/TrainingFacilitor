@@ -10,7 +10,7 @@ class AssesmentType extends React.Component{
     constructor(props) {
         super(props)
         this.state = {
-            assType: '', sucessMessage: '', errors: {}
+            assType: '', sucessMessage: '', errorMessage:'', errors: {}
         }}
     
         //Validation
@@ -36,13 +36,22 @@ class AssesmentType extends React.Component{
                 updated_by: 1,
                 created_date: date
             }
-              this.props.setAddAssesmentTypeList(details);   
+           
+              this.props.setAddAssesmentTypeList(details); 
               setTimeout(
                 function() {
-                    this.setState({               
-                        sucessMessage: "Data saved sucessfully!",
-                        assType: '',
-                        }) 
+                    if(this.props.AssesmentTypeList.AssesmentTypeList.errCode === 200){
+                        this.setState({               
+                            sucessMessage: "Data saved sucessfully!",
+                            assType: '',
+                            }) 
+                        }
+                        else{
+                            this.setState({               
+                                errorMessage: "Error in saving Data!",
+                                assType: '',
+                                }) 
+                            }
                 }.bind(this),1500);              
                 this.dissmissModel();
             }  
@@ -50,7 +59,7 @@ class AssesmentType extends React.Component{
         dissmissModel = () =>{
             setTimeout(
                 function() {
-                    this.setState({sucessMessage: ""});
+                    this.setState({sucessMessage: "", errorMessage:''});
                 }.bind(this),
             4000);
         }      
@@ -66,7 +75,8 @@ class AssesmentType extends React.Component{
                 <Row>
                     <Col xs ={12} md = {12} lg="12" >
                     <h2 className="text-center">Assesment Type</h2>
-                     {this.state.sucessMessage !== "" ? <p className="sucessMessage">{this.state.sucessMessage}</p> : null }
+                    {this.state.sucessMessage !== "" ? <p className="sucessMessage">{this.state.sucessMessage}</p> : null }
+                    {this.state.errorMessage !== "" ? <p className="errorMessage">{this.state.errorMessage}</p> : null }
                     <form className="login-form">
                     <Textbox 
                     value = {this.state.assType}

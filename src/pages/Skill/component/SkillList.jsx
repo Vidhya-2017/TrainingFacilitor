@@ -10,7 +10,7 @@ class SkillList extends React.Component{
     constructor(props) {
         super(props)
         this.state = {
-            skillName: '', sucessMessage: '', errors: {}
+            skillName: '', sucessMessage: '', errorMessage:'', errors: {}
         }}
     
         //Validation
@@ -33,13 +33,22 @@ class SkillList extends React.Component{
                 created_by: 1, 
                 created_date: date
             }
-              this.props.setAddSkillList(details);   
+              this.props.setAddSkillList(details);  
+
               setTimeout(
                 function() {
+                    if(this.props.SkillDetails.SkillDetails.errCode === 200){
                     this.setState({               
                         sucessMessage: "Data saved sucessfully!",
                         skillName: '',
                         }) 
+                    }
+                    else{
+                        this.setState({               
+                            errorMessage: "Error in saving Data!",
+                            skillName: '',
+                            }) 
+                    }
                 }.bind(this),1500);              
                 this.dissmissModel();
             }  
@@ -47,7 +56,7 @@ class SkillList extends React.Component{
         dissmissModel = () =>{
             setTimeout(
                 function() {
-                    this.setState({sucessMessage: ""});
+                    this.setState({sucessMessage: "", errorMessage: ''});
                 }.bind(this),
             4000);
         }      
@@ -63,6 +72,7 @@ class SkillList extends React.Component{
                     <Col xs ={12} md = {12} lg="12" >
                     <h2 className="text-center">Skill List</h2>
                     {this.state.sucessMessage !== "" ? <p className="sucessMessage">{this.state.sucessMessage}</p> : null }
+                    {this.state.errorMessage !== "" ? <p className="errorMessage">{this.state.errorMessage}</p> : null }
                     <form className="login-form">
                     <Textbox 
                     value = {this.state.skillName}

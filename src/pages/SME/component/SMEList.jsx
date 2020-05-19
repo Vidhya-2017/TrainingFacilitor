@@ -10,7 +10,7 @@ class SMEList extends React.Component{
     constructor(props) {
         super(props)
         this.state = {
-            name: '', sapid: '',phone_number:'', sucessMessage: '', SMEList:[],  errors: {}
+            name: '', sapid: '',phone_number:'', sucessMessage: '',errorMessage:'', SMEList:[],  errors: {}
         }}
     
         //Validation
@@ -47,12 +47,23 @@ class SMEList extends React.Component{
               this.props.setAddSMEList(details);   
               setTimeout(
                 function() {
-                    this.setState({               
-                        sucessMessage: "Data saved sucessfully!",
-                        sapid: '',
-                        name: "",
-                        phone_number: "",
-                        }) 
+                    if(this.props.SMEList.errCode === 200){
+                        this.setState({               
+                            sucessMessage: "Data saved sucessfully!",
+                            sapid: '',
+                            name: "",
+                            phone_number: "",
+                            }) 
+                        }
+                        else{
+                            this.setState({               
+                                errorMessage: "Error in saving Data!",
+                                sapid: '',
+                                name: "",
+                                phone_number: "",
+                                }) 
+                        }
+                   
                 }.bind(this),1500);              
                 this.dissmissModel();
             }  
@@ -60,7 +71,7 @@ class SMEList extends React.Component{
         dissmissModel = () =>{
             setTimeout(
                 function() {
-                    this.setState({sucessMessage: ""});
+                    this.setState({sucessMessage: "", errorMessage:''});
                 }.bind(this),
             4000);
         }  
@@ -76,6 +87,7 @@ class SMEList extends React.Component{
                     <Col xs ={12} md = {12} lg="12" >
                     <h2 className="text-center">SME List</h2>
                     {this.state.sucessMessage !== "" ? <p className="sucessMessage">{this.state.sucessMessage}</p> : null }
+                    {this.state.errorMessage !== "" ? <p className="errorMessage">{this.state.errorMessage}</p> : null }
                     <form className="login-form">
                     <Textbox 
                     value = {sapid}

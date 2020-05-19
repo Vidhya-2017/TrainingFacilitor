@@ -35,14 +35,19 @@
   border-top-right-radius: 0.3rem !important;
     border-bottom-right-radius: 0.3rem !important;
 }
-.sucessMessage{
+.sucessMessage, .errorMessage{
   text-align: center;
   width: 40%;
   margin: 0px auto;
-  background-color: #2eba2e;
   padding: 10px;
   color: #fff;
   border-radius: 5px;
+}
+.sucessMessage{  
+  background-color: #2eba2e;  
+}
+.errorMessage{  
+  background-color: red;  
 }
 .errorMsg {
   color: red;
