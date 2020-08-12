@@ -1,6 +1,7 @@
 import React from 'react';
 import { withRouter } from 'react-router';
-import { Route, Switch, Redirect } from 'react-router-dom'
+import { Route, Switch, Redirect } from 'react-router-dom';
+import { Spinner } from 'react-bootstrap';
 import { Provider } from 'react-redux';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from "redux-persist/lib/storage";
@@ -27,8 +28,6 @@ import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
 import './App.scss';
 
-
-
 const persistConfig = {
   key: 'root',
   storage,
@@ -52,6 +51,9 @@ class App extends React.Component {
   render() {
     return (
       <div className='appContainer'>
+        <div className='spinnerWrapper hide'>
+          <Spinner className='spinner' animation="grow" variant="primary" />
+        </div>
         <Provider store={store}>
           <PersistGate loading={null} persistor={persistor}>
             <Header />

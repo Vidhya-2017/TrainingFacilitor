@@ -6,7 +6,6 @@ export const initialState = {
 
 
 export const HomeReducer = (state = initialState, action) => {
-    console.log(action);
     switch(action.type){
         case actionTypes.IMPORT_EXCEL:
         return {

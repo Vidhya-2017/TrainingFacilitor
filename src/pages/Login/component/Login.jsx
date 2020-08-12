@@ -29,7 +29,6 @@ class Login extends React.Component{
             }
     
             this.setState({ errors: errors });
-           console.log('---formIsValid---', formIsValid);
             return formIsValid;
         }
     

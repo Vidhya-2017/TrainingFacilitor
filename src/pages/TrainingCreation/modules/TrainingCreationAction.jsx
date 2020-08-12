@@ -1,7 +1,7 @@
 import clients from '../../../common/clients';
 import * as actionTypes from "../../../common/actionTypes/BatchMaster.actiontype";
 
-export const BatchMasterAction = {
+export const TrainingCreationAction = {
     setAddBatchMasterList: (data) => {
         return async (dispatch) => {
           return clients.AddBatchMasterList.post('', data).then(res =>{
@@ -17,6 +17,22 @@ export const BatchMasterAction = {
             );
           }
       },
-    
-    
+      getSkillList: async (data) => {
+        try {
+            const response = await clients.axiosAPI.post('ListLOB.php', data);
+            return (response.data);
+        }
+        catch (error) {
+            return (error.response);
+        }
+    },
+    getLocation: async (data) => {
+      try {
+          const response = await clients.axiosAPI.post('ListLocation.php', data);
+          return (response.data);
+      }
+      catch (error) {
+          return (error.response);
+      }
+  },
 }

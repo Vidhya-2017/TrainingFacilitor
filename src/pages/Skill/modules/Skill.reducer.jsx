@@ -6,7 +6,6 @@ export const initialState = {
 
 
 export const SkillReducer = (state = initialState, action) => {
-    console.log(action);
     switch(action.type){
         case actionTypes.ADD_SKILL:
         return {

@@ -8,31 +8,40 @@ class SelectOne extends React.Component {
 
 	constructor(props) {
 		super(props)
-		this.state = { value: null, errorMessage: false }
+		this.state = { value: null, errorMessage: false, options: props.options }
 	}
+
+	static getDerivedStateFromProps(props, state) {
+		if (props.options !== state.options) {
+      return {
+        options: props.options
+      };
+    }
+		return null;
+	}
+
+
 	handleChange = (e) => {
-		this.setState({ value: e.target.value });
-		this.props.onChange(e.target.value);
+		this.setState({ value: e });
+		this.props.onChange(e.value);
 	}
 
 	render() {
-		const selectionList = this.props.list !== undefined ? this.props.list : [];
+		const { options } = this.state;
 		return (
 			<>
 				<Col>
 				<label className="text-capitalize">{this.props.fieldLabel}</label>
 					<Select
-						id={this.props.id}
-						className={this.props.className}
-						name={this.props.name}
+						// id={this.props.id}
+						// className={this.props.className}
+						// name={this.props.name}
 						placeholder={this.props.placeholder}
-						aria-label={this.props.ariaLabel}
-						aria-describedby={this.props.ariaDescribedBy}
 						onChange={this.handleChange}
-						options={selectionList}
+						options={options}
 						defaultValue={this.state.value}
 						value={this.state.value}
-						styles={SelectStyles(215)}
+						styles={SelectStyles()}
 						isMulti={this.props.isMulti}
 						closeMenuOnSelect={!this.props.isMulti}
 						isDisabled={this.props.isDisabled}
