@@ -14,13 +14,15 @@ import LoginContainer from './pages/Login/container/LoginContainer';
 // import ForgetPassword from './pages/ForgetPassword/ForgetPassword';
 import SMEListContainer from './pages/SME/container/SMEListContainer';
 import SkillListContainer from './pages/Skill/container/SkillListContainer';
+import TrainingCreationContainer from './pages/TrainingCreation/container/TrainingCreationContainer';
 import ForgetPasswordContainer from './pages/ForgetPassword/container/ForgetPasswordContainer';
 import ExternalTrainingContainer from './pages/ExternalTraining/container/ExternalTrainingContainer';
 import TrainingTypeContainer from './pages/TrainingType/container/TrainingTypeContainer';
 import BatchMasterContainer from './pages/BatchMaster/container/BatchMasterContainer';
 import DurationMasterContainer from './pages/DurationMaster/container/DurationMasterContainer';
 import AssesmentTypeContainer from './pages/AssesmentType/container/AssesmentTypeContainer';
-import Home from './pages/Home/Home'
+import CandidateRegistrationContainer from './pages/CandidateRegistration/container/CandidateRegistrationContainer';
+import Home from './pages/Home/container/HomeContainer';
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
 import './App.scss';
@@ -55,17 +57,21 @@ class App extends React.Component {
             <Header />
             <div className='routerContent'>
                <Switch>
+              {/* <Route path="" exact component={LoginContainer} /> */}
               <Route path="/register" exact component={RegisterContainer} />
               <Route path="/login" component={LoginContainer} />
+              <Route path="/trainingCreation" component={TrainingCreationContainer} />
               <Route path="/forgetPassword" component={ForgetPasswordContainer} />
               <Route path="/sme" component={SMEListContainer} /> 
               <Route path="/skill" component={SkillListContainer} />             
               <Route path="/externalTraining" component={ExternalTrainingContainer} />
               <Route path="/trainingType" component={TrainingTypeContainer} />
               <Route path="/batchMaster" component={BatchMasterContainer} />              
-              <Route path="/durationMaster" component={DurationMasterContainer} />  assesmentType
+              <Route path="/durationMaster" component={DurationMasterContainer} />
               <Route path="/assesmentType" component={AssesmentTypeContainer} />   
+              {/* <Route path="/home" component={Home} />    */}
               <PrivateRoute component={Home} path="/home"  />
+              <Route path="/candidateRegistration" component={CandidateRegistrationContainer} />  
             </Switch>
             </div>
             <Footer />

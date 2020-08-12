@@ -1,12 +1,12 @@
 import clients from '../../../common/clients';
-import * as actionTypes from "../../../common/actionTypes/AssesmentType.actiontype";
+import * as actionTypes from "../../../common/actionTypes/BatchMaster.actiontype";
 
-export const AssesmentTypeAction = {
-    setAddAssesmentTypeList: (data) => {
+export const BatchMasterAction = {
+    setAddBatchMasterList: (data) => {
         return async (dispatch) => {
-          return clients.AddAssesmentTypeList.post('AssessmentTypesAdd.php', data).then(res =>{
+          return clients.AddBatchMasterList.post('', data).then(res =>{
             dispatch({
-                type : actionTypes.ADD_ASSESSMENT_TYPE,
+                type : actionTypes.ADD_BATCH,
                 payload : res.data
             });
         }

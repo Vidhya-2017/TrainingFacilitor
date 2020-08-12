@@ -5,12 +5,11 @@ import Nav from 'react-bootstrap/Nav';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import './scss/Header.scss';
 class Header extends React.Component {
-  constructor(props) {
-    super(props)
-  }
+ 
   logout(){
    localStorage.clear();
   }
+
   render() {
     return (
       <>
@@ -33,6 +32,7 @@ class Header extends React.Component {
     <Nav><Link to="/skill"> Skill List </Link></Nav>
    
     <Nav><Link to="/assesmentType"> assessment type</Link></Nav>
+    <Nav><Link to="/trainingCreation"> Training Creation </Link></Nav>
     <NavDropdown title="Training" id="collasible-nav-dropdown" style={{right: "0", left: "none"}}>
     <Nav><Link className="clr_black" to="/externalTraining"> External Training </Link></Nav>
     <Nav><Link className="clr_black" to="/trainingType"> Training Type</Link></Nav>

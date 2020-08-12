@@ -4,7 +4,7 @@ import * as actionTypes from "../../../common/actionTypes/Skill.actiontype";
 export const SkillAction = {
     setAddSkillList: (data) => {
         return async (dispatch) => {
-          return clients.AddSkillList.post('', data).then(res =>{
+          return clients.AddSkillList.post('AddSkillsList.php', data).then(res =>{
             dispatch({
                 type : actionTypes.ADD_SKILL,
                 payload : res.data

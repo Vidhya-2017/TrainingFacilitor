@@ -1,39 +1,26 @@
 import axios from 'axios';
+import Interceptors from './Interceptors';
 
-const AddSMEList = axios.create({
-    baseURL: 'http://proctor.eastus.cloudapp.azure.com/training-facilitator/AddSmeList.php',
-    headers : {
-        'Accept' : 'application/json',
-        'Content-Type' : 'application/json'
+axios.defaults.timeout = 2500 * 10;
+
+const HOSTNAME = 'http://proctor.eastus.cloudapp.azure.com/';
+// const HOSTNAME = 'https://apk.cnc.hclets.com/';
+
+const HACKERANCHOR = 'TrainingFacilitator/';
+
+const axiosAPI = axios.create({
+    baseURL: `${HOSTNAME}${HACKERANCHOR}`,
+    headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'text/plain'
     }
 });
-const AddSkillList = axios.create({
-    baseURL: 'http://proctor.eastus.cloudapp.azure.com/training-facilitator/AddSkillsList.php',
-    headers : {
-        'Accept' : 'application/json',
-        'Content-Type' : 'application/json'
-    }
-});
-const AddAssesmentTypeList = axios.create({
-    baseURL: 'http://proctor.eastus.cloudapp.azure.com/training-facilitator/AssessmentTypesAdd.php',
-    headers : {
-        'Accept' : 'application/json',
-        'Content-Type' : 'application/json'
-    }
-});
-const AddBatchMaster = axios.create({
-    baseURL: 'http://proctor.eastus.cloudapp.azure.com/training-facilitator/AddBatchMaster.php',
-    headers : {
-        'Accept' : 'application/json',
-        'Content-Type' : 'application/json'
-    }
-});
+
 const clients = {
-    AddSMEList: AddSMEList,
-    AddSkillList:AddSkillList,
-    AddAssesmentTypeList: AddAssesmentTypeList,
-    AddBatchMaster: AddBatchMaster
-    
-}
+    axiosAPI
+};
 
+const interceptors = new Interceptors();
+interceptors.addRequestInterceptors(axiosAPI);
+interceptors.addResponseInterceptors(axiosAPI);
 export default clients;

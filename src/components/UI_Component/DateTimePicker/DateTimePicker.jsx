@@ -11,17 +11,14 @@ class DateTimePicker extends React.Component{
 
     constructor(props) {
         super(props)
-        this.handleChange = this.handleChange.bind(this);
-        
-        this.onChange = this.props.onChange;
-        this.state= {value:'', errorMessage: false}
             this.state = {
                 value: props.showDate,
+                errorMessage: false
             }
     }
-    handleChange(e) {      
+    handleChange = (e) => {      
         this.setState({value: e});    
-        this.onChange(e);
+        this.props.onChange(e);
       }
 
 

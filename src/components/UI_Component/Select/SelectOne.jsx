@@ -1,61 +1,70 @@
 import React from 'react';
-import FormControl from 'react-bootstrap/FormControl';
-import InputGroup from 'react-bootstrap/InputGroup';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
+import PropTypes from 'prop-types';
+import { Col } from 'react-bootstrap';
+import Select from 'react-select';
+import SelectStyles from './SelectStyles';
 
-class SelectOne extends React.Component{
+class SelectOne extends React.Component {
 
-    constructor(props) {
-        super(props)
-        this.handleChange = this.handleChange.bind(this);
-        this.onChange = this.props.onChange;
-        this.state= {value:'', errorMessage: false}
-            this.state = {
-                value:''
-            }
-       
-    }
-     handleChange(e) {       
-        this.setState({value: e.target.value});    
-        this.onChange(e.target.value);
-      }
+	constructor(props) {
+		super(props)
+		this.state = { value: null, errorMessage: false }
+	}
+	handleChange = (e) => {
+		this.setState({ value: e.target.value });
+		this.props.onChange(e.target.value);
+	}
 
-    render() {
-        const selectionList = this.props.list !== undefined ? this.props.list : [];
-        return (
-            <>
-            <Col>
-                <label className="text-capitalize">{this.props.fieldLabel}</label>
-                <InputGroup className= {this.props.errorMessage === undefined ? "mb-2" : "mb-1" }>                          
-                <FormControl as="select" 
-                 id={this.props.id}
-                 className = {this.props.className}
-                 style={this.props.style}               
-                 name={this.props.name}                
-                 placeholder={this.props.placeholder}
-                 aria-label={this.props.ariaLabel}
-                 aria-describedby={this.props.ariaDescribedBy}                
-                size = {this.props.size}
-                onChange={(e) => this.handleChange(e)}
-                >
-                    <option value=''>{this.props.placeholder}</option>
-                    {selectionList.length !== 0 && selectionList.length !== undefined ? 
-                    selectionList.map((item) => {
-                        return(<option value ={item.id}>{item.locationName}</option>);
-                    }) : null}
-                   
-                   
-                    </FormControl> 
-                </InputGroup>
-                <div className="errorMsg">{this.props.errorMessage}</div>
-            </Col>
-         
-          
-          </>
-        )
-    }
+	render() {
+		const selectionList = this.props.list !== undefined ? this.props.list : [];
+		return (
+			<>
+				<Col>
+				<label className="text-capitalize">{this.props.fieldLabel}</label>
+					<Select
+						id={this.props.id}
+						className={this.props.className}
+						name={this.props.name}
+						placeholder={this.props.placeholder}
+						aria-label={this.props.ariaLabel}
+						aria-describedby={this.props.ariaDescribedBy}
+						onChange={this.handleChange}
+						options={selectionList}
+						defaultValue={this.state.value}
+						value={this.state.value}
+						styles={SelectStyles(215)}
+						isMulti={this.props.isMulti}
+						closeMenuOnSelect={!this.props.isMulti}
+						isDisabled={this.props.isDisabled}
+					/>
+					<div className="errorMsg">{this.props.errorMessage}</div>
+				</Col>
+			</>
+		)
+	}
 }
-  
+
+SelectOne.propTypes = {
+  isDisabled: PropTypes.bool,
+  isMulti: PropTypes.bool,
+  ariaDescribedBy: PropTypes.string,
+  ariaLabel: PropTypes.string,
+  placeholder: PropTypes.string,
+  name: PropTypes.string,
+  id: PropTypes.string,
+  className: PropTypes.string,
+};
+
+
+SelectOne.defaultProps = {
+	isDisabled: false,
+  isMulti: false,
+  ariaDescribedBy: '',
+  ariaLabel: '',
+  placeholder: '',
+  name: '',
+  id: '',
+  className: '',
+};
 
 export default SelectOne;
