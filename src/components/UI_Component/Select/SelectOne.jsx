@@ -23,19 +23,16 @@ class SelectOne extends React.Component {
 
 	handleChange = (e) => {
 		this.setState({ value: e });
-		this.props.onChange(e.value);
+		this.props.onChange({ target: { ...e, name: this.props.name } });
 	}
 
 	render() {
 		const { options } = this.state;
 		return (
 			<>
-				<Col>
+				<Col className="mb-2">
 				<label className="text-capitalize">{this.props.fieldLabel}</label>
 					<Select
-						// id={this.props.id}
-						// className={this.props.className}
-						// name={this.props.name}
 						placeholder={this.props.placeholder}
 						onChange={this.handleChange}
 						options={options}
@@ -66,7 +63,7 @@ SelectOne.propTypes = {
 
 
 SelectOne.defaultProps = {
-	isDisabled: false,
+isDisabled: false,
   isMulti: false,
   ariaDescribedBy: '',
   ariaLabel: '',

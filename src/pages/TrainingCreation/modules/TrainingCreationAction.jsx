@@ -19,7 +19,7 @@ export const TrainingCreationAction = {
       },
       getSkillList: async (data) => {
         try {
-            const response = await clients.axiosAPI.post('ListLOB.php', data);
+            const response = await clients.axiosAPI.post('ListSkillsList.php', data);
             return (response.data);
         }
         catch (error) {
@@ -35,4 +35,14 @@ export const TrainingCreationAction = {
           return (error.response);
       }
   },
+
+  getAccount: async (data) => {
+    try {
+        const response = await clients.axiosAPI.post('ListAccount.php', data);
+        return (response.data);
+    }
+    catch (error) {
+        return (error.response);
+    }
+},
 }

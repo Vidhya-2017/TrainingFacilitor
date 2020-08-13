@@ -8,19 +8,17 @@ class Gender extends React.Component{
 
     constructor(props) {
         super(props)
-        this.handleChange = this.handleChange.bind(this);
-        this.onChange = this.props.onChange;
+    
         this.state= {value:'', errorMessage: false}
             this.state = {
                 value:''
             }
        
     }
-     handleChange(e) {       
+     handleChange = (e) => {       
         this.setState({value: e.target.value});    
-        this.onChange(e.target.value);
-      }
-
+        this.props.onChange(e);
+    }
     render() {
         const selectionList = this.props.list !== undefined ? this.props.list : [];
         return (

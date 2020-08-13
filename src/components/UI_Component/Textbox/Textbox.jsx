@@ -8,8 +8,6 @@ class Textbox extends React.Component{
 
     constructor(props) {
         super(props)
-        this.handleChange = this.handleChange.bind(this);
-        this.onChange = this.props.onChange;
         this.state= {value:'', errorMessage: false}
             this.state = {
                 value: this.props.value
@@ -17,25 +15,15 @@ class Textbox extends React.Component{
     }
 
    
-     handleChange(e) {       
+     handleChange = (e) => {       
         this.setState({value: e.target.value});    
-        this.onChange(e.target.value);
-       /* let errors = {};
-        if (e.target.value.length === 0) {
-            errors[this.props.name] = this.props.errorMessage
-            errors['type'] = this.props.name
-        }
-        else{
-            errors[this.props.name] = ""
-            errors['type'] = ""
-        }      
-        this.setState({ errors: errors});*/
-      }
+        this.props.onChange(e);
+    }
+
       componentWillReceiveProps(nextProps) {
         if (nextProps.value !== this.state.value) {
           this.setState({value : nextProps.value});
         }
-      
     }
     render() {      
         return (
