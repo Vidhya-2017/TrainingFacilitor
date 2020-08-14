@@ -59,7 +59,7 @@ class App extends React.Component {
             <Header />
             <div className='routerContent'>
                <Switch>
-              {/* <Route path="" exact component={LoginContainer} /> */}
+              <Route path="/" exact component={LoginContainer} />
               <Route path="/register" exact component={RegisterContainer} />
               <Route path="/login" component={LoginContainer} />
               <Route path="/trainingCreation" component={TrainingCreationContainer} />
