@@ -13,10 +13,16 @@ class SelectOne extends React.Component {
 
 	static getDerivedStateFromProps(props, state) {
 		if (props.options !== state.options) {
-      return {
-        options: props.options
-      };
-    }
+			return {
+				options: props.options,
+				value: props.value
+			};
+		}
+		if (props.value === null) {
+			return {
+				value: props.value
+			};
+		}
 		return null;
 	}
 
@@ -31,7 +37,7 @@ class SelectOne extends React.Component {
 		return (
 			<>
 				<Col className="mb-2">
-				<label className="text-capitalize">{this.props.fieldLabel}</label>
+					<label className="text-capitalize">{this.props.fieldLabel}</label>
 					<Select
 						placeholder={this.props.placeholder}
 						onChange={this.handleChange}
@@ -51,26 +57,26 @@ class SelectOne extends React.Component {
 }
 
 SelectOne.propTypes = {
-  isDisabled: PropTypes.bool,
-  isMulti: PropTypes.bool,
-  ariaDescribedBy: PropTypes.string,
-  ariaLabel: PropTypes.string,
-  placeholder: PropTypes.string,
-  name: PropTypes.string,
-  id: PropTypes.string,
-  className: PropTypes.string,
+	isDisabled: PropTypes.bool,
+	isMulti: PropTypes.bool,
+	ariaDescribedBy: PropTypes.string,
+	ariaLabel: PropTypes.string,
+	placeholder: PropTypes.string,
+	name: PropTypes.string,
+	id: PropTypes.string,
+	className: PropTypes.string,
 };
 
 
 SelectOne.defaultProps = {
-isDisabled: false,
-  isMulti: false,
-  ariaDescribedBy: '',
-  ariaLabel: '',
-  placeholder: '',
-  name: '',
-  id: '',
-  className: '',
+	isDisabled: false,
+	isMulti: false,
+	ariaDescribedBy: '',
+	ariaLabel: '',
+	placeholder: '',
+	name: '',
+	id: '',
+	className: '',
 };
 
 export default SelectOne;

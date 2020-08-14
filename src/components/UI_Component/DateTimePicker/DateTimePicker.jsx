@@ -21,12 +21,17 @@ class DateTimePicker extends React.Component {
 
 	handleChange = (e) => {
 		this.setState({ value: e });
-		// const dateValue = moment(e).format("YYYY-MM-DD HH:mm:ss");
-		console.log('----', e);
 		this.props.onChange({ target: { value: e, name: this.props.name } });
 	}
 
-
+	static getDerivedStateFromProps(props, state) {
+		if (props.value !== state.value) {
+			return {
+				value: props.value
+			};
+		}
+		return null;
+	}
 	render() {
 		return (
 			<>

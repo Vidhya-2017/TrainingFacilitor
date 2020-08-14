@@ -9,25 +9,25 @@ import DateTimePicker from '../../../components/UI_Component/DateTimePicker/Date
 import '../scss/TrainingCreation.scss'
 
 const inputField = {
-  value: '',
-  validation: {
-    required: true
-  },
-  valid: false
+	value: '',
+	validation: {
+		required: true
+	},
+	valid: false
 };
 
 const trainingRegForm = {
-  batchName: {...inputField},
-  duration: {...inputField},
-  location: {...inputField},
-  requestBy: {...inputField},
-  account: {...inputField},
-  count: {...inputField},
-	skills: {...inputField},
-  plannedEndDate: {...inputField},
-  plannedStDate: {...inputField},
-  actualEndDate: {...inputField},
-  actualStDate: {...inputField},
+	batchName: { ...inputField },
+	duration: { ...inputField },
+	location: { ...inputField },
+	requestBy: { ...inputField },
+	account: { ...inputField },
+	count: { ...inputField },
+	skills: { ...inputField },
+	plannedEndDate: { ...inputField },
+	plannedStDate: { ...inputField },
+	actualEndDate: { ...inputField },
+	actualStDate: { ...inputField },
 }
 class TrainingCreation extends React.Component {
 	constructor(props) {
@@ -104,76 +104,90 @@ class TrainingCreation extends React.Component {
 
 
 
-  inputFieldChange = (e) => {
-    const targetName = e.target.name;
-    const targetValue = e.target.value;
-    const updatedRegForm = {
-      ...this.state.formValues
-    };
-    const updatedFormElement = {
-      ...updatedRegForm[targetName]
-    };
-    updatedFormElement.value = targetValue;
-    updatedFormElement.valid = this.checkValidity(updatedFormElement.value, updatedFormElement.validation);
-    updatedRegForm[targetName] = updatedFormElement;
-    let formIsValid = true;
-    for (let inputIdentifier in updatedRegForm) {
-      formIsValid = updatedRegForm[inputIdentifier].valid && formIsValid;
-    }
-    this.setState({ formValues: updatedRegForm, formIsValid });
-  }
-
-  checkValidity(inputValue, rules) {
-    const value = inputValue.toString();
-    let isValid = true;
-    if (!rules) {
-      return true;
-    }
-    if (rules.required) {
-      isValid = value.trim() !== '' && isValid;
-    }
-    if (rules.isNumeric) {
-      const pattern = /^\d+$/;
-      isValid = pattern.test(value) && isValid
-    }
-    return isValid;
-  }
-
-
-  submitForm = () => {
-    const formData = {};
-    const { formValues } = this.state;
-    const resetRegisterEvent = {
-      ...formValues
-    };
-    for (let inputIdentifier in resetRegisterEvent) {
-      formData[inputIdentifier] = resetRegisterEvent[inputIdentifier].value;
+	inputFieldChange = (e) => {
+		const targetName = e.target.name;
+		const targetValue = e.target.value;
+		const updatedRegForm = {
+			...this.state.formValues
+		};
+		const updatedFormElement = {
+			...updatedRegForm[targetName]
+		};
+		updatedFormElement.value = targetValue;
+		updatedFormElement.valid = this.checkValidity(updatedFormElement.value, updatedFormElement.validation);
+		updatedRegForm[targetName] = updatedFormElement;
+		let formIsValid = true;
+		for (let inputIdentifier in updatedRegForm) {
+			formIsValid = updatedRegForm[inputIdentifier].valid && formIsValid;
 		}
-	
-    let reqObj = {
-      account: formData.account,
-      actualEndDate: moment(formData.actualEndDate).format("YYYY-MM-DD HH:mm:ss"),
-      actualStDate: moment(formData.actualStDate).format("YYYY-MM-DD HH:mm:ss"),
-      batchName: formData.batchName,
-      count: formData.count,
-      duration: formData.duration,
-      location: formData.location,
-      plannedEndDate: moment(formData.plannedEndDate).format("YYYY-MM-DD HH:mm:ss"),
-      plannedStDate: moment(formData.plannedStDate).format("YYYY-MM-DD HH:mm:ss"),
-      requestBy: formData.requestBy,
-      skills: formData.skills,
-      CreatedBy: 1,
-      UpdatedBy: 1
+		this.setState({ formValues: updatedRegForm, formIsValid });
+	}
+
+	checkValidity(inputValue, rules) {
+		const value = inputValue.toString();
+		let isValid = true;
+		if (!rules) {
+			return true;
 		}
-		console.log('----formData--', reqObj);
+		if (rules.required) {
+			isValid = value.trim() !== '' && isValid;
+		}
+		if (rules.isNumeric) {
+			const pattern = /^\d+$/;
+			isValid = pattern.test(value) && isValid
+		}
+		return isValid;
+	}
 
+
+	submitForm = () => {
+		const formData = {};
+		const { formValues } = this.state;
+		const resetRegisterEvent = {
+			...formValues
+		};
+		for (let inputIdentifier in resetRegisterEvent) {
+			formData[inputIdentifier] = resetRegisterEvent[inputIdentifier].value;
+		}
+    console.log('---submit---');
+		// let reqObj = {
+		// 	account: formData.account,
+		// 	actualEndDate: moment(formData.actualEndDate).format("YYYY-MM-DD HH:mm:ss"),
+		// 	actualStDate: moment(formData.actualStDate).format("YYYY-MM-DD HH:mm:ss"),
+		// 	batchName: formData.batchName,
+		// 	count: formData.count,
+		// 	duration: formData.duration,
+		// 	location: formData.location,
+		// 	plannedEndDate: moment(formData.plannedEndDate).format("YYYY-MM-DD HH:mm:ss"),
+		// 	plannedStDate: moment(formData.plannedStDate).format("YYYY-MM-DD HH:mm:ss"),
+		// 	requestBy: formData.requestBy,
+		// 	skills: formData.skills,
+		// 	CreatedBy: 1,
+		// 	UpdatedBy: 1
+		// }
+    // console.log('----formData--', reqObj);
+    this.setState({ formValues: {...trainingRegForm}, selectedAccount: null, selectedLocation: null,
+    selectedSkill: null});
+	}
+
+  selectFieldChange = (e) => {
+    if(e.target.name === 'location') {
+      this.setState({ selectedLocation: e.target });
+    }
+
+    if(e.target.name === 'account') {
+      this.setState({ selectedAccount: e.target });
+    }
+    if(e.target.name === 'skills') {
+      this.setState({ selectedSkill: e.target });
+    }
+    this.inputFieldChange(e);
   }
-
-
 
 	render() {
 		const { skillList, showToast, toastMsg, formIsValid, selectedSkill, selectedAccount, selectedLocation, locationList, accountList, formValues } = this.state;
-		return (
+    console.log('--formValues.actualStDate.value---', formValues.actualStDate.value);
+    return (
 			<div className="batchMaster_container">
 				<section className="blue_theme">
 					<Container>
@@ -203,7 +217,7 @@ class TrainingCreation extends React.Component {
 											placeholder="Location"
 											value={selectedLocation}
 											options={locationList}
-											onChange={this.inputFieldChange}
+											onChange={this.selectFieldChange}
 											errorMessage={this.state.errors.location === "" ? null : this.state.errors.location}
 										/>
 										<Textbox
@@ -223,7 +237,7 @@ class TrainingCreation extends React.Component {
 											value={selectedAccount}
 											placeholder="Account"
 											options={accountList}
-											onChange={this.inputFieldChange}
+											onChange={this.selectFieldChange}
 											errorMessage={this.state.errors.account === "" ? null : this.state.errors.account}
 										/>
 
@@ -236,8 +250,8 @@ class TrainingCreation extends React.Component {
 											errorMessage={this.state.errors.requestBy === "" ? null : this.state.errors.requestBy}
 											name="requestBy"
 											onChange={this.inputFieldChange}
-
 										/>
+
 										<Textbox
 											fieldLabel="Count"
 											value={formValues.count.value}
@@ -257,7 +271,7 @@ class TrainingCreation extends React.Component {
 											placeholder="Skills"
 											value={selectedSkill}
 											options={skillList}
-											onChange={this.inputFieldChange}
+											onChange={this.selectFieldChange}
 											errorMessage={this.state.errors.skills === "" ? null : this.state.errors.skills}
 										/>
 										<DateTimePicker
@@ -297,7 +311,7 @@ class TrainingCreation extends React.Component {
 										<Buttons
 											className="float-right"
 											value="Submit"
-											disabled={!formIsValid}
+											// disabled={!formIsValid}
 											onClick={this.submitForm} />
 									</Col>
 								</Row>
