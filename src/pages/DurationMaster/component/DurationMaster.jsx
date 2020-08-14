@@ -58,8 +58,8 @@ class DurationMaster extends React.Component{
                     name ="Duration"
                     aria-label="Duration"
                     aria-describedby="Duration"
-                    onChange={(val) => {        
-                        this.setState({ Duration: val });                      
+                    onChange={(e) => {        
+                        this.setState({ Duration: e.target.value });                      
                    }}
                     />
                                   

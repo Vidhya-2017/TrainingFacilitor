@@ -63,9 +63,8 @@ class Login extends React.Component{
                     name ="username"
                     aria-label="USERNAME"
                     aria-describedby="USERNAME"
-                    onChange={(val) => {        
-                        this.setState({ username: val });
-                      
+                    onChange={(e) => {        
+                        this.setState({ username: e.target.value });
                    }}
                     />
                     <Textbox 
@@ -78,8 +77,8 @@ class Login extends React.Component{
                     name ="password"
                     aria-label="Password"
                     aria-describedby="Password"
-                    onChange={(val) => {        
-                        this.setState({ password: val });
+                    onChange={(e) => {        
+                        this.setState({ password: e.target.value });
                       
                    }}
                     />                   

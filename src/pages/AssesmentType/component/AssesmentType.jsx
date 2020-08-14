@@ -88,8 +88,8 @@ class AssesmentType extends React.Component{
                     name ="assType"
                     aria-label="Duration"
                     aria-describedby="Duration"
-                    onChange={(val) => {        
-                        this.setState({ assType: val });                      
+                    onChange={(e) => {        
+                        this.setState({ assType: e.target.value });                      
                    }}
                     />
                                   
