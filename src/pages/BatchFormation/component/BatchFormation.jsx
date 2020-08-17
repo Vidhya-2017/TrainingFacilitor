@@ -191,7 +191,7 @@ class BatchFormation extends React.Component {
             <Row>
               <Col xs={12} md={12} lg="12" >
                 <h2 className="text-center">Batch Formation
-                <i onClick={this.createBatchName} className="addUser fa fa-plus"></i></h2>
+                <i onClick={this.addBatchName} className="addUser fa fa-plus"></i></h2>
               </Col>
             </Row>
 
@@ -224,13 +224,13 @@ class BatchFormation extends React.Component {
                   id="batch"
                 /> 
               </Col>
-              {eventSelected && <Col>
+              {/* {eventSelected && <Col>
                 <Buttons
                   className="float-right"
                   value="Add"
                   onClick={this.addBatchName} />
 
-              </Col>}
+              </Col>} */}
             </Row>
             {candidateList && candidateList.length > 0 && <div>
               <p className='memberLabel'>Candidate List: Count - {this.CandidateIDs.length} </p>
