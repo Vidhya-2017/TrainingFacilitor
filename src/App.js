@@ -23,6 +23,7 @@ import BatchMasterContainer from './pages/BatchMaster/container/BatchMasterConta
 import DurationMasterContainer from './pages/DurationMaster/container/DurationMasterContainer';
 import AssesmentTypeContainer from './pages/AssesmentType/container/AssesmentTypeContainer';
 import CandidateRegistrationContainer from './pages/CandidateRegistration/container/CandidateRegistrationContainer';
+import BatchFormationContainer from './pages/BatchFormation/container/BatchFormationContainer'
 import Home from './pages/Home/container/HomeContainer';
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
@@ -71,6 +72,7 @@ class App extends React.Component {
               <Route path="/batchMaster" component={BatchMasterContainer} />              
               <Route path="/durationMaster" component={DurationMasterContainer} />
               <Route path="/assesmentType" component={AssesmentTypeContainer} />   
+              <Route path="/batchFormation" component={BatchFormationContainer} />   
               {/* <Route path="/home" component={Home} />    */}
               <PrivateRoute component={Home} path="/home"  />
               <Route path="/candidateRegistration" component={CandidateRegistrationContainer} />  
