@@ -8,32 +8,88 @@ class SelectOne extends React.Component {
 
 	constructor(props) {
 		super(props)
-		this.state = { value: null, errorMessage: false, options: props.options }
+		this.state = { value: null, errorMessage: false, options: props.options, isMulti: props.isMulti }
 	}
 
-	static getDerivedStateFromProps(props, state) {
-		if (props.options !== state.options) {
-			return {
-				options: props.options,
-				value: props.value
-			};
+	componentWillReceiveProps(nextProps, nextState) {
+		if(nextProps.options !== this.state.options) {
+			this.setState({options: nextProps.options, value: nextProps.value})
 		}
-		if (props.value === null) {
-			return {
-				value: props.value
-			};
+		if(nextProps.value !== this.state.value) {
+			if(nextProps.isMulti) {
+				const skillVal  = this.state.options.filter(f => nextProps.value.includes(f.value));
+				this.setState({ value: skillVal ? skillVal : [] });
+			} else {
+				this.setState({ value: nextProps.value})
+			}
 		}
-		return null;
+		if(nextProps.isMulti !== this.state.isMulti) {
+			this.setState({ isMulti: nextProps.isMulti})
+		}
 	}
+	// static getDerivedStateFromProps(props, state) {
+	// 	if (props.options !== state.options) {
+	// 		return {
+	// 			options: props.options,
+	// 			value: props.value
+	// 		};
+	// 	}
+	// 	if (props.value === null) {
+	// 		return {
+	// 			value: props.value
+	// 		};
+	// 	}
+	// 	if (props.value !== state.value) {
+	// 		console.log('--state.value--', state.value);
+	// 		return {
+	// 			value: props.value
+	// 		};
+	// 	}
+	// 	if (props.isMulti === state.isMulti) {
+	// 		return {
+	// 			isMulti: props.isMulti
+	// 		};
+	// 	}
+	// 	return null;
+	// }
 
 
 	handleChange = (e) => {
-		this.setState({ value: e });
-		this.props.onChange({ target: { ...e, name: this.props.name } });
+		if(this.state.isMulti) {
+
+			console.log('-----prev state------', this.state.value);
+			console.log('-----value------', e);
+			this.setState({ value: e });
+			  const value = [];
+			  if(e) {
+				e.forEach(item => {
+				  value.push(item.value)
+				})
+			  }
+			  console.log('-----value----for--', value);
+
+			  this.props.onChange({target: {value, name: this.props.name}});
+			// this.props.onChange({ target: { ...[e], name: this.props.name } });
+		} else {
+			this.setState({ value: e });
+			this.props.onChange({ target: { ...e, name: this.props.name } });
+		}
+
+
+		// this.setState({
+		// 	selectedSkillSet
+		//   });
+		//   const value = [];
+		//   if(selectedSkillSet) {
+		// 	selectedSkillSet.forEach(item => {
+		// 	  value.push(item.value)
+		// 	})
+		//   }
+		//   this.props.onEventChange({target: {value, name: 'skillset'}});
 	}
 
 	render() {
-		const { options } = this.state;
+		const { options, value } = this.state;
 		return (
 			<>
 				<Col className="mb-2">
@@ -42,8 +98,8 @@ class SelectOne extends React.Component {
 						placeholder={this.props.placeholder}
 						onChange={this.handleChange}
 						options={options}
-						defaultValue={this.state.value}
-						value={this.state.value}
+						defaultValue={value}
+						value={value}
 						styles={SelectStyles()}
 						isMulti={this.props.isMulti}
 						closeMenuOnSelect={!this.props.isMulti}

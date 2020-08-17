@@ -40,7 +40,7 @@ class TrainingCreation extends React.Component {
 			skillList: [],
 			locationList: [],
 			accountList: [],
-			selectedSkill: null,
+			selectedSkill: [],
 			selectedAccount: null,
 			selectedlocation: null,
 			formIsValid: false
@@ -149,25 +149,25 @@ class TrainingCreation extends React.Component {
 		for (let inputIdentifier in resetRegisterEvent) {
 			formData[inputIdentifier] = resetRegisterEvent[inputIdentifier].value;
 		}
-    console.log('---submit---');
-		// let reqObj = {
-		// 	account: formData.account,
-		// 	actualEndDate: moment(formData.actualEndDate).format("YYYY-MM-DD HH:mm:ss"),
-		// 	actualStDate: moment(formData.actualStDate).format("YYYY-MM-DD HH:mm:ss"),
-		// 	batchName: formData.batchName,
-		// 	count: formData.count,
-		// 	duration: formData.duration,
-		// 	location: formData.location,
-		// 	plannedEndDate: moment(formData.plannedEndDate).format("YYYY-MM-DD HH:mm:ss"),
-		// 	plannedStDate: moment(formData.plannedStDate).format("YYYY-MM-DD HH:mm:ss"),
-		// 	requestBy: formData.requestBy,
-		// 	skills: formData.skills,
-		// 	CreatedBy: 1,
-		// 	UpdatedBy: 1
-		// }
-    // console.log('----formData--', reqObj);
-    this.setState({ formValues: {...trainingRegForm}, selectedAccount: null, selectedLocation: null,
-    selectedSkill: null});
+		let reqObj = {
+			account: formData.account,
+			actualEndDate: moment(formData.actualEndDate).format("YYYY-MM-DD HH:mm:ss"),
+			actualStDate: moment(formData.actualStDate).format("YYYY-MM-DD HH:mm:ss"),
+			batchName: formData.batchName,
+			count: formData.count,
+			duration: formData.duration,
+			location: formData.location,
+			plannedEndDate: moment(formData.plannedEndDate).format("YYYY-MM-DD HH:mm:ss"),
+			plannedStDate: moment(formData.plannedStDate).format("YYYY-MM-DD HH:mm:ss"),
+			requestBy: formData.requestBy,
+			skills: formData.skills,
+			CreatedBy: 1,
+			UpdatedBy: 1
+		}
+    this.props.registerTraining(reqObj).then(result => {
+      this.setState({ formValues: {...trainingRegForm}, selectedAccount: null, selectedLocation: null,
+        selectedSkill: null});
+    })
 	}
 
   selectFieldChange = (e) => {
@@ -178,15 +178,11 @@ class TrainingCreation extends React.Component {
     if(e.target.name === 'account') {
       this.setState({ selectedAccount: e.target });
     }
-    if(e.target.name === 'skills') {
-      this.setState({ selectedSkill: e.target });
-    }
     this.inputFieldChange(e);
   }
 
 	render() {
 		const { skillList, showToast, toastMsg, formIsValid, selectedSkill, selectedAccount, selectedLocation, locationList, accountList, formValues } = this.state;
-    console.log('--formValues.actualStDate.value---', formValues.actualStDate.value);
     return (
 			<div className="batchMaster_container">
 				<section className="blue_theme">
@@ -269,7 +265,8 @@ class TrainingCreation extends React.Component {
 											id="skills"
 											name="skills"
 											placeholder="Skills"
-											value={selectedSkill}
+                      value={formValues.skills && formValues.skills.value}
+                      isMulti={true}
 											options={skillList}
 											onChange={this.selectFieldChange}
 											errorMessage={this.state.errors.skills === "" ? null : this.state.errors.skills}

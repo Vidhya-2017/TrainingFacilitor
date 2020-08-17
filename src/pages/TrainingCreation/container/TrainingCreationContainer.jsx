@@ -6,7 +6,8 @@ const mapDispatchToProps = (dispatch) => {
   return {
     getSkillList: TrainingCreationAction.getSkillList,
     getLocation: TrainingCreationAction.getLocation,
-    getAccount: TrainingCreationAction.getAccount
+    getAccount: TrainingCreationAction.getAccount,
+    registerTraining: TrainingCreationAction.registerTraining,
     
   };
 };

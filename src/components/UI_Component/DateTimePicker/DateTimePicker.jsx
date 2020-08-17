@@ -64,16 +64,16 @@ DateTimePicker.propTypes = {
 	id: PropTypes.string,
 	className: PropTypes.string,
 	minDate: PropTypes.any
-  };
-  
-  
-  DateTimePicker.defaultProps = {
+};
+
+
+DateTimePicker.defaultProps = {
 	disabled: false,
 	placeholder: '',
 	name: '',
 	id: '',
 	minDate: new Date(),
 	className: '',
-  };
+};
 
 export default DateTimePicker;

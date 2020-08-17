@@ -58,7 +58,6 @@ class Home extends Component {
     reader.onload = (e) => {
       var binaryData = e.target.result;
       var base64String = window.btoa(binaryData);
-      console.log('-base64String--', base64String);
     };
     reader.readAsBinaryString(file);
   }
