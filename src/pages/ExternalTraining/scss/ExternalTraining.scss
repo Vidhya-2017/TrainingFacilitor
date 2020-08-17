@@ -6,9 +6,9 @@
         padding-bottom: 20px;
         min-height: auto;
     }
-    .blue_theme{
-        height: auto;
-    }
+    // .blue_theme{
+    //     height: auto;
+    // }
     $breakpoint-tablet: 775px;
     @media (max-width: $breakpoint-tablet) {
         .container{width: 100%; height: auto; }

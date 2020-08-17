@@ -93,7 +93,7 @@ class SelectOne extends React.Component {
 		return (
 			<>
 				<Col className="mb-2">
-					<label className="text-capitalize">{this.props.fieldLabel}</label>
+					{this.props.fieldLabel && <label className="text-capitalize">{this.props.fieldLabel}</label>}
 					<Select
 						placeholder={this.props.placeholder}
 						onChange={this.handleChange}
