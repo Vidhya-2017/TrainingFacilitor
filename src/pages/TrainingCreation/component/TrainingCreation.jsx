@@ -164,26 +164,28 @@ class TrainingCreation extends React.Component {
 			CreatedBy: 1,
 			UpdatedBy: 1
 		}
-    this.props.registerTraining(reqObj).then(result => {
-      this.setState({ formValues: {...trainingRegForm}, selectedAccount: null, selectedLocation: null,
-        selectedSkill: null});
-    })
+		this.props.registerTraining(reqObj).then(result => {
+			this.setState({
+				formValues: { ...trainingRegForm }, selectedAccount: null, selectedLocation: null,
+				selectedSkill: null
+			});
+		})
 	}
 
-  selectFieldChange = (e) => {
-    if(e.target.name === 'location') {
-      this.setState({ selectedLocation: e.target });
-    }
+	selectFieldChange = (e) => {
+		if (e.target.name === 'location') {
+			this.setState({ selectedLocation: e.target });
+		}
 
-    if(e.target.name === 'account') {
-      this.setState({ selectedAccount: e.target });
-    }
-    this.inputFieldChange(e);
-  }
+		if (e.target.name === 'account') {
+			this.setState({ selectedAccount: e.target });
+		}
+		this.inputFieldChange(e);
+	}
 
 	render() {
 		const { skillList, showToast, toastMsg, formIsValid, selectedSkill, selectedAccount, selectedLocation, locationList, accountList, formValues } = this.state;
-    return (
+		return (
 			<div className="batchMaster_container">
 				<section className="blue_theme">
 					<Container>
@@ -198,13 +200,23 @@ class TrainingCreation extends React.Component {
 									<Col xs={12} md={12} lg="6" >
 										<Textbox
 											value={formValues.batchName.value}
-											fieldLabel="Batch Name"
+											fieldLabel="Training Name"
 											id="batchName"
 											type="text"
-											placeholder="Batch Name"
+											placeholder="Training Name"
 											errorMessage={this.state.errors.batchName === "" ? null : this.state.errors.batchName}
 											name="batchName"
 											onChange={this.inputFieldChange}
+										/>
+										<SelectOne
+											fieldLabel="Training Type"
+											id="trainingType"
+											name="trainingType"
+											placeholder="Training Type"
+											// value={}
+											options={[{ value: 'Freshers', label: 'Freshers' }, { value: 'Focused', label: 'Focused' }]}
+											onChange={this.selectFieldChange}
+											errorMessage={this.state.errors.location === "" ? null : this.state.errors.location}
 										/>
 										<SelectOne
 											fieldLabel="Location"
@@ -248,6 +260,8 @@ class TrainingCreation extends React.Component {
 											onChange={this.inputFieldChange}
 										/>
 
+									</Col>
+									<Col xs={12} md={12} lg="6" >
 										<Textbox
 											fieldLabel="Count"
 											value={formValues.count.value}
@@ -258,33 +272,16 @@ class TrainingCreation extends React.Component {
 											name="count"
 											onChange={this.inputFieldChange}
 										/>
-									</Col>
-									<Col xs={12} md={12} lg="6" >
 										<SelectOne
 											fieldLabel="Skills"
 											id="skills"
 											name="skills"
 											placeholder="Skills"
-                      value={formValues.skills && formValues.skills.value}
-                      isMulti={true}
+											value={formValues.skills && formValues.skills.value}
+											isMulti={true}
 											options={skillList}
 											onChange={this.selectFieldChange}
 											errorMessage={this.state.errors.skills === "" ? null : this.state.errors.skills}
-										/>
-										<DateTimePicker
-											value={formValues.actualStDate.value}
-											fieldLabel="Actual Start Date"
-											minDate={new Date()}
-											name="actualStDate"
-											onChange={this.inputFieldChange}
-										/>
-										<DateTimePicker
-											fieldLabel="Actual End Date"
-											value={formValues.actualEndDate.value}
-											name="actualEndDate"
-											disabled={formValues.actualStDate.value === ''}
-											minDate={formValues.actualStDate.value}
-											onChange={this.inputFieldChange}
 										/>
 										<DateTimePicker
 											fieldLabel="Planned Start Date"
@@ -299,6 +296,21 @@ class TrainingCreation extends React.Component {
 											name="plannedEndDate"
 											disabled={formValues.plannedStDate.value === ''}
 											minDate={formValues.plannedStDate.value}
+											onChange={this.inputFieldChange}
+										/>
+										<DateTimePicker
+											value={formValues.actualStDate.value}
+											fieldLabel="Actual Start Date"
+											minDate={new Date()}
+											name="actualStDate"
+											onChange={this.inputFieldChange}
+										/>
+										<DateTimePicker
+											fieldLabel="Actual End Date"
+											value={formValues.actualEndDate.value}
+											name="actualEndDate"
+											disabled={formValues.actualStDate.value === ''}
+											minDate={formValues.actualStDate.value}
 											onChange={this.inputFieldChange}
 										/>
 									</Col>

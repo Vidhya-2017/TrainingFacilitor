@@ -211,8 +211,8 @@ class BatchFormation extends React.Component {
               </Col>
             </Row>
             <Row>
-              <Col xs={5} md={5} lg="5" > Batch list    </Col>
-              <Col xs={5} md={5} lg="7">
+              <Col>Batch list</Col>
+              <Col>
                 <SelectOne
                   value={batchSelected}
                   onChange={this.onChangeBatch}

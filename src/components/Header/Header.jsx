@@ -28,20 +28,25 @@ class Header extends React.Component {
     </Nav>
     <Nav className="onCollapse">
     <div className="bottom"></div>
-    <Nav><Link to="/sme"> SME List </Link></Nav>
-    <Nav><Link to="/skill"> Skill List </Link></Nav>
-    <Nav><Link to="/candidateRegistration"> Candidate Registration</Link></Nav>
-  
-    <Nav><Link to="/assesmentType"> assessment type</Link></Nav>
+    {/* <Nav><Link to="/sme"> SME List </Link></Nav>
+    <Nav><Link to="/skill"> Skill List </Link></Nav> */}
     <Nav><Link to="/trainingCreation"> Training Creation </Link></Nav>
+    <Nav><Link to="/candidateRegistration"> Candidate Registration</Link></Nav>
+    <Nav><Link to="/batchFormation"> Batch Formation</Link></Nav>
+  
+    {/* <Nav><Link to="/assesmentType"> assessment type</Link></Nav> */}
+    {/* <Nav><Link to="/trainingCreation"> Training Creation </Link></Nav> */}
     <NavDropdown title="Training" id="collasible-nav-dropdown" style={{right: "0", left: "none"}}>
     <Nav><Link className="clr_black" to="/externalTraining"> External Training </Link></Nav>
     <Nav><Link className="clr_black" to="/trainingType"> Training Type</Link></Nav>
-       <NavDropdown.Divider />
-        <Nav><Link className="clr_black" to="/batchMaster">Separated link</Link></Nav>
+       {/* <NavDropdown.Divider />
+        <Nav><Link className="clr_black" to="/batchMaster">Separated link</Link></Nav> */}
     </NavDropdown>
     <NavDropdown title="Master" id="collasible-nav-dropdown" style={{right: "0", left: "none"}}>
-    <Nav><Link className="clr_black" to="/batchMaster"> Batch Master</Link></Nav>
+    {/* <Nav><Link className="clr_black" to="/batchMaster"> Batch Master</Link></Nav> */}
+    <Nav><Link className="clr_black" to="/sme"> SME List </Link></Nav>
+    <Nav><Link className="clr_black" to="/skill"> Skill List </Link></Nav>
+    <Nav><Link className="clr_black" to="/assesmentType"> Assessment type</Link></Nav> 
     <Nav><Link className="clr_black" to="/durationMaster"> duration master </Link></Nav>
     </NavDropdown> 
       <Nav><Link  to="/login" onClick ={this.logout}>Logout </Link></Nav>
