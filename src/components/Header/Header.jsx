@@ -33,7 +33,7 @@ class Header extends React.Component {
     <Nav><Link to="/trainingCreation"> Training Creation </Link></Nav>
     <Nav><Link to="/candidateRegistration"> Candidate Registration</Link></Nav>
     <Nav><Link to="/batchFormation"> Batch Formation</Link></Nav>
-  
+    <Nav><Link to="/smeAssign"> SME Assign</Link></Nav>
     {/* <Nav><Link to="/assesmentType"> assessment type</Link></Nav> */}
     {/* <Nav><Link to="/trainingCreation"> Training Creation </Link></Nav> */}
     <NavDropdown title="Training" id="collasible-nav-dropdown" style={{right: "0", left: "none"}}>

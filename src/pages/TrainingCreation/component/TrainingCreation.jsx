@@ -17,7 +17,8 @@ const inputField = {
 };
 
 const trainingRegForm = {
-	batchName: { ...inputField },
+	trainingName: { ...inputField },
+	trainingType: { ...inputField },
 	duration: { ...inputField },
 	location: { ...inputField },
 	requestBy: { ...inputField },
@@ -42,6 +43,7 @@ class TrainingCreation extends React.Component {
 			accountList: [],
 			selectedSkill: [],
 			selectedAccount: null,
+			selectedTrainingType: null,
 			selectedlocation: null,
 			formIsValid: false
 		}
@@ -153,10 +155,11 @@ class TrainingCreation extends React.Component {
 			account: formData.account,
 			actualEndDate: moment(formData.actualEndDate).format("YYYY-MM-DD HH:mm:ss"),
 			actualStDate: moment(formData.actualStDate).format("YYYY-MM-DD HH:mm:ss"),
-			batchName: formData.batchName,
+			trainingName: formData.trainingName,
 			count: formData.count,
 			duration: formData.duration,
 			location: formData.location,
+			trainingType:formData.trainingType,
 			plannedEndDate: moment(formData.plannedEndDate).format("YYYY-MM-DD HH:mm:ss"),
 			plannedStDate: moment(formData.plannedStDate).format("YYYY-MM-DD HH:mm:ss"),
 			requestBy: formData.requestBy,
@@ -164,9 +167,10 @@ class TrainingCreation extends React.Component {
 			CreatedBy: 1,
 			UpdatedBy: 1
 		}
+		// console.log('reqObj---', reqObj);
 		this.props.registerTraining(reqObj).then(result => {
 			this.setState({
-				formValues: { ...trainingRegForm }, selectedAccount: null, selectedLocation: null,
+				formValues: { ...trainingRegForm }, selectedAccount: null, selectedTrainingType: null, selectedLocation: null,
 				selectedSkill: null
 			});
 		})
@@ -180,11 +184,14 @@ class TrainingCreation extends React.Component {
 		if (e.target.name === 'account') {
 			this.setState({ selectedAccount: e.target });
 		}
+		if (e.target.name === 'trainingType') {
+			this.setState({ selectedTrainingType: e.target });
+		}
 		this.inputFieldChange(e);
 	}
 
 	render() {
-		const { skillList, showToast, toastMsg, formIsValid, selectedSkill, selectedAccount, selectedLocation, locationList, accountList, formValues } = this.state;
+		const { skillList, showToast, toastMsg, formIsValid, selectedSkill, selectedTrainingType,  selectedAccount, selectedLocation, locationList, accountList, formValues } = this.state;
 		return (
 			<div className="batchMaster_container">
 				<section className="blue_theme">
@@ -199,13 +206,13 @@ class TrainingCreation extends React.Component {
 								<Row>
 									<Col xs={12} md={12} lg="6" >
 										<Textbox
-											value={formValues.batchName.value}
+											value={formValues.trainingName.value}
 											fieldLabel="Training Name"
-											id="batchName"
+											id="trainingName"
 											type="text"
 											placeholder="Training Name"
-											errorMessage={this.state.errors.batchName === "" ? null : this.state.errors.batchName}
-											name="batchName"
+											errorMessage={this.state.errors.trainingName === "" ? null : this.state.errors.trainingName}
+											name="trainingName"
 											onChange={this.inputFieldChange}
 										/>
 										<SelectOne
@@ -213,8 +220,8 @@ class TrainingCreation extends React.Component {
 											id="trainingType"
 											name="trainingType"
 											placeholder="Training Type"
-											// value={}
-											options={[{ value: 'Freshers', label: 'Freshers' }, { value: 'Focused', label: 'Focused' }]}
+											value={selectedTrainingType}
+											options={[{ value: '1', label: 'Freshers' }, { value: '2', label: 'Focused' }]}
 											onChange={this.selectFieldChange}
 											errorMessage={this.state.errors.location === "" ? null : this.state.errors.location}
 										/>

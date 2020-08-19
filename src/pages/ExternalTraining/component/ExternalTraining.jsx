@@ -50,7 +50,7 @@ class ExternalTraining extends React.Component{
 
     render() {
         return (
-            <div className="exTraining_container">           
+            <div className="batchMaster_container">           
             <section className="blue_theme">
                 <Container>
                 <Row>

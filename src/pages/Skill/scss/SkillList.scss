@@ -2,16 +2,15 @@
 
 .SkillList_container{
     .container{
-        width: 40%;
+        width: 60%;
+        border: solid 1px lightgrey;
+        min-height: auto;
+        padding-bottom: 20px;
     }
     $breakpoint-tablet: 775px;
     @media (max-width: $breakpoint-tablet) {
         .container{width: 100%; height: auto; }
-        
-        
     }
-
-    
 
 } 
 

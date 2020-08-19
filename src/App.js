@@ -12,6 +12,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 import PrivateRoute from './PrivateRoute'
 import RegisterContainer from './pages/Registration/container/RegisterContainer';
 import LoginContainer from './pages/Login/container/LoginContainer';
+import SMEAssignContainer from './pages/SMEAssign/container/SMEAssignContainer'
 // import ForgetPassword from './pages/ForgetPassword/ForgetPassword';
 import SMEListContainer from './pages/SME/container/SMEListContainer';
 import SkillListContainer from './pages/Skill/container/SkillListContainer';
@@ -72,6 +73,7 @@ class App extends React.Component {
               <Route path="/batchMaster" component={BatchMasterContainer} />              
               <Route path="/durationMaster" component={DurationMasterContainer} />
               <Route path="/assesmentType" component={AssesmentTypeContainer} />   
+              <Route path="/smeAssign" component={SMEAssignContainer} />   
               <Route path="/batchFormation" component={BatchFormationContainer} />   
               {/* <Route path="/home" component={Home} />    */}
               <PrivateRoute component={Home} path="/home"  />

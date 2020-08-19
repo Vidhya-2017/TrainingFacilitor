@@ -53,7 +53,8 @@ class BatchFormation extends React.Component {
 
   onChangeTraining = (eventSelected) => {
     console.log("Onchange", eventSelected.target);
-    this.setState({ eventSelected: eventSelected.target, batchSelected: null });
+    this.candidateList = [];
+    this.setState({ eventSelected: eventSelected.target, batchDetailsList: [], batchSelected: null, candidateList: [] });
     const tID = eventSelected.target.value;
     this.getBatchList(tID);
   }
@@ -69,7 +70,7 @@ class BatchFormation extends React.Component {
             label: list.batch_name
           }
         });
-        this.setState({ batchDetailsList: batchList, loading: false });
+        this.setState({ batchDetailsList: batchList});
       } else {
         this.setState({ showToast: true, toastMsg: 'Something went Wrong. Please try again later.' })
       }
@@ -222,7 +223,7 @@ class BatchFormation extends React.Component {
                   aria-label="batch"
                   aria-describedby="batch"
                   id="batch"
-                /> 
+                />
               </Col>
               {/* {eventSelected && <Col>
                 <Buttons
