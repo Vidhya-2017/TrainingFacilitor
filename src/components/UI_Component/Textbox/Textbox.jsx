@@ -1,61 +1,55 @@
 import React from 'react';
-import FormControl from 'react-bootstrap/FormControl';
-import InputGroup from 'react-bootstrap/InputGroup';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
+import { TextField, withStyles, Typography } from '@material-ui/core';
+const styles = (theme) => ({
 
-class Textbox extends React.Component{
+    textField: {
+        width: '100%'
+    },
+});
+class Textbox extends React.Component {
 
     constructor(props) {
         super(props)
-        this.state= {value:'', errorMessage: false}
-            this.state = {
-                value: this.props.value
-            }      
+        this.state = { value: '', errorMessage: false }
+        this.state = {
+            value: this.props.value
+        }
     }
 
-   
-     handleChange = (e) => {       
-        this.setState({value: e.target.value});    
+
+    handleChange = (e) => {
+        this.setState({ value: e.target.value });
         this.props.onChange(e);
     }
 
-      componentWillReceiveProps(nextProps) {
+    componentWillReceiveProps(nextProps) {
         if (nextProps.value !== this.state.value) {
-          this.setState({value : nextProps.value});
+            this.setState({ value: nextProps.value });
         }
     }
-    render() {      
+    render() {
         return (
-            <>
-            <Col>
-                <label className="text-capitalize">{this.props.fieldLabel}</label>
-                <InputGroup className= {this.props.errorMessage === undefined ? "mb-2" : "mb-1" }>                           
-                <FormControl
+            <div>
+                <Typography variant="caption" display="block" gutterBottom>
+                    {this.props.fieldLabel}
+                </Typography>
+                <TextField
                     id={this.props.id}
-                    className = {this.props.className}
-                    style={this.props.style}
+                    className={this.props.classes.textField}
+                    variant="outlined"
+                    margin="dense"
                     onChange={(e) => this.handleChange(e)}
                     name={this.props.name}
-                    value={ this.state.value}
+                    value={this.state.value}
                     placeholder={this.props.placeholder}
-                    aria-label={this.props.ariaLabel}
-                    aria-describedby={this.props.ariaDescribedBy}
-                    type = {this.props.type}
-                    disabled = {this.props.isDisabled}
-                    maxLength = {this.props.maxlength}
-                    minLength ={this.props.minlength}
-                />               
-                </InputGroup>       
-                {this.props.errorMessage !== undefined ? <div className="errorMsg">{this.props.errorMessage}</div> : null }
-                {/*this.state.errors !== undefined && this.state.errors.type !== "" ? <div className="errorMsg">{this.props.errorMessage}</div> : null */}
-            </Col>
-         
-          
-          </>
+                    type={this.props.type}
+                    disabled={this.props.isDisabled}
+                    maxLength={this.props.maxlength}
+                />
+                {this.props.errorMessage !== undefined ? <div className="errorMsg">{this.props.errorMessage}</div> : null}
+            </div>
         )
     }
 }
-  
 
-export default Textbox;
+export default withStyles(styles, { withTheme: true })(Textbox);

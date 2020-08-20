@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Col } from 'react-bootstrap';
+import { TextField, withStyles, Typography } from '@material-ui/core';
 import Select from 'react-select';
 import SelectStyles from './SelectStyles';
 
@@ -12,19 +12,19 @@ class SelectOne extends React.Component {
 	}
 
 	componentWillReceiveProps(nextProps, nextState) {
-		if(nextProps.options !== this.state.options) {
-			this.setState({options: nextProps.options, value: nextProps.value})
+		if (nextProps.options !== this.state.options) {
+			this.setState({ options: nextProps.options, value: nextProps.value })
 		}
-		if(nextProps.value !== this.state.value) {
-			if(nextProps.isMulti) {
-				const skillVal  = this.state.options.filter(f => nextProps.value.includes(f.value));
+		if (nextProps.value !== this.state.value) {
+			if (nextProps.isMulti) {
+				const skillVal = this.state.options.filter(f => nextProps.value.includes(f.value));
 				this.setState({ value: skillVal ? skillVal : [] });
 			} else {
-				this.setState({ value: nextProps.value})
+				this.setState({ value: nextProps.value })
 			}
 		}
-		if(nextProps.isMulti !== this.state.isMulti) {
-			this.setState({ isMulti: nextProps.isMulti})
+		if (nextProps.isMulti !== this.state.isMulti) {
+			this.setState({ isMulti: nextProps.isMulti })
 		}
 	}
 	// static getDerivedStateFromProps(props, state) {
@@ -55,20 +55,15 @@ class SelectOne extends React.Component {
 
 
 	handleChange = (e) => {
-		if(this.state.isMulti) {
-
-			console.log('-----prev state------', this.state.value);
-			console.log('-----value------', e);
+		if (this.state.isMulti) {
 			this.setState({ value: e });
-			  const value = [];
-			  if(e) {
+			const value = [];
+			if (e) {
 				e.forEach(item => {
-				  value.push(item.value)
+					value.push(item.value)
 				})
-			  }
-			  console.log('-----value----for--', value);
-
-			  this.props.onChange({target: {value, name: this.props.name}});
+			}
+			this.props.onChange({ target: { value, name: this.props.name } });
 			// this.props.onChange({ target: { ...[e], name: this.props.name } });
 		} else {
 			this.setState({ value: e });
@@ -91,23 +86,23 @@ class SelectOne extends React.Component {
 	render() {
 		const { options, value } = this.state;
 		return (
-			<>
-				<Col className="mb-2">
-					{this.props.fieldLabel && <label className="text-capitalize">{this.props.fieldLabel}</label>}
-					<Select
-						placeholder={this.props.placeholder}
-						onChange={this.handleChange}
-						options={options}
-						defaultValue={value}
-						value={value}
-						styles={SelectStyles()}
-						isMulti={this.props.isMulti}
-						closeMenuOnSelect={!this.props.isMulti}
-						isDisabled={this.props.isDisabled}
-					/>
-					<div className="errorMsg">{this.props.errorMessage}</div>
-				</Col>
-			</>
+			<div>
+				<Typography variant="caption" display="block" gutterBottom>
+					{this.props.fieldLabel}
+				</Typography>
+				<Select
+					placeholder={this.props.placeholder}
+					onChange={this.handleChange}
+					options={options}
+					defaultValue={value}
+					value={value}
+					styles={SelectStyles()}
+					isMulti={this.props.isMulti}
+					closeMenuOnSelect={!this.props.isMulti}
+					isDisabled={this.props.isDisabled}
+				/>
+				<div className="errorMsg">{this.props.errorMessage}</div>
+			</div>
 		)
 	}
 }

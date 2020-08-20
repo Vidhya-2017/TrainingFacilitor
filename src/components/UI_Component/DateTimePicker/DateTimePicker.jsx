@@ -1,12 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import DatePicker from 'react-date-picker';
+import { TextField, withStyles, Typography } from '@material-ui/core';
 import moment from 'moment';
 // import DatePicker from "react-datepicker"; //for more https://reactdatepicker.com/
 // import addDays from 'date-fns/addDays';
 // import subDays from 'date-fns/subDays';
 // import "react-datepicker/dist/react-datepicker.css";
-import { InputGroup, Col } from 'react-bootstrap';
 import './DateTimePicker.scss'
 
 class DateTimePicker extends React.Component {
@@ -34,9 +34,10 @@ class DateTimePicker extends React.Component {
 	}
 	render() {
 		return (
-			<>
-				<Col>
-					<label className="text-capitalize">{this.props.fieldLabel}</label>
+			<div>
+			<Typography variant="caption" display="block" gutterBottom>
+				{this.props.fieldLabel}
+			</Typography>
 					<DatePicker
 						className="datePicker mb-2"
 						format="yyyy-MM-dd"
@@ -49,10 +50,7 @@ class DateTimePicker extends React.Component {
 						disabled={this.props.disabled}
 					/>
 					<div className="errorMsg">{this.props.errorMessage}</div>
-				</Col>
-
-
-			</>
+				</div>
 		)
 	}
 }

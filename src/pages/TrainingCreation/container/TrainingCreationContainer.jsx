@@ -8,7 +8,9 @@ const mapDispatchToProps = (dispatch) => {
     getLocation: TrainingCreationAction.getLocation,
     getAccount: TrainingCreationAction.getAccount,
     registerTraining: TrainingCreationAction.registerTraining,
-    
+    getTrainingList: TrainingCreationAction.getTrainingList,
+    getBatchList: TrainingCreationAction.getBatchList,
+    addBatchName: TrainingCreationAction.addBatchName,
   };
 };
 
