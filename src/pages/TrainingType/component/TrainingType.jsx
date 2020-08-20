@@ -40,10 +40,6 @@ class TrainingType extends React.Component{
     
     
         submitForm = () => {
-           {/* if (this.validateform()) {
-                localStorage.setItem("token", 1)
-                this.props.history.push('/home')
-            }*/}
             console.log("-----------");
         }      
        
