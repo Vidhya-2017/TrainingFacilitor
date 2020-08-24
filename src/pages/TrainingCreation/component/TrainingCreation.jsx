@@ -45,8 +45,6 @@ const trainingRegForm = {
 
 const styles = (theme) => ({
   paperRoot: {
-    // margin: theme.spacing(6, 18),
-    // padding: theme.spacing(4),
     width: '70%',
     margin: '20px auto',
     padding: '10px 20px'
@@ -78,9 +76,6 @@ const styles = (theme) => ({
     backgroundColor: theme.palette.background.paper,
     border: 'solid 1px lightgray'
   },
-  batchTitle: {
-    margin: theme.spacing(1, 0, 1),
-  },
 });
 
 class TrainingCreation extends React.Component {
@@ -97,6 +92,7 @@ class TrainingCreation extends React.Component {
       accountList: [],
       selectedSkill: [],
       EventDetailsList: [],
+      trainingTypeList: [],
       eventSelected: null,
       selectedAccount: null,
       selectedTrainingType: null,
@@ -114,6 +110,7 @@ class TrainingCreation extends React.Component {
     this.getSkillList();
     this.getLocation();
     this.getAccount();
+    this.getTrainingType();
   }
   getAccount = () => {
     this.props.getAccount().then(response => {
@@ -147,6 +144,23 @@ class TrainingCreation extends React.Component {
       }
     })
   }
+  getTrainingType = () => {
+    this.props.getTrainingType().then(response => {
+      if (response && response.arrRes) {
+        const trainingTypeList = response.arrRes.map(list => {
+          return {
+            value: list.id,
+            id: list.id,
+            label: list.type
+          }
+        });
+        this.setState({ trainingTypeList });
+      } else {
+        this.setState({ showToast: true, toastMsg: 'Something went Wrong. Please try again later.' })
+      }
+    })
+  }
+
   getSkillList = () => {
     this.props.getSkillList().then(response => {
       if (response && response.arrRes) {
@@ -201,7 +215,7 @@ class TrainingCreation extends React.Component {
   }
 
   checkValidity(inputValue, rules) {
-    if(inputValue) {
+    if (inputValue) {
       const value = inputValue.toString();
       let isValid = true;
       if (!rules) {
@@ -216,7 +230,6 @@ class TrainingCreation extends React.Component {
       }
       return isValid;
     }
-    return false;
   }
 
   submitForm = () => {
@@ -348,7 +361,7 @@ class TrainingCreation extends React.Component {
     const { classes } = this.props;
     const { skillList, showAddBatchModal, newBatchName, batchDetailsList, EventDetailsList,
       eventSelected, activeStep, toastMsg, formIsValid, selectedProgramManager, newBatchCount, selectedTrainingType,
-      selectedAccount, selectedLocation, locationList, accountList, formValues } = this.state;
+      selectedAccount, selectedLocation, locationList, accountList, trainingTypeList, formValues } = this.state;
     const steps = this.getSteps();
     return (
       <Paper className={classes.paperRoot} elevation={3}>
@@ -381,7 +394,7 @@ class TrainingCreation extends React.Component {
                 name="trainingType"
                 placeholder="Training Type"
                 value={selectedTrainingType}
-                options={[{ value: '1', label: 'Freshers' }, { value: '2', label: 'Focused' }]}
+                options={trainingTypeList}
                 onChange={this.selectFieldChange}
                 errorMessage={this.state.errors.location === "" ? null : this.state.errors.location}
               />

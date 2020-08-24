@@ -72,6 +72,16 @@ export const TrainingCreationAction = {
             return (error.response);
         }
     },
+    getTrainingType: async () => {
+        try {
+            const response = await clients.axiosAPI.post('ListTrainingType.php');
+            return (response.data);
+        }
+        catch (error) {
+            return (error.response);
+        }
+    },
+
     addBatchName: async (data) => {
         try {
             const response = await clients.axiosAPI.post('/BatchMasterAdd.php', data);

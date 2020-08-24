@@ -1,21 +1,25 @@
 import React from 'react';
 import MaterialTable from "material-table";
 import {
-  Paper, withStyles, Typography, Dialog, DialogTitle, TextField, DialogActions, DialogContent,
-  Button,
+  Paper, withStyles, Typography, Dialog, DialogTitle, TextField, DialogActions, DialogContent, Button
 } from '@material-ui/core';
 import '../scss/AssesmentType.scss';
 import moment from 'moment';
-import ToastBox from '../../../components/UI_Component/Toast/ToastBox';
 
 const styles = (theme) => ({
   iconRoot: {
     color: '#6b6b6b'
   },
   paperRoot: {
-    // margin: theme.spacing(6, 18),
-    // padding: theme.spacing(4),
-    width: '70%',
+    [theme.breakpoints.down('sm')]: {
+      width: '80%',
+    },
+    [theme.breakpoints.up('md')]: {
+      width: '55%',
+    },
+    [theme.breakpoints.up('lg')]: {
+      width: '45%',
+    },
     margin: '20px auto',
     padding: '10px 20px'
   },

@@ -11,6 +11,7 @@ const mapDispatchToProps = (dispatch) => {
     getTrainingList: TrainingCreationAction.getTrainingList,
     getBatchList: TrainingCreationAction.getBatchList,
     addBatchName: TrainingCreationAction.addBatchName,
+    getTrainingType: TrainingCreationAction.getTrainingType,
   };
 };
 
