@@ -114,7 +114,7 @@ class TrainingCreation extends React.Component {
   }
   getAccount = () => {
     this.props.getAccount().then(response => {
-      if (response && response.arrRes) {
+      if (response && response.errCode === 200) {
         const accountList = response.arrRes.map(list => {
           return {
             value: list.id,
@@ -130,7 +130,7 @@ class TrainingCreation extends React.Component {
   }
   getLocation = () => {
     this.props.getLocation().then(response => {
-      if (response && response.arrRes) {
+      if (response && response.errCode === 200) {
         const locationList = response.arrRes.map(list => {
           return {
             value: list.id,
@@ -146,7 +146,7 @@ class TrainingCreation extends React.Component {
   }
   getTrainingType = () => {
     this.props.getTrainingType().then(response => {
-      if (response && response.arrRes) {
+      if (response && response.errCode === 200) {
         const trainingTypeList = response.arrRes.map(list => {
           return {
             value: list.id,
@@ -163,7 +163,7 @@ class TrainingCreation extends React.Component {
 
   getSkillList = () => {
     this.props.getSkillList().then(response => {
-      if (response && response.arrRes) {
+      if (response && response.errCode === 200) {
         const skillList = response.arrRes.map(list => {
           return {
             value: list.id,
@@ -180,7 +180,7 @@ class TrainingCreation extends React.Component {
 
   getTrainingList = () => {
     this.props.getTrainingList().then((response) => {
-      if (response && response.arrRes) {
+      if (response && response.errCode === 200) {
         const eventList = response.arrRes.map(list => {
           return {
             value: list.id,
@@ -267,6 +267,7 @@ class TrainingCreation extends React.Component {
   }
 
   selectFieldChange = (e) => {
+    console.log('----', e);
     if (e.target.name === 'location') {
       this.setState({ selectedLocation: e.target });
     }
