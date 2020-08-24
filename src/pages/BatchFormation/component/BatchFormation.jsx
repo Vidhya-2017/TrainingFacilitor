@@ -233,7 +233,7 @@ class BatchFormation extends React.Component {
 
               </Col>} */}
             </Row>
-            {candidateList && candidateList.length > 0 && <div>
+            {this.candidateList && this.candidateList.length > 0 && <div>
               <p className='memberLabel'>Candidate List: Count - {this.CandidateIDs.length} </p>
               <InputGroup className="mb-3">
                 <FormControl

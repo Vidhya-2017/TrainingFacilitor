@@ -25,6 +25,7 @@ import DurationMasterContainer from './pages/DurationMaster/container/DurationMa
 import AssesmentTypeContainer from './pages/AssesmentType/container/AssesmentTypeContainer';
 import CandidateRegistrationContainer from './pages/CandidateRegistration/container/CandidateRegistrationContainer';
 import BatchFormationContainer from './pages/BatchFormation/container/BatchFormationContainer'
+import CandidateSelectionContainer from './pages/CandidateSelection/container/CandidateSelectionContainer'
 import Home from './pages/Home/container/HomeContainer';
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
@@ -78,6 +79,7 @@ class App extends React.Component {
               {/* <Route path="/home" component={Home} />    */}
               <PrivateRoute component={Home} path="/home"  />
               <Route path="/candidateRegistration" component={CandidateRegistrationContainer} />  
+              <Route path="/candidateSelection" component={CandidateSelectionContainer} />  
             </Switch>
             </div>
             <Footer />
