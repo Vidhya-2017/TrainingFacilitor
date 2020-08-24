@@ -56,7 +56,6 @@ class AssesmentType extends React.Component {
     ]
   }
 
-
   componentDidMount() {
     this.props.getAssessmentList().then((response) => {
       if (response && response.arrRes) {
@@ -75,95 +74,15 @@ class AssesmentType extends React.Component {
     });
   }
 
-  validateform() {
-    let errors = {};
-    let formIsValid = true;
-    if (this.state.assessmentType.length === 0) {
-      formIsValid = false;
-      errors["assessmentType"] = "Enter Valid assessment type"
-    }
-    this.setState({ errors: errors });
-    return formIsValid;
-  }
-
-  submitForm = (e) => {
-    e.preventDefault();
-    if (this.validateform()) {
-      const date = moment().format("YYYY-MM-DD");
-      const details = {
-        assesment_type_name: this.state.assessmentType,
-        created_by: 1,
-        updated_by: 1,
-        created_date: date
-      }
-      this.props.setAddAssesmentTypeList(details).then(response => {
-        if (response.errCode === 200) {
-          const myObj = {
-            id: response.AssessmentTypeId,
-            assesment_type_name: response.AssessmentTypeName
-          }
-          const updatedItems = [...this.state.assessmentListVal, myObj];
-          this.setState({
-            assessmentType: '',
-            add: false,
-            assessmentListVal: updatedItems,
-            showToast: true,
-            toastMessage: "Assessment name added successfully!"
-          })
-        }
-        else if (response.errCode === 404) {
-          this.setState({
-            assessmentType: '',
-            add: false,
-            showToast: true,
-            toastMessage: "Already Assessment type name exists!"
-          })
-        }
-        else {
-          this.setState({
-            assessmentType: '',
-            add: false,
-            showToast: true,
-            toastMessage: "error in adding aseessment name!"
-          })
-        }
-      });
-    }
-  }
-
-  buttonFormatter = (cell, row) => {
-    return (
-      <>
-
-        {
-          <i id="icon" className="fa fa-edit " row={row}
-            onClick={() => { this.handleEdit(row) }}></i>
-        }
-
-
-
-        <i id="icon" className="fa fa-trash float-right" row={row}
-          onClick={() => this.setState({ deleteModal: true, id: row.id, assessmentType: row.assesment_type_name })}
-        ></i>
-
-
-      </>
-
-
-    );
-  }
-
   handleDelete = (id) => {
-
     const filteredItems = this.state.assessmentListVal.filter((item) => item.id !== id);
     const reqObj = {
       id: id,
       updated_by: 1
-
     }
-    this.props.DeleteAssesmentTypeList(reqObj).then(response => {
-      if (response.errCode === 200) {
 
+    this.props.DeleteAssesmentTypeList(reqObj).then(response => {
+      if (response && response.errCode === 200) {
         this.setState({
           assessmentType: '',
           assessmentListVal: filteredItems,
@@ -183,17 +102,6 @@ class AssesmentType extends React.Component {
     });
   }
 
-  handleEdit = (row) => {
-    this.setState({
-      edit: true,
-      assessmentType: row.assesment_type_name,
-      id: row.id,
-      updated_by: 1
-    })
-
-  }
-
-
   editSubmit = () => {
     const reqObj = {
       id: this.state.id,
@@ -201,27 +109,24 @@ class AssesmentType extends React.Component {
       updated_by: this.state.updated_by
     }
     this.props.EditAssesmentTypeList(reqObj).then(response => {
-      if (response.errCode === 200) {
+      if (response && response.errCode === 200) {
         this.setState(prevState => ({
           assessmentListVal: prevState.assessmentListVal.map(
             el => el.id === this.state.id ? { ...el, assesment_type_name: this.state.assessmentType } : el
           )
         }))
-
         this.setState({
           assessmentType: '', edit: false,
           showToast: true,
           toastMessage: "Assessment name updated successfully",
         });
       }
-      else if (response.errCode === 404) {
+      else if (response && response.errCode === 404) {
         this.setState({
           assessmentType: '', edit: false,
           showToast: true,
           toastMessage: " failed in updating Assessment name "
-
         });
-
       }
       else {
         this.setState({
@@ -231,19 +136,6 @@ class AssesmentType extends React.Component {
         });
       }
     });
-  }
-
-  handleSearch = (e) => {
-    const query = e.target.value;
-    const lowerCaseQuery = query.toLowerCase();
-    const searchedData = (query
-      ? this.state.assessmentListVal.filter((list) =>
-        list['assesment_type_name']
-          .toLowerCase()
-          .includes(lowerCaseQuery)
-      )
-      : this.state.assessmentListVal);
-    this.setState({ assessmentListVal: searchedData, searchQuery: query });
   }
 
   handleModalClose = () => {
@@ -259,10 +151,7 @@ class AssesmentType extends React.Component {
       updated_by: 1,
       created_date: date
     }
-    console.log('-reqObj---', reqObj);
     this.props.setAddAssesmentTypeList(reqObj).then(response => {
-    console.log('-response---', response);
-
       if (response && response.errCode === 200) {
         const myObj = {
           id: response.AssessmentTypeId,
@@ -272,6 +161,7 @@ class AssesmentType extends React.Component {
         this.setState({
           assessmentType: '',
           add: false,
+          showAddAssessmentModal: false,
           assessmentListVal: updatedItems,
           showToast: true,
           toastMessage: "Assessment name added successfully!"
@@ -281,6 +171,7 @@ class AssesmentType extends React.Component {
         this.setState({
           assessmentType: '',
           add: false,
+          showAddAssessmentModal: false,
           showToast: true,
           toastMessage: "Already Assessment type name exists!"
         })
@@ -289,45 +180,17 @@ class AssesmentType extends React.Component {
         this.setState({
           assessmentType: '',
           add: false,
+          showAddAssessmentModal: false,
           showToast: true,
           toastMessage: "error in adding aseessment name!"
         })
       }
     });
   };
+
   render() {
     const { assessmentListVal, showAddAssessmentModal, newAssessmentScale, showToast, toastMessage } = this.state;
     const {classes} = this.props;
-    const sizePerPageRenderer = ({
-    }) => (
-        <div className="btn-group recordPerPage" role="group">
-        </div>
-      );
-    const paginationOptions = {
-      sizePerPageRenderer,
-      sizePerPage: 5
-
-    };
-
-    const rowEvents = {
-      onClick: (e, row, rowIndex) => {
-        this.buttonFormatter(row);
-      }
-    };
-
-
-    const cols = [
-
-      {
-        dataField: 'assesment_type_name',
-        text: 'Assessment Type'
-      },
-      {
-        dataField: 'value',
-        text: 'Actions',
-        formatter: this.buttonFormatter,
-      }
-    ];
     return (
       <div className="AssesmentType_container">
         <Dialog
@@ -382,22 +245,6 @@ class AssesmentType extends React.Component {
               isFreeAction: true,
               onClick: (event) => this.setState({showAddAssessmentModal: true})
             },
-            // {
-            //   icon: 'edit',
-            //   tooltip: 'Edit Assessment Type',
-            //   iconProps: {
-            //     classes:{root: classes.iconRoot}
-            //   },
-            //   onClick: (event, rowData) => console.log("You saved " , rowData)
-            // },
-            // {
-            //   icon: 'delete',
-            //   tooltip: 'Delete Assessment Type',
-            //   iconProps: {
-            //     classes:{root: classes.iconRoot}
-            //   },
-            //   onClick: (event, rowData) => console.log("You want to delete " , rowData)
-            // }
           ]}
           editable={{
             onRowUpdate: (newData, oldData) =>
