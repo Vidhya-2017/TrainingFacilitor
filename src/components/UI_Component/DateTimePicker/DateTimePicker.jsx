@@ -39,7 +39,7 @@ class DateTimePicker extends React.Component {
 				{this.props.fieldLabel}
 			</Typography>
 					<DatePicker
-						className="datePicker mb-2"
+						className="datePicker"
 						format="yyyy-MM-dd"
 						onChange={(e) => this.handleChange(e)}
 						value={this.state.value}
@@ -49,7 +49,7 @@ class DateTimePicker extends React.Component {
 						dayPlaceholder="dd"
 						disabled={this.props.disabled}
 					/>
-					<div className="errorMsg">{this.props.errorMessage}</div>
+				{this.props.errorMessage !== undefined ? <div className="errorMsg">{this.props.errorMessage}</div> : null}
 				</div>
 		)
 	}

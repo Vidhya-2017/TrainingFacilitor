@@ -101,7 +101,7 @@ class SelectOne extends React.Component {
 					closeMenuOnSelect={!this.props.isMulti}
 					isDisabled={this.props.isDisabled}
 				/>
-				<div className="errorMsg">{this.props.errorMessage}</div>
+				{this.props.errorMessage !== undefined ? <div className="errorMsg">{this.props.errorMessage}</div> : null}
 			</div>
 		)
 	}

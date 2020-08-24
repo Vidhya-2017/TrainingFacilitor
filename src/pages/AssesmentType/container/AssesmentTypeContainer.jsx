@@ -4,7 +4,12 @@ import { AssesmentTypeAction } from '../modules/AssesmentTypeAction';
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    setAddAssesmentTypeList: (data) => dispatch( AssesmentTypeAction.setAddAssesmentTypeList(data))
+    // setAddAssesmentTypeList: (data) => dispatch( AssesmentTypeAction.setAddAssesmentTypeList(data))
+
+    getAssessmentList: AssesmentTypeAction.getAssessmentList,
+    DeleteAssesmentTypeList: AssesmentTypeAction.DeleteAssesmentTypeList,
+    setAddAssesmentTypeList:AssesmentTypeAction.setAddAssesmentTypeList,
+    EditAssesmentTypeList:AssesmentTypeAction.EditAssesmentTypeList
   };
 };
 

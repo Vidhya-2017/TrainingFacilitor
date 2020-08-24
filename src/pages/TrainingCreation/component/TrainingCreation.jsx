@@ -35,6 +35,8 @@ const trainingRegForm = {
   account: { ...inputField },
   count: { ...inputField },
   skills: { ...inputField },
+  assignSME: { ...inputField },
+  programManager: { ...inputField },
   plannedEndDate: { ...inputField },
   plannedStDate: { ...inputField },
   actualEndDate: { ...inputField },
@@ -43,8 +45,11 @@ const trainingRegForm = {
 
 const styles = (theme) => ({
   paperRoot: {
-    margin: theme.spacing(6, 18),
-    padding: theme.spacing(4),
+    // margin: theme.spacing(6, 18),
+    // padding: theme.spacing(4),
+    width: '70%',
+    margin: '20px auto',
+    padding: '10px 20px'
   },
   textField: {
     marginLeft: theme.spacing(1),
@@ -58,18 +63,23 @@ const styles = (theme) => ({
   },
   bottomBtn: {
     justifyContent: 'flex-end',
-    display: 'flex'
+    display: 'flex',
+    marginTop: 10
   },
   addBtn: {
     marginTop: 27,
-    marginLeft:20
+    marginLeft: 20
   },
   listRoot: {
     width: '100%',
-    maxWidth: 360,
+    minWidth: 360,
+    maxWidth: 450,
     padding: 0,
     backgroundColor: theme.palette.background.paper,
     border: 'solid 1px lightgray'
+  },
+  batchTitle: {
+    margin: theme.spacing(1, 0, 1),
   },
 });
 
@@ -90,6 +100,7 @@ class TrainingCreation extends React.Component {
       eventSelected: null,
       selectedAccount: null,
       selectedTrainingType: null,
+      selectedProgramManager: null,
       selectedlocation: null,
       batchDetailsList: [],
       formIsValid: false,
@@ -190,19 +201,22 @@ class TrainingCreation extends React.Component {
   }
 
   checkValidity(inputValue, rules) {
-    const value = inputValue.toString();
-    let isValid = true;
-    if (!rules) {
-      return true;
+    if(inputValue) {
+      const value = inputValue.toString();
+      let isValid = true;
+      if (!rules) {
+        return true;
+      }
+      if (rules.required) {
+        isValid = value.trim() !== '' && isValid;
+      }
+      if (rules.isNumeric) {
+        const pattern = /^\d+$/;
+        isValid = pattern.test(value) && isValid
+      }
+      return isValid;
     }
-    if (rules.required) {
-      isValid = value.trim() !== '' && isValid;
-    }
-    if (rules.isNumeric) {
-      const pattern = /^\d+$/;
-      isValid = pattern.test(value) && isValid
-    }
-    return isValid;
+    return false;
   }
 
   submitForm = () => {
@@ -250,6 +264,11 @@ class TrainingCreation extends React.Component {
     if (e.target.name === 'trainingType') {
       this.setState({ selectedTrainingType: e.target });
     }
+
+    if (e.target.name === 'programManager') {
+      this.setState({ selectedProgramManager: e.target });
+    }
+    
     this.inputFieldChange(e);
   }
 
@@ -267,6 +286,9 @@ class TrainingCreation extends React.Component {
     }
     if (this.state.activeStep < 2) {
       this.setState(prev => ({ activeStep: prev.activeStep + 1, batchDetailsList: [], eventSelected: null }));
+    }
+    if(this.state.activeStep === 2) {
+      console.log('---finished---');
     }
   }
 
@@ -324,8 +346,8 @@ class TrainingCreation extends React.Component {
   }
   render() {
     const { classes } = this.props;
-    const { skillList, showAddBatchModal, newBatchName, batchDetailsList, EventDetailsList, 
-      eventSelected, activeStep, toastMsg, formIsValid, selectedSkill, newBatchCount, selectedTrainingType, 
+    const { skillList, showAddBatchModal, newBatchName, batchDetailsList, EventDetailsList,
+      eventSelected, activeStep, toastMsg, formIsValid, selectedProgramManager, newBatchCount, selectedTrainingType,
       selectedAccount, selectedLocation, locationList, accountList, formValues } = this.state;
     const steps = this.getSteps();
     return (
@@ -403,6 +425,16 @@ class TrainingCreation extends React.Component {
                 name="requestBy"
                 onChange={this.inputFieldChange}
               />
+              <SelectOne
+                fieldLabel="Program Manager"
+                id="programManager"
+                name="programManager"
+                placeholder="Program Manager"
+                value={selectedProgramManager}
+                options={skillList}
+                onChange={this.selectFieldChange}
+                errorMessage={this.state.errors.programManager === "" ? null : this.state.errors.programManager}
+              />
             </div>
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -428,6 +460,17 @@ class TrainingCreation extends React.Component {
               onChange={this.selectFieldChange}
               errorMessage={this.state.errors.skills === "" ? null : this.state.errors.skills}
             />
+            <SelectOne
+              fieldLabel="Assign SME"
+              id="assignSME"
+              name="assignSME"
+              placeholder="Assign SME"
+              value={formValues.assignSME && formValues.assignSME.value}
+              isMulti={true}
+              options={skillList}
+              onChange={this.selectFieldChange}
+              errorMessage={this.state.errors.assignSME === "" ? null : this.state.errors.assignSME}
+            />
             <DateTimePicker
               fieldLabel="Planned Start Date"
               value={formValues.plannedStDate.value}
@@ -439,7 +482,7 @@ class TrainingCreation extends React.Component {
               value={formValues.plannedEndDate.value}
               fieldLabel="Planned End Date"
               name="plannedEndDate"
-              disabled={formValues.plannedStDate.value === ''}
+              disabled={formValues.plannedStDate.value === '' || formValues.plannedStDate.value === null}
               minDate={formValues.plannedStDate.value}
               onChange={this.inputFieldChange}
             />
@@ -454,7 +497,7 @@ class TrainingCreation extends React.Component {
               fieldLabel="Actual End Date"
               value={formValues.actualEndDate.value}
               name="actualEndDate"
-              disabled={formValues.actualStDate.value === ''}
+              disabled={formValues.actualStDate.value === ''|| formValues.plannedStDate.value === null}
               minDate={formValues.actualStDate.value}
               onChange={this.inputFieldChange}
             />
@@ -476,33 +519,40 @@ class TrainingCreation extends React.Component {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <Button variant="contained" disabled={eventSelected=== '' || eventSelected === null} className={classes.addBtn} onClick={this.addBatch} color="primary">
+            <Button variant="contained" disabled={eventSelected === '' || eventSelected === null} className={classes.addBtn} onClick={this.addBatch} color="primary">
               Add
           </Button>
           </Grid>
         </Grid>}
 
-        {batchDetailsList.length > 0 && <List className={classes.listRoot}>
-            {batchDetailsList.map(batch =>
-              <Fragment>
-                <ListItem>
-                  <ListItemText primary={`Name: ${batch.batch_name}`}
-                    secondary={
-                      <Typography component="span" color="textPrimary">
-                        Count: {batch.batch_count}
-                      </Typography>
-                    }
-                  />
-                  <ListItemSecondaryAction>
-                    <IconButton>
-                      <DeleteIcon />
-                    </IconButton>
-                  </ListItemSecondaryAction>
-                </ListItem>
-                <Divider />
-              </Fragment>
-            )}
-          </List>}
+        {batchDetailsList.length > 0 &&
+          <Fragment>
+            <Typography variant="h6" className={classes.batchTitle}>
+              Batch List:
+            </Typography>
+            <List className={classes.listRoot}>
+              {batchDetailsList.map(batch =>
+                <Fragment>
+                  <ListItem>
+                    <ListItemText primary={`Name: ${batch.batch_name}`}
+                      secondary={
+                        <Typography component="span" color="textPrimary">
+                          Count: {batch.batch_count}
+                        </Typography>
+                      }
+                    />
+                    <ListItemSecondaryAction>
+                      <IconButton>
+                        <DeleteIcon />
+                      </IconButton>
+                    </ListItemSecondaryAction>
+                  </ListItem>
+                  <Divider />
+                </Fragment>
+              )}
+            </List>
+          </Fragment>
+        }
         {activeStep === 2 && <div>Curriculum</div>}
         <Dialog
           disableBackdropClick
@@ -514,29 +564,29 @@ class TrainingCreation extends React.Component {
         >
           <DialogTitle id="form-dialog-title">Add new Batch</DialogTitle>
           <DialogContent >
-            <div style={{display: 'flex'}}>
-            <Typography style={{padding: '15px 15px 10px 0'}}>Batch Name:</Typography>
-            <TextField
-              autoFocus
-              variant="outlined"
-              margin="dense"
-              placeholder="Batch Name"
-              type="text"
-              value={newBatchName}
-              onChange={(e) => this.setState({ newBatchName: e.target.value })}
-            />
+            <div style={{ display: 'flex' }}>
+              <Typography style={{ padding: '15px 15px 10px 0' }}>Batch Name:</Typography>
+              <TextField
+                autoFocus
+                variant="outlined"
+                margin="dense"
+                placeholder="Batch Name"
+                type="text"
+                value={newBatchName}
+                onChange={(e) => this.setState({ newBatchName: e.target.value })}
+              />
             </div>
-            <div style={{display: 'flex'}}>
-            <Typography  style={{padding: '15px 15px 10px 0'}}>Batch Count:</Typography>
-            <TextField
-              autoFocus
-              variant="outlined"
-              margin="dense"
-              placeholder="Batch Count"
-              type="number"
-              value={newBatchCount}
-              onChange={(e) => this.setState({ newBatchCount: e.target.value })}
-            />
+            <div style={{ display: 'flex' }}>
+              <Typography style={{ padding: '15px 15px 10px 0' }}>Batch Count:</Typography>
+              <TextField
+                autoFocus
+                variant="outlined"
+                margin="dense"
+                placeholder="Batch Count"
+                type="number"
+                value={newBatchCount}
+                onChange={(e) => this.setState({ newBatchCount: e.target.value })}
+              />
             </div>
           </DialogContent>
           <DialogActions>

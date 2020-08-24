@@ -7,7 +7,6 @@ const SelectStyles = (width = 200, maxWidth = 215) => {
       minWidth: 200,
       // maxWidth: maxWidth,
       minHeight: 40,
-      height:40,
       borderColor: '#000',
       borderRadius: '5px',
       marginBottom: '4px',
