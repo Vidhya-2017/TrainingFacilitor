@@ -1,22 +1,44 @@
 import clients from '../../../common/clients';
-import * as actionTypes from "../../../common/actionTypes/Skill.actiontype";
 
 export const SkillAction = {
-    setAddSkillList: (data) => {
-        return async (dispatch) => {
-          return clients.AddSkillList.post('AddSkillsList.php', data).then(res =>{
-            dispatch({
-                type : actionTypes.ADD_SKILL,
-                payload : res.data
-            });
-        }
-            ).catch(
-              error => {
-              return (error.response.data);   
-            }
-            );
-          }
-      },
-    
-    
+  getSkillList: async (data) => {
+    try {
+      const response = await clients.axiosAPI.post('ListSkillsList.php', data);
+      return (response.data);
+    }
+    catch (error) {
+      return (error.response);
+    }
+  },
+  deleteSkillList: async (data) => {
+    try {
+      const response = await clients.axiosAPI.post('/DeleteSkillsList.php', data);
+      return (response.data);
+    }
+    catch (error) {
+      return (error.response);
+    }
+  },
+  addSkillList: async (data) => {
+    try {
+      const response = await clients.axiosAPI.post('/AddSkillsList.php', data);
+      return (response.data);
+    }
+    catch (error) {
+      return (error.response);
+    }
+  },
+
+  editSkillList: async (data) => {
+    try {
+      const response = await clients.axiosAPI.post('/EditSkillsList.php', data);
+      return (response.data);
+    }
+    catch (error) {
+      return (error.response);
+    }
+  },
+
+
+
 }

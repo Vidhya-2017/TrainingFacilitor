@@ -5,17 +5,19 @@ import SkillList from '../component/SkillList';
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    setAddSkillList: (data) => dispatch(SkillAction.setAddSkillList(data))
+    getSkillList: SkillAction.getSkillList,
+    deleteSkillList: SkillAction.deleteSkillList,
+    addSkillList: SkillAction.addSkillList,
+    editSkillList: SkillAction.editSkillList
   };
 };
 
 
 const mapStateToProps = (state) => {
   return {
-    SkillDetails: state.SkillReducer
+    SkillDetails: state
   }
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SkillList);
- 
- 
+
