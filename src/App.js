@@ -24,11 +24,12 @@ import BatchMasterContainer from './pages/BatchMaster/container/BatchMasterConta
 import DurationMasterContainer from './pages/DurationMaster/container/DurationMasterContainer';
 import AssesmentTypeContainer from './pages/AssesmentType/container/AssesmentTypeContainer';
 import CandidateRegistrationContainer from './pages/CandidateRegistration/container/CandidateRegistrationContainer';
-import BatchFormationContainer from './pages/BatchFormation/container/BatchFormationContainer'
-import CandidateSelectionContainer from './pages/CandidateSelection/container/CandidateSelectionContainer'
+import BatchFormationContainer from './pages/BatchFormation/container/BatchFormationContainer';
+import CandidateSelectionContainer from './pages/CandidateSelection/container/CandidateSelectionContainer';
+import TrainingListContainer from './pages/TrainingList/container/TrainingListContainer';
 import Home from './pages/Home/container/HomeContainer';
 import Header from './components/Header/Header';
-import Footer from './components/Footer/Footer';
+import Footer from './components/Footer/Footer'; 
 import './App.scss';
 
 const persistConfig = {
@@ -80,6 +81,7 @@ class App extends React.Component {
               <PrivateRoute component={Home} path="/home"  />
               <Route path="/candidateRegistration" component={CandidateRegistrationContainer} />  
               <Route path="/candidateSelection" component={CandidateSelectionContainer} />  
+              <Route path="/trainingList" component={TrainingListContainer}/>
             </Switch>
             </div>
             <Footer />
