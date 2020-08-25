@@ -58,7 +58,6 @@ class Home extends Component {
     reader.onload = (e) => {
       var binaryData = e.target.result;
       var base64String = window.btoa(binaryData);
-      //console.log('-base64String--', base64String);
       const reqObj = {
         mime: file.type,
         data: base64String,
@@ -68,16 +67,6 @@ class Home extends Component {
       }
       console.log(reqObj);
       this.props.importExcel(reqObj);   
-      setTimeout(
-        function() {
-           console.log(this.props.HomeDetails)
-           
-        }.bind(this),1500); 
-     /*  this.props.importExcel(reqObj).then(response => {
-        if (response && response.errCode === 200) {
-          console.log(response);
-        }
-      }) */
     };
     reader.readAsBinaryString(file);
   }
@@ -301,8 +290,6 @@ class Home extends Component {
               data={data}
               columns={cols}
               wrapperClasses='listTable'
-              // striped
-              // hover
               rowClasses='rowlist'
               headerClasses="listHeader"
               pagination={paginationFactory(paginationOptions)}

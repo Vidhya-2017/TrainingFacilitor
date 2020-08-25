@@ -1,17 +1,14 @@
 import React, { Fragment } from 'react';
-import { Container, Row, Col } from 'react-bootstrap';
 import moment from 'moment';
 import {
   Paper, Stepper, Dialog, DialogTitle, TextField, DialogActions, DialogContent,
-  DialogContentText, IconButton, Grid, ListItemSecondaryAction, Step, Button, Typography,
-  StepLabel, withStyles
+  Slide, IconButton, Grid, ListItemSecondaryAction, Step, Button, Typography,
+  StepLabel, withStyles, AppBar, Toolbar, List, ListItem, ListItemText, Divider
 } from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
 import DeleteIcon from '@material-ui/icons/Delete';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import Divider from '@material-ui/core/Divider';
-
+import HomeContainer from '../../Home/container/HomeContainer';
+import CandidateRegistration from './CandidateRegistration';
 import Textbox from '../../../components/UI_Component/Textbox/Textbox';
 import SelectOne from '../../../components/UI_Component/Select/SelectOne';
 import ToastBox from '../../../components/UI_Component/Toast/ToastBox';
@@ -25,6 +22,10 @@ const inputField = {
   },
   valid: false
 };
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 
 const trainingRegForm = {
   trainingName: { ...inputField },
@@ -76,13 +77,20 @@ const styles = (theme) => ({
     backgroundColor: theme.palette.background.paper,
     border: 'solid 1px lightgray'
   },
+  appBar: {
+    position: 'relative',
+  },
+  title: {
+    marginLeft: theme.spacing(2),
+    flex: 1,
+  },
 });
 
 class TrainingCreation extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      activeStep: 0,
+      activeStep: 1,
       errors: {},
       formValues: { ...trainingRegForm },
       showToast: false,
@@ -102,8 +110,10 @@ class TrainingCreation extends React.Component {
       formIsValid: false,
       showAddBatchModal: false,
       newBatchName: '',
-      newBatchCount: ''
+      newBatchCount: '',
+      showCandidateUpload: false,
     }
+    this.candidateRegRef = React.createRef();
   }
 
   componentDidMount() {
@@ -257,7 +267,6 @@ class TrainingCreation extends React.Component {
       CreatedBy: 1,
       UpdatedBy: 1
     }
-    // console.log('reqObj---', reqObj);
     this.props.registerTraining(reqObj).then(result => {
       this.setState({
         formValues: { ...trainingRegForm }, selectedAccount: null, selectedTrainingType: null, selectedLocation: null,
@@ -267,7 +276,6 @@ class TrainingCreation extends React.Component {
   }
 
   selectFieldChange = (e) => {
-    console.log('----', e);
     if (e.target.name === 'location') {
       this.setState({ selectedLocation: e.target });
     }
@@ -282,33 +290,39 @@ class TrainingCreation extends React.Component {
     if (e.target.name === 'programManager') {
       this.setState({ selectedProgramManager: e.target });
     }
-    
+
     this.inputFieldChange(e);
   }
 
-  getSteps = () => ['Registration', 'Batch Creation', 'Curriculum'];
+  getSteps = () => ['Registration', 'Candidate Registration', 'Batch Creation', 'Curriculum'];
 
   handleStep = (index) => {
-    if (index === 1) {
+    if (index === 2) {
       this.getTrainingList();
     }
     this.setState({ activeStep: index, batchDetailsList: [], eventSelected: null });
   }
   handleNext = () => {
-    if (this.state.activeStep + 1 === 1) {
+    if(this.state.activeStep === 1) {
+      console.log('----this.candidateRegRef---', this.candidateRegRef.current.submitForm());
+    }
+    if (this.state.activeStep + 1 === 2) {
       this.getTrainingList();
     }
-    if (this.state.activeStep < 2) {
+    if (this.state.activeStep < 3) {
       this.setState(prev => ({ activeStep: prev.activeStep + 1, batchDetailsList: [], eventSelected: null }));
     }
-    if(this.state.activeStep === 2) {
+    if (this.state.activeStep === 3) {
       console.log('---finished---');
     }
   }
 
   handleBack = () => {
-    if (this.state.activeStep - 1 === 1) {
+    if (this.state.activeStep - 1 === 2) {
       this.getTrainingList();
+    }
+    if(this.state.activeStep === 1) {
+      console.log('----this.candidateRegRef---', this.candidateRegRef.current.submitForm());
     }
     this.setState(prev => ({ activeStep: prev.activeStep - 1, batchDetailsList: [], eventSelected: null }));
   }
@@ -340,6 +354,9 @@ class TrainingCreation extends React.Component {
 
   }
 
+  showCandidateUpload = () => {
+    this.setState({ showCandidateUpload: true });
+  }
   handleModalSubmit = () => {
     const { newBatchName, eventSelected, newBatchCount } = this.state;
     const reqObj = {
@@ -358,10 +375,13 @@ class TrainingCreation extends React.Component {
     });
 
   }
+  handleCandidateUploadClose = () => {
+    this.setState({ showCandidateUpload: false });
+  }
   render() {
     const { classes } = this.props;
     const { skillList, showAddBatchModal, newBatchName, batchDetailsList, EventDetailsList,
-      eventSelected, activeStep, toastMsg, formIsValid, selectedProgramManager, newBatchCount, selectedTrainingType,
+      eventSelected, activeStep, showCandidateUpload, formIsValid, selectedProgramManager, newBatchCount, selectedTrainingType,
       selectedAccount, selectedLocation, locationList, accountList, trainingTypeList, formValues } = this.state;
     const steps = this.getSteps();
     return (
@@ -511,13 +531,38 @@ class TrainingCreation extends React.Component {
               fieldLabel="Actual End Date"
               value={formValues.actualEndDate.value}
               name="actualEndDate"
-              disabled={formValues.actualStDate.value === ''|| formValues.plannedStDate.value === null}
+              disabled={formValues.actualStDate.value === '' || formValues.plannedStDate.value === null}
               minDate={formValues.actualStDate.value}
               onChange={this.inputFieldChange}
             />
           </Grid>
         </Grid>}
-        {activeStep === 1 && <Grid container spacing={3} className={classes.gridRoot}>
+        {activeStep === 1 &&
+
+          <Fragment>
+            <div style={{ float: 'right' }}><Button variant="contained" onClick={this.showCandidateUpload} color="primary">Candidate Upload</Button></div>
+            <Dialog fullScreen open={showCandidateUpload} onClose={this.handleCandidateUploadClose} TransitionComponent={Transition}>
+              <AppBar className={classes.appBar}>
+                <Toolbar>
+                  <IconButton edge="start" color="inherit" onClick={this.handleCandidateUploadClose} aria-label="close">
+                    <CloseIcon />
+                  </IconButton>
+                  <Typography variant="h6" className={classes.title}>Candidate Upload</Typography>
+                </Toolbar>
+              </AppBar>
+              <HomeContainer />
+            </Dialog>
+            <CandidateRegistration 
+            ref={this.candidateRegRef}
+            getTrainingList={this.props.getTrainingList}
+            getAccount={this.props.getAccount}
+            getLobList={this.props.getLobList}
+            getLocation={this.props.getLocation}
+            insertCandidate={this.props.insertCandidate}
+            />
+          </Fragment>
+        }
+        {activeStep === 2 && <Grid container spacing={3} className={classes.gridRoot}>
           <Grid item xs={12} sm={4}>
             <SelectOne
               fieldLabel="Training List"
@@ -546,7 +591,7 @@ class TrainingCreation extends React.Component {
             </Typography>
             <List className={classes.listRoot}>
               {batchDetailsList.map(batch =>
-                <Fragment>
+                <Fragment key={batch.batch_id}>
                   <ListItem>
                     <ListItemText primary={`Name: ${batch.batch_name}`}
                       secondary={
@@ -567,14 +612,13 @@ class TrainingCreation extends React.Component {
             </List>
           </Fragment>
         }
-        {activeStep === 2 && <div>Curriculum</div>}
+        {activeStep === 3 && <div>Curriculum</div>}
         <Dialog
           disableBackdropClick
           maxWidth="xs"
           fullWidth={true}
           open={showAddBatchModal}
           onClose={this.handleModalClose}
-          aria-labelledby="form-dialog-title"
         >
           <DialogTitle id="form-dialog-title">Add new Batch</DialogTitle>
           <DialogContent >
@@ -619,7 +663,8 @@ class TrainingCreation extends React.Component {
             className={classes.backButton}
           >Back</Button>
           <Button variant="contained" color="primary" onClick={this.handleNext}>
-            {activeStep === steps.length - 1 ? 'Finish' : 'Next'}
+            {/* {activeStep === steps.length - 1 ? 'Finish' : 'Next'} */}
+            Submit
           </Button>
         </div>
       </Paper>

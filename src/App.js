@@ -2,6 +2,7 @@ import React from 'react';
 import { withRouter } from 'react-router';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import { Spinner } from 'react-bootstrap';
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
 import { Provider } from 'react-redux';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from "redux-persist/lib/storage";
@@ -32,6 +33,14 @@ import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer'; 
 import './App.scss';
 
+const outerTheme = createMuiTheme({
+  palette: {
+    primary: {
+      main: '#1b91e5',
+    },
+  },
+});
+
 const persistConfig = {
   key: 'root',
   storage,
@@ -54,6 +63,7 @@ class App extends React.Component {
 
   render() {
     return (
+      <ThemeProvider theme={outerTheme}>
       <div className='appContainer'>
         <div className='spinnerWrapper hide'>
           <Spinner className='spinner' animation="grow" variant="primary" />
@@ -88,6 +98,7 @@ class App extends React.Component {
           </PersistGate>
         </Provider>
       </div>
+      </ThemeProvider>
     );
   }
 }

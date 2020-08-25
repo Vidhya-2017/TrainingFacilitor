@@ -91,4 +91,22 @@ export const TrainingCreationAction = {
             return (error.response);
         }
     },
+    insertCandidate: async (data) => {
+        try {
+            const response = await clients.axiosAPI.post('/CandidateRegistration.php', data);
+            return (response.data);
+        }
+        catch (error) {
+            return (error.response);
+        }
+    },
+    getLobList: async () => {
+        try {
+            const response = await clients.axiosAPI.get('/ListLOB.php');
+            return (response.data);
+        }
+        catch (error) {
+            return (error.response);
+        }
+    },
 }
