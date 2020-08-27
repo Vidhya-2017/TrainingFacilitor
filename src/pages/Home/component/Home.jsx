@@ -253,7 +253,6 @@ class Home extends Component {
     }
     return (
       <div>
-        <h3 className='pageTitle'>Candidate List</h3>
         <section className='handlerContainer'>
           <div className='uploadBtn'>
             <label htmlFor="fileUpload" className="file-upload fileUploadBtn btn shadow">

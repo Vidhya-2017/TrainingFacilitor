@@ -191,6 +191,7 @@ class CandidateRegistration extends React.Component {
 
             formIsValid = updatedRegForm[inputIdentifier].valid && formIsValid;
         }
+        this.props.checkAllFieldsValid(formIsValid);
         this.setState({ formValues: updatedRegForm, formIsValid });
     }
 
@@ -279,46 +280,28 @@ class CandidateRegistration extends React.Component {
                 expected_joining_date: ''
             }
         }
-        return reqObj;
-        // this.props.insertCandidate(reqObj).then(response => {
-        //   if (response && response.errCode === 200) {
-        //     this.setState({
-        //       showToast: true,
-        //       toastMsg: 'Inserted Successfully.',
-        //       formValues: { ...candidateRegForm },
-        //       selectedLocation: null,
-        //       selectedLob: null,
-        //       selectedAccount: null,
-        //       selectedMonth: null,
-        //       selectedTraining: null,
-        //       formDisable: false
-        //     })
-        //   } else if (response.errCode === 404 && response.status === 'Email Id already exists') {
-        //     this.setState({
-        //       showToast: true,
-        //       toastMsg: 'Email Id already exists.',
-        //       formValues: { ...candidateRegForm },
-        //       selectedLocation: null,
-        //       selectedLob: null,
-        //       selectedAccount: null,
-        //       selectedMonth: null,
-        //       selectedTraining: null,
-        //       formDisable: false
-        //     })
-        //   } else {
-        //     this.setState({
-        //       showToast: true,
-        //       toastMsg: 'Something went Wrong. Please try again later.',
-        //       formValues: { ...candidateRegForm },
-        //       selectedLocation: null,
-        //       selectedLob: null,
-        //       selectedAccount: null,
-        //       selectedMonth: null,
-        //       selectedTraining: null,
-        //       formDisable: false
-        //     })
-        //   }
-        // })
+        return this.props.insertCandidate(reqObj).then(response => {
+            let toastMsg = '';
+          if (response && response.errCode === 200) {
+            toastMsg = 'Inserted Successfully.';
+          } else if (response.errCode === 404 && response.status === 'Email Id already exists') {
+            toastMsg = 'Email Id already exists.';
+          } else {
+            toastMsg = 'Something went Wrong. Please try again later.';
+          }
+          this.setState({
+            showToast: true,
+            toastMsg,
+            formValues: { ...candidateRegForm },
+            selectedLocation: null,
+            selectedLob: null,
+            selectedAccount: null,
+            selectedMonth: null,
+            selectedTraining: null,
+            formDisable: false
+          });
+          return response.errCode;
+        })
     }
 
     render() {
@@ -461,11 +444,11 @@ class CandidateRegistration extends React.Component {
                     showToast &&
                     <ToastBox showToast={showToast} toastMsg={toastMsg} />
                 }
-                <Buttons
+                {/* <Buttons
                     className="float-right"
                     value="Submit"
                     disabled={!formIsValid}
-                    onClick={this.submitForm} />
+                    onClick={this.submitForm} /> */}
             </Grid>
         )
     }

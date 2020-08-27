@@ -112,6 +112,7 @@ class TrainingCreation extends React.Component {
       newBatchName: '',
       newBatchCount: '',
       showCandidateUpload: false,
+      CRFormIsValid: false,
     }
     this.candidateRegRef = React.createRef();
   }
@@ -302,29 +303,32 @@ class TrainingCreation extends React.Component {
     }
     this.setState({ activeStep: index, batchDetailsList: [], eventSelected: null });
   }
-  handleNext = () => {
-    if(this.state.activeStep === 1) {
-      console.log('----this.candidateRegRef---', this.candidateRegRef.current.submitForm());
+  handleNext = async () => {
+    if (this.state.activeStep === 1) {
+      await this.candidateRegRef.current.submitForm().then(res => {
+        console.log('-isFormSubmittedSuccess--', res);
+        if (res === 200) {
+          this.setState(prev => ({ activeStep: prev.activeStep + 1,  CRFormIsValid: false, batchDetailsList: [], eventSelected: null }));
+        }
+      });
+    } else if (this.state.activeStep < 3 && this.state.activeStep !== 1) {
+      console.log('-isFormSubmittedSuccess-again-');
+      this.setState(prev => ({ activeStep: prev.activeStep + 1, CRFormIsValid: false, batchDetailsList: [], eventSelected: null }));
     }
     if (this.state.activeStep + 1 === 2) {
       this.getTrainingList();
-    }
-    if (this.state.activeStep < 3) {
-      this.setState(prev => ({ activeStep: prev.activeStep + 1, batchDetailsList: [], eventSelected: null }));
     }
     if (this.state.activeStep === 3) {
       console.log('---finished---');
     }
   }
 
-  handleBack = () => {
+  handleBack = async () => {
     if (this.state.activeStep - 1 === 2) {
       this.getTrainingList();
     }
-    if(this.state.activeStep === 1) {
-      console.log('----this.candidateRegRef---', this.candidateRegRef.current.submitForm());
-    }
-    this.setState(prev => ({ activeStep: prev.activeStep - 1, batchDetailsList: [], eventSelected: null }));
+
+    this.setState(prev => ({ activeStep: prev.activeStep - 1, CRFormIsValid: false, batchDetailsList: [], eventSelected: null }));
   }
 
   onChangeTraining = (eventSelected) => {
@@ -378,12 +382,21 @@ class TrainingCreation extends React.Component {
   handleCandidateUploadClose = () => {
     this.setState({ showCandidateUpload: false });
   }
+
+  checkAllFieldsValid = (CRFormIsValid) => {
+    console.log('-formisValid--', CRFormIsValid);
+    this.setState({ CRFormIsValid })
+  }
   render() {
     const { classes } = this.props;
     const { skillList, showAddBatchModal, newBatchName, batchDetailsList, EventDetailsList,
-      eventSelected, activeStep, showCandidateUpload, formIsValid, selectedProgramManager, newBatchCount, selectedTrainingType,
+      eventSelected, activeStep, showCandidateUpload, CRFormIsValid, selectedProgramManager, newBatchCount, selectedTrainingType,
       selectedAccount, selectedLocation, locationList, accountList, trainingTypeList, formValues } = this.state;
     const steps = this.getSteps();
+    let disableSubmitBtn = false;
+    if (activeStep === 1) {
+      disableSubmitBtn = !CRFormIsValid;
+    }
     return (
       <Paper className={classes.paperRoot} elevation={3}>
         <Typography variant="h4" className="text-center" gutterBottom>
@@ -552,13 +565,14 @@ class TrainingCreation extends React.Component {
               </AppBar>
               <HomeContainer />
             </Dialog>
-            <CandidateRegistration 
-            ref={this.candidateRegRef}
-            getTrainingList={this.props.getTrainingList}
-            getAccount={this.props.getAccount}
-            getLobList={this.props.getLobList}
-            getLocation={this.props.getLocation}
-            insertCandidate={this.props.insertCandidate}
+            <CandidateRegistration
+              ref={this.candidateRegRef}
+              getTrainingList={this.props.getTrainingList}
+              getAccount={this.props.getAccount}
+              getLobList={this.props.getLobList}
+              getLocation={this.props.getLocation}
+              insertCandidate={this.props.insertCandidate}
+              checkAllFieldsValid={this.checkAllFieldsValid}
             />
           </Fragment>
         }
@@ -662,9 +676,13 @@ class TrainingCreation extends React.Component {
             onClick={this.handleBack}
             className={classes.backButton}
           >Back</Button>
-          <Button variant="contained" color="primary" onClick={this.handleNext}>
-            {/* {activeStep === steps.length - 1 ? 'Finish' : 'Next'} */}
-            Submit
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={this.handleNext}
+            disabled={disableSubmitBtn}>
+            {activeStep === 2 ? 'Next' : 'Submit'}
+            
           </Button>
         </div>
       </Paper>
