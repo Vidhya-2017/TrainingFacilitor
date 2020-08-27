@@ -1,11 +1,14 @@
 /* Made with love by Mutiullah Samim*/
 
-.sme_container{
+.SMEList_container{
     .container{
         width: 60%;
         border: solid 1px lightgrey;
         min-height: auto;
         padding-bottom: 20px;
+    }
+    .blue_theme{
+        height: 100%;
     }
     $breakpoint-tablet: 775px;
     @media (max-width: $breakpoint-tablet) {
@@ -23,8 +26,5 @@
             color: #fff;
         }
     }
-
-    
-
 } 
 

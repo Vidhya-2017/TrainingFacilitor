@@ -5,14 +5,17 @@ import SMEList from '../component/SMEList';
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    setAddSMEList: (data) => dispatch(SMEAction.setAddSMEList(data))
+    getSkillList: SMEAction.getSkillList,
+    getSMEList:SMEAction.getSMEList,
+    deleteSMEList:SMEAction.deleteSMEList,
+    editSMEList:SMEAction.editSMEList,
+    addSMEList:SMEAction.addSMEList
   };
 };
 
 
 const mapStateToProps = (state) => {
   return {
-    SMEList: state.SMEReducer.SMEList
   }
 }
 
