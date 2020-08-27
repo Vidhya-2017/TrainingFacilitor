@@ -143,7 +143,7 @@ MySnackbarContent.propTypes = {
 const MySnackbarContentWrapper = withStyles(styles1)(MySnackbarContent);
 
 
-class CandidateSelection extends Component {
+class BatchFormation extends Component {
 
   constructor(props) {
     super(props);
@@ -412,12 +412,10 @@ class CandidateSelection extends Component {
   };
 
   render() {
-    const { classes, variant } = this.props;
+    const { classes } = this.props;
     const { trainingList, selectedTraining, candidatesList, snackbaropen, snackmsg, snackvariant, query, selectall, checked, left, right, batchSelected, batchDetailsList } = this.state;
-
     this.leftChecked = this.intersection(checked, left);
     this.rightChecked = this.intersection(checked, right);
-
     this.CandidateIDs = [];
     candidatesList.forEach(list => {
       if (list.training_id !== null && list.training_id !== '') {
@@ -425,14 +423,12 @@ class CandidateSelection extends Component {
       }
     })
 
-
     return (
       <div className="exTraining_container">
-        {/*   <Grid item > */}
-        <Paper className={classes.paperRoot} elevation={3}>
-          <Typography variant="h4" className="text-center" gutterBottom>
+        {/* <Paper className={classes.paperRoot} elevation={3}> */}
+          {/* <Typography variant="h4" className="text-center" gutterBottom>
             Batch Formation
-          </Typography>
+          </Typography> */}
           <div className={classes.selectOne}>
             <Typography variant="h6" className={classes.trainingTitle}> Training List </Typography >
             <Grid item xs={12} sm={4} md={3}>
@@ -524,7 +520,7 @@ class CandidateSelection extends Component {
               message={snackmsg}
             />
           </Snackbar>
-        </Paper>
+        {/* </Paper> */}
         {/* </Grid> */}
 
       </div>
@@ -533,4 +529,4 @@ class CandidateSelection extends Component {
 }
 
 
-export default withStyles(styles)(CandidateSelection);
+export default withStyles(styles)(BatchFormation);

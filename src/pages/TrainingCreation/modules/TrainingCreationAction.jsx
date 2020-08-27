@@ -109,4 +109,22 @@ export const TrainingCreationAction = {
             return (error.response);
         }
     },
+    getCandidateMapList: async (data) => {
+        try {
+            const response = await clients.axiosAPI.post('/BatchMapCandidateList.php', data);
+            return (response.data);
+        }
+        catch (error) {
+            return (error.response);
+        }
+    },
+    insertCandidateBatchMap: async (data) => {
+        try {
+            const response = await clients.axiosAPI.post('/CandidateBatchMapAdd.php', data);
+            return (response.data);
+        }
+        catch (error) {
+            return (error.response);
+        }
+    },
 }
