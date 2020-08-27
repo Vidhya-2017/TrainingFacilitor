@@ -48,7 +48,8 @@ class SkillList extends React.Component {
       newCurriculumName: '',
       showToast: false,
       updated_by: '',
-      toastMessage: ''
+      toastMessage: '',
+      skillId: ''
     }
     this.curriculumListVal = [];
     this.columnFields = [
@@ -219,12 +220,19 @@ class SkillList extends React.Component {
     }
     this.props.addCurriculum(reqObj).then(response => {
       if (response && response.errCode === 200) {
-
+        console.log('--response-', response);
         const myObj = {
-          id: response.AddedCurriculumId
-          // skill_name: response.AddedSkillName    
+          id: response.AddedCurriculumId.toString(),
+          skill_id: skillId,
+          name: newCurriculumName,
+          skill_name: newCurriculumName  
         }
+        console.log('--myObj-', myObj);
+        this.curriculumListVal = [...this.state.curriculumListVal, myObj];
+        console.log('--curriculumListVal-', this.curriculumListVal);
+
         const updatedItems = [...this.state.curriculumListVal, myObj];
+        console.log('--updatedItems-', updatedItems);
         this.setState({
           showAddCurriculumModal: false,
           curriculumListVal: updatedItems,
@@ -402,14 +410,14 @@ class SkillList extends React.Component {
               placeholder="Search Skills"
             >
               {skillListVal.map((skill) => (
-                <MenuItem value={skill.id}>{skill.skill_name}</MenuItem>
+                <MenuItem key={skill.id} value={skill.id}>{skill.skill_name}</MenuItem>
               ))}
             </Select>
           </FormControl>
           <ButtonGroup size="small"
             style={{
               'padding': '15px 0px 26px 5px',
-              'vertical-align': 'bottom'
+              'verticalAlign': 'bottom'
             }} >
             <Button onClick={(event) => this.setState({ showAddSkillModal: true, skillEdit: false })}><AddIcon fontSize="small" /></Button>
             <Button onClick={(event) => this.setState({ showAddSkillModal: true, skillEdit: true })}><CreateIcon fontSize="small" /></Button>
@@ -418,14 +426,14 @@ class SkillList extends React.Component {
           {/* </div> */}
           <MaterialTable
             title="Curriculum List"
-            columns={this.columnFields}
+            columns={curriculumListVal.length > 0 ? this.columnFields : []}
             data={curriculumListVal}
             style={{ boxShadow: 'none', border: 'solid 1px #ccc' }}
             options={{
               actionsColumnIndex: -1,
               pageSizeOptions: []
             }}
-            actions={[
+            actions={skillId ? [
               {
                 icon: 'add',
                 tooltip: 'Add Skill Name',
@@ -433,8 +441,8 @@ class SkillList extends React.Component {
                 onClick: (event) => this.setState({ showAddCurriculumModal: true })
               },
 
-            ]}
-            editable={{
+            ] : []}
+            editable={curriculumListVal.length > 0 ? {
               onRowUpdate: (newData, oldData) =>
                 new Promise((resolve) => {
                   resolve();
@@ -447,7 +455,7 @@ class SkillList extends React.Component {
                   resolve();
                   this.deleteCurriculum(oldData.id);
                 })
-            }}
+            } : {}}
           />
         </Paper>
       </div >
