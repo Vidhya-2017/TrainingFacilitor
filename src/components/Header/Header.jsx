@@ -18,7 +18,7 @@ class Header extends React.Component {
 
 : null }
   <Navbar className="header" expand="lg"  variant="dark">
-  <Navbar className="navbar-brand"><Link to="/home" className="navLinks_logo"> HCL</Link></Navbar>
+  <Navbar className="navbar-brand"><Link to="/home" className="navLinks_logo"> DiEvA</Link></Navbar>
   {localStorage.getItem('token') === "1"  && this.props !== undefined? 
   <>
   <Navbar.Toggle aria-controls="responsive-navbar-nav" />

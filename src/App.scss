@@ -1,6 +1,7 @@
 @import "~bootstrap/scss/bootstrap";
 .routerContent{
-  padding-bottom: 65px;
+  min-height: calc(100vh - 168px);
+  padding-bottom: 30px;
 }
 .App {
   text-align: center;
