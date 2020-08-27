@@ -90,7 +90,7 @@ class TrainingCreation extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      activeStep: 1,
+      activeStep: 0,
       errors: {},
       formValues: { ...trainingRegForm },
       showToast: false,

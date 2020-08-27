@@ -1,246 +1,458 @@
 import React from 'react';
 import MaterialTable from "material-table";
 import {
-    Paper, withStyles, Typography, Dialog, DialogTitle, TextField, DialogActions, DialogContent,
-    Button
+  Paper, withStyles, Typography, Dialog, DialogTitle, TextField, DialogActions, DialogContent,
+  Button, ButtonGroup
 } from '@material-ui/core';
 import moment from 'moment';
 import ToastBox from '../../../components/UI_Component/Toast/ToastBox';
 import '../scss/SkillList.scss'
+import DeleteIcon from '@material-ui/icons/Delete';
+import AddIcon from '@material-ui/icons/Add';
+import CreateIcon from '@material-ui/icons/Create';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
 
 const styles = (theme) => ({
-    iconRoot: {
-        color: '#6b6b6b'
-    },
-    paperRoot: {
-        // margin: theme.spacing(6, 18),
-        // padding: theme.spacing(4),
-        width: '70%',
-        margin: '20px auto',
-        padding: '10px 20px'
-    },
+  formControl: {
+    // margin: theme.spacing(1),
+    // minWidth: 120,
+    margin: '0 8px 8px',
+    minWidth: 200,
+  },
+  selectEmpty: {
+  },
+  iconRoot: {
+    color: '#6b6b6b'
+  },
+  paperRoot: {
+    // margin: theme.spacing(6, 18),
+    // padding: theme.spacing(4),
+    width: '70%',
+    margin: '20px auto',
+    padding: '10px 20px'
+  },
 });
 class SkillList extends React.Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            skillListVal: [],
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      skillListVal: [],
+      curriculumListVal: [],
+      showAddSkillModal: false,
+      showAddCurriculumModal: false,
+      newSkillName: '',
+      newCurriculumName: '',
+      showToast: false,
+      updated_by: '',
+      toastMessage: ''
+    }
+    this.curriculumListVal = [];
+    this.columnFields = [
+      {
+        title: "Curriculum Name",
+        field: "name",
+        validate: rowData => rowData.name !== '',
+      },
+    ]
+  }
+
+  componentDidMount() {
+    this.props.getSkillList().then((response) => {
+      if (response && response.errCode === 200) {
+        this.setState({
+          skillListVal: response.arrRes,
+          showToast: true,
+          toastMessage: "Skill Data loaded successfully"
+        })
+      } else {
+        this.setState({
+          skillListVal: [],
+          showToast: true,
+          toastMessage: "Error in loading Skill Data"
+        })
+      }
+    });
+
+    this.props.getCurriculumList().then((response) => {
+      if (response && response.errCode === 200) {
+        this.curriculumListVal = response.arrRes;
+        this.setState({
+          // curriculumListVal: response.arrRes,
+          showToast: true,
+          toastMessage: "Skill Data loaded successfully"
+        })
+      } else {
+        this.setState({
+          // curriculumListVal: [],
+          showToast: true,
+          toastMessage: "Error in loading Skill Data"
+        })
+      }
+    });
+  }
+
+  handleDelete = (id) => {
+    const filteredItems = this.state.skillListVal.filter((item) => item.id !== id);
+    const reqObj = {
+      id: id,
+      updated_by: 1
+    }
+    this.props.deleteSkillList(reqObj).then(response => {
+      if (response.errCode === 200) {
+        this.setState({
+          skillListVal: filteredItems,
+          showToast: true,
+          toastMessage: "Skill name deleted successfully",
+        });
+      }
+      else {
+        this.setState({
+          showToast: true,
+          toastMessage: "Error in Skill name deletion"
+        });
+      }
+
+    });
+  }
+
+  editSubmit = (newData, oldData) => {
+    console.log(newData);
+    console.log(this.state.skillListVal, "Val")
+    const reqObj = {
+      id: newData.id,
+      skill_name: newData.skill_name,
+      updated_by: this.state.updated_by
+    }
+    console.log(reqObj);
+    this.props.editSkillList(reqObj).then(response => {
+      if (response.errCode === 200) {
+        this.setState(prevState => ({
+          skillListVal: prevState.skillListVal.map(
+            el => el.id === newData.id ? { ...el, skill_name: newData.skill_name } : el
+          )
+        }))
+        this.setState({
+          showToast: true,
+          toastMessage: "Skill name updated successfully",
+        });
+      }
+      else if (response.errCode === 404) {
+        this.setState({
+          showToast: true,
+          toastMessage: " failed in updating Skill name "
+        });
+      }
+      else {
+        this.setState({
+          showToast: true,
+          toastMessage: "error in updating the Skill name"
+        });
+      }
+    });
+  }
+
+  handleModalClose = () => {
+    this.setState({ showAddSkillModal: false, newSkillName: '' })
+  }
+
+  handleCurriculumModalClose = () => {
+    this.setState({ showAddCurriculumModal: false, newCurriculumName: '' })
+  }
+
+  handleModalSubmit = (e) => {
+    const { newSkillName } = this.state;
+    const date = moment().format("YYYY-MM-DD");
+    const reqObj = {
+      skill_name: newSkillName,
+      created_by: 1,
+      updated_by: 1,
+      created_date: date
+    }
+    if (this.state.skillEdit === true) {
+      //   console.log(e)
+    } else {
+      this.props.addSkillList(reqObj).then(response => {
+        if (response && response.errCode === 200) {
+          const myObj = {
+            id: response.AddedSkillId,
+            skill_name: response.AddedSkillName
+          }
+          const updatedItems = [...this.state.skillListVal, myObj];
+          this.setState({
             showAddSkillModal: false,
-            newSkillName: '',
-            showToast: false,
-            updated_by: '',
-            toastMessage: ''
+            skillListVal: updatedItems,
+            showToast: true,
+            toastMessage: "Skill name added successfully!"
+          })
         }
-        this.columnFields = [
-            {
-                title: "Skill Name",
-                field: "skill_name",
-                validate: rowData => rowData.skill_name !== '',
-            },
-        ]
-    }
-
-    componentDidMount() {
-        this.props.getSkillList().then((response) => {
-            if (response && response.errCode === 200) {
-                this.setState({
-                    skillListVal: response.arrRes,
-                    showToast: true,
-                    toastMessage: "Skill Data loaded successfully"
-                })
-            } else {
-                this.setState({
-                    skillListVal: [],
-                    showToast: true,
-                    toastMessage: "Error in loading Skill Data"
-                })
-            }
-        });
-    }
-
-    handleDelete = (id) => {
-        const filteredItems = this.state.skillListVal.filter((item) => item.id !== id);
-        const reqObj = {
-            id: id,
-            updated_by: 1
+        else if (response && response.errCode === 404) {
+          this.setState({
+            showAddSkillModal: false,
+            showToast: true,
+            toastMessage: "Already Skill name exists!"
+          })
         }
-        this.props.deleteSkillList(reqObj).then(response => {
-            if (response.errCode === 200) {
-                this.setState({
-                    skillListVal: filteredItems,
-                    showToast: true,
-                    toastMessage: "Skill name deleted successfully",
-                });
-            }
-            else {
-                this.setState({
-                    showToast: true,
-                    toastMessage: "Error in Skill name deletion"
-                });
-            }
-
-        });
-    }
-
-    editSubmit = (newData, oldData) => {
-        console.log(newData);
-        console.log(this.state.skillListVal, "Val")
-        const reqObj = {
-            id: newData.id,
-            skill_name: newData.skill_name,
-            updated_by: this.state.updated_by
+        else {
+          this.setState({
+            showAddSkillModal: false,
+            showToast: true,
+            toastMessage: "error in adding aseessment name!"
+          })
         }
-        console.log(reqObj);
-        this.props.editSkillList(reqObj).then(response => {
-            if (response.errCode === 200) {
-                this.setState(prevState => ({
-                    skillListVal: prevState.skillListVal.map(
-                        el => el.id === newData.id ? { ...el, skill_name: newData.skill_name } : el
-                    )
-                }))
-                this.setState({
-                    showToast: true,
-                    toastMessage: "Skill name updated successfully",
-                });
-            }
-            else if (response.errCode === 404) {
-                this.setState({
-                    showToast: true,
-                    toastMessage: " failed in updating Skill name "
-                });
-            }
-            else {
-                this.setState({
-                    showToast: true,
-                    toastMessage: "error in updating the Skill name"
-                });
-            }
-        });
+      });
     }
+  };
 
-    handleModalClose = () => {
-        this.setState({ showAddSkillModal: false, newSkillName: '' })
+  handleCurriculumModalSubmit = () => {
+    const { newCurriculumName, skillId } = this.state;
+    const date = moment().format("YYYY-MM-DD");
+    const reqObj = {
+      skill_id: skillId,
+      curriculum_name: newCurriculumName,
+      created_by: 1,
+      updated_by: 1,
+      created_date: date
     }
+    this.props.addCurriculum(reqObj).then(response => {
+      if (response && response.errCode === 200) {
 
-    handleModalSubmit = () => {
-        const { newSkillName } = this.state;
-        const date = moment().format("YYYY-MM-DD");
-        const reqObj = {
-            skill_name: newSkillName,
-            created_by: 1,
-            updated_by: 1,
-            created_date: date
+        const myObj = {
+          id: response.AddedCurriculumId
+          // skill_name: response.AddedSkillName    
         }
-        this.props.addSkillList(reqObj).then(response => {
-            if (response && response.errCode === 200) {
-                const myObj = {
-                    id: response.AddedSkillId,
-                    skill_name: response.AddedSkillName
-                }
-                const updatedItems = [...this.state.skillListVal, myObj];
-                this.setState({
-                    showAddSkillModal: false,
-                    skillListVal: updatedItems,
-                    showToast: true,
-                    toastMessage: "Skill name added successfully!"
-                })
-            }
-            else if (response && response.errCode === 404) {
-                this.setState({
-                    showAddSkillModal: false,
-                    showToast: true,
-                    toastMessage: "Already Skill name exists!"
-                })
-            }
-            else {
-                this.setState({
-                    showAddSkillModal: false,
-                    showToast: true,
-                    toastMessage: "error in adding aseessment name!"
-                })
-            }
+        const updatedItems = [...this.state.curriculumListVal, myObj];
+        this.setState({
+          showAddCurriculumModal: false,
+          curriculumListVal: updatedItems,
+          showToast: true,
+          toastMessage: "Curriculum name added successfully!"
+        })
+      }
+      else if (response && response.errCode === 404) {
+        this.setState({
+          showAddCurriculumModal: false,
+          showToast: true,
+          toastMessage: "Already Skill name exists!"
+        })
+      }
+      else {
+        this.setState({
+          showAddCurriculumModal: false,
+          showToast: true,
+          toastMessage: "error in adding aseessment name!"
+        })
+      }
+    });
+  };
+
+  editCurriculum = (newData, oldData) => {
+    const reqObj = {
+      id: newData.id,
+      skill_id: newData.skill_id,
+      curriculum_name: newData.name,
+      updated_by: newData.updated_by
+    }
+
+    this.props.editCurriculum(reqObj).then(response => {
+      if (response.errCode === 200) {
+        this.setState(prevState => ({
+          curriculumListVal: prevState.curriculumListVal.map(
+            el => el.id === newData.id ? { ...el, name: newData.name } : el
+          )
+        }))
+        this.setState({
+          showToast: true,
+          toastMessage: "Skill name updated successfully",
         });
-    };
+      }
+      else if (response.errCode === 404) {
+        this.setState({
+          showToast: true,
+          toastMessage: " failed in updating Skill name "
+        });
+      }
+      else {
+        this.setState({
+          showToast: true,
+          toastMessage: "error in updating the Skill name"
+        });
+      }
+    });
+  }
+
+  deleteCurriculum = (id) => {
+    const filteredItems = this.state.curriculumListVal.filter((item) => item.id !== id);
+    const reqObj = {
+      id: id,
+      updated_by: 1
+    }
+    this.props.delCurriculum(reqObj).then(response => {
+      if (response.errCode === 200) {
+        this.setState({
+          curriculumListVal: filteredItems,
+          showToast: true,
+          toastMessage: "Curriculum name deleted successfully",
+        });
+      }
+      else {
+        this.setState({
+          showToast: true,
+          toastMessage: "Error in Skill name deletion"
+        });
+      }
+
+    });
+  }
+
+  handleSkillChange = (e) => {
+    const filteredCurriculum = this.curriculumListVal.filter((skill) =>
+      skill.skill_id === e.target.value
+    )
+
+    this.setState({ curriculumListVal: filteredCurriculum, skillId: e.target.value})
+  }
 
 
-    render() {
-        const { skillListVal, showAddSkillModal, newSkillName } = this.state;
-        const { classes } = this.props;
-        return (
-            <div className="SkillList_container">
-                <Dialog
-                    disableBackdropClick
-                    maxWidth="xs"
-                    fullWidth={true}
-                    open={showAddSkillModal}
-                    onClose={this.handleModalClose}
-                    aria-labelledby="Skill-Name"
-                >
-                    <DialogTitle id="Skill-Name">Add Skill Name</DialogTitle>
-                    <DialogContent >
-                        <div style={{ display: 'flex' }}>
-                            <Typography style={{ padding: '15px 15px 10px 0' }}>Skill Name:</Typography>
-                            <TextField
-                                autoFocus
-                                variant="outlined"
-                                margin="dense"
-                                placeholder="Skill Name"
-                                type="text"
-                                value={newSkillName}
-                                onChange={(e) => this.setState({ newSkillName: e.target.value })}
-                            />
-                        </div>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={this.handleModalClose} variant="contained" color="primary">
-                            Cancel
-                </Button>
-                        <Button onClick={this.handleModalSubmit} disabled={newSkillName === '' || newSkillName === null} variant="contained" color="primary">
-                            Submit
-                </Button>
-                    </DialogActions>
-                </Dialog>
-                <Paper className={classes.paperRoot} elevation={3}>
-                    <Typography variant="h4" className="text-center" gutterBottom>
-                        Skill List
-            </Typography>
-                    <MaterialTable
-                        title=""
-                        columns={this.columnFields}
-                        data={skillListVal}
-                        style={{ boxShadow: 'none', border: 'solid 1px #ccc' }}
-                        options={{
-                            actionsColumnIndex: -1,
-                            pageSizeOptions: []
-                        }}
-                        actions={[
-                            {
-                                icon: 'add',
-                                tooltip: 'Add Skill Name',
-                                isFreeAction: true,
-                                onClick: (event) => this.setState({ showAddSkillModal: true })
-                            },
+  render() {
+    const { skillListVal, showAddSkillModal, newSkillName, curriculumListVal, skillId,
+      newCurriculumName, showAddCurriculumModal } = this.state;
+    const { classes } = this.props;
 
-                        ]}
-                        editable={{
-                            onRowUpdate: (newData, oldData) =>
-                                new Promise((resolve) => {
-                                    resolve();
-                                    if (oldData) {
-                                        this.editSubmit(newData, oldData);
-                                    }
-                                }),
-                            onRowDelete: (oldData) =>
-                                new Promise((resolve) => {
-                                    resolve();
-                                    this.handleDelete(oldData.id);
-                                })
-                        }}
-                    />
-                </Paper>
+    return (
+      <div className="SkillList_container">
+        <Dialog
+          disableBackdropClick
+          maxWidth="xs"
+          fullWidth={true}
+          open={showAddSkillModal}
+          onClose={this.handleModalClose}
+          aria-labelledby="Skill-Name"
+        >
+          <DialogTitle id="Skill-Name">Add Skill Name</DialogTitle>
+          <DialogContent >
+            <div style={{ display: 'flex' }}>
+              <Typography style={{ padding: '15px 15px 10px 0' }}>Skill Name:</Typography>
+              <TextField
+                autoFocus
+                variant="outlined"
+                margin="dense"
+                placeholder="Skill Name"
+                type="text"
+                value={newSkillName}
+                onChange={(e) => this.setState({ newSkillName: e.target.value })}
+              />
             </div>
-        )
-    }
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={this.handleModalClose} variant="contained" color="primary">
+              Cancel
+                </Button>
+            <Button onClick={this.handleModalSubmit} disabled={newSkillName === '' || newSkillName === null} variant="contained" color="primary">
+              Submit
+                </Button>
+          </DialogActions>
+        </Dialog>
+        <Dialog
+          disableBackdropClick
+          maxWidth="xs"
+          fullWidth={true}
+          open={showAddCurriculumModal}
+          onClose={this.handleCurriculumModalClose}
+          aria-labelledby="Curriculum-Name"
+        >
+          <DialogTitle id="Curriculum-Name">Add Curriculum Name</DialogTitle>
+          <DialogContent >
+            <div style={{ display: 'flex' }}>
+              <Typography style={{ padding: '15px 15px 10px 0' }}>Curriculum Name:</Typography>
+              <TextField
+                autoFocus
+                variant="outlined"
+                margin="dense"
+                placeholder="Curriculum Name"
+                type="text"
+                value={newCurriculumName}
+                onChange={(e) => this.setState({ newCurriculumName: e.target.value })}
+              />
+            </div>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={this.handleCurriculumModalClose} variant="contained" color="primary">
+              Cancel
+                </Button>
+            <Button onClick={this.handleCurriculumModalSubmit} disabled={newCurriculumName === '' || newCurriculumName === null} variant="contained" color="primary">
+              Submit
+                </Button>
+          </DialogActions>
+        </Dialog>
+        <Paper className={classes.paperRoot} elevation={3}>
+          <Typography variant="h4" className="text-center" gutterBottom>
+            Skill List
+            </Typography>
+          {/* <div> */}
+          <FormControl variant="outlined" className={classes.formControl}>
+            <InputLabel id="demo-simple-select-label">Select Skill</InputLabel>
+            <Select
+              value={skillId}
+              onChange={this.handleSkillChange}
+              label="Search Skills"
+              placeholder="Search Skills"
+            >
+              {skillListVal.map((skill) => (
+                <MenuItem value={skill.id}>{skill.skill_name}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+          <ButtonGroup size="small"
+            style={{
+              'padding': '15px 0px 26px 5px',
+              'vertical-align': 'bottom'
+            }} >
+            <Button onClick={(event) => this.setState({ showAddSkillModal: true, skillEdit: false })}><AddIcon fontSize="small" /></Button>
+            <Button onClick={(event) => this.setState({ showAddSkillModal: true, skillEdit: true })}><CreateIcon fontSize="small" /></Button>
+            <Button><DeleteIcon fontSize="small" /></Button>
+          </ButtonGroup>
+          {/* </div> */}
+          <MaterialTable
+            title="Curriculum List"
+            columns={this.columnFields}
+            data={curriculumListVal}
+            style={{ boxShadow: 'none', border: 'solid 1px #ccc' }}
+            options={{
+              actionsColumnIndex: -1,
+              pageSizeOptions: []
+            }}
+            actions={[
+              {
+                icon: 'add',
+                tooltip: 'Add Skill Name',
+                isFreeAction: true,
+                onClick: (event) => this.setState({ showAddCurriculumModal: true })
+              },
+
+            ]}
+            editable={{
+              onRowUpdate: (newData, oldData) =>
+                new Promise((resolve) => {
+                  resolve();
+                  if (oldData) {
+                    this.editCurriculum(newData, oldData);
+                  }
+                }),
+              onRowDelete: (oldData) =>
+                new Promise((resolve) => {
+                  resolve();
+                  this.deleteCurriculum(oldData.id);
+                })
+            }}
+          />
+        </Paper>
+      </div >
+    )
+  }
 }
 
 

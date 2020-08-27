@@ -8,14 +8,17 @@ const mapDispatchToProps = (dispatch) => {
     getSkillList: SkillAction.getSkillList,
     deleteSkillList: SkillAction.deleteSkillList,
     addSkillList: SkillAction.addSkillList,
-    editSkillList: SkillAction.editSkillList
+    editSkillList: SkillAction.editSkillList,
+    getCurriculumList: SkillAction.getCurriculumList,
+    addCurriculum: SkillAction.addCurriculum,
+    editCurriculum: SkillAction.editCurriculum,
+    delCurriculum: SkillAction.delCurriculum,
   };
 };
 
 
 const mapStateToProps = (state) => {
   return {
-    SkillDetails: state
   }
 }
 

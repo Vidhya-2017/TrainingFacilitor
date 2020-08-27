@@ -38,7 +38,40 @@ export const SkillAction = {
       return (error.response);
     }
   },
-
-
-
+  addCurriculum: async (data) => {
+    try {
+      const response = await clients.axiosAPI.post('/AddCurriculum.php', data);
+      return (response.data);
+    }
+    catch (error) {
+      return (error.response);
+    }
+  },
+  getCurriculumList: async (data) => {
+    try {
+      const response = await clients.axiosAPI.post('/ListCurriculum.php', data);
+      return (response.data);
+    }
+    catch (error) {
+      return (error.response);
+    }
+  },
+  editCurriculum: async (data) => {
+    try {
+      const response = await clients.axiosAPI.post('/EditCurriculum.php', data);
+      return (response.data);
+    }
+    catch (error) {
+      return (error.response);
+    }
+  },
+  delCurriculum: async (data) => {
+    try {
+      const response = await clients.axiosAPI.post('/DeleteCurriculum.php', data);
+      return (response.data);
+    }
+    catch (error) {
+      return (error.response);
+    }
+  }
 }

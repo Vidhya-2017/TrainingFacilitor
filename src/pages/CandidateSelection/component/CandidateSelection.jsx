@@ -47,9 +47,6 @@ const styles = (theme) => ({
     width: '100%',
     maxWidth: 360,
   },
-  close: {
-    padding: theme.spacing.unit / 2,
-  },
   input: {
     marginLeft: 8,
     flex: 1,
@@ -97,7 +94,7 @@ const styles1 = theme => ({
   },
   iconVariant: {
     opacity: 0.9,
-    marginRight: theme.spacing.unit,
+    marginRight: theme.spacing(1),
   },
   message: {
     display: 'flex',
@@ -124,7 +121,6 @@ function MySnackbarContent(props) {
           key="close"
           aria-label="Close"
           color="inherit"
-          className={classes.close}
           onClick={onClose}
         >
           <CloseIcon className={classes.icon} />
@@ -159,10 +155,9 @@ class CandidateSelection extends Component {
       candidatesList: [],
       snackbaropen: false,
       snackmsg: '',
-      snackvariant: '',
+      snackvariant: 'success',
       query: '',
       selectall: false,
-      checked: [],
       left: [],
       right: []
     }

@@ -47,9 +47,6 @@ const styles = (theme) => ({
     width: '100%',
     maxWidth: 360,
   },
-  close: {
-    padding: theme.spacing.unit / 2,
-  },
   input: {
     marginLeft: 8,
     flex: 1,
@@ -97,7 +94,7 @@ const styles1 = theme => ({
   },
   iconVariant: {
     opacity: 0.9,
-    marginRight: theme.spacing.unit,
+    marginRight: theme.spacing(1),
   },
   message: {
     display: 'flex',
