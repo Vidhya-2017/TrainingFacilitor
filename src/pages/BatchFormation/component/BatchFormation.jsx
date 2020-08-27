@@ -1,67 +1,200 @@
-import React from 'react';
-import { render } from 'react-dom';
-import { Modal, Button, InputGroup, FormControl, ListGroup, Form } from 'react-bootstrap';
-import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Buttons from '../../../components/UI_Component/Buttons/Buttons';
-import Textbox from '../../../components/UI_Component/Textbox/Textbox';
+import React, { Component } from 'react'
+import { Paper, Typography, List, Grid, ListItem, ListItemIcon, Checkbox, ListItemText, IconButton, withStyles } from '@material-ui/core';
+import Snackbar from '@material-ui/core/Snackbar';
+import CloseIcon from '@material-ui/icons/Close';
+import Button from '@material-ui/core/Button';
 import SelectOne from '../../../components/UI_Component/Select/SelectOne';
-
 import '../scss/BatchFormation.scss'
 
-class BatchFormation extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      startDate: new Date(),
-      batchName: '',
-      location: '',
-      batchNM: '',
-      sme: '',
-      startDate: new Date(),
-      endDate: new Date(),
-      errors: {},
-      eventSelected: null,
-      EventDetailsList: [],
-      batchSelected: null,
-      batchDetailsList: [],
-      showUserModal: false,
-      newBatchName: '',
-      newBatchCount: '',
-      candidateList: [],
-      query: ''
-    }
-    this.candidateList = [];
+import green from '@material-ui/core/colors/green';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import ErrorIcon from '@material-ui/icons/Error';
+import SnackbarContent from '@material-ui/core/SnackbarContent';
+import PropTypes from 'prop-types';
+import classNames from 'classnames';
+
+
+import Divider from "@material-ui/core/Divider";
+import Card from "@material-ui/core/Card";
+import CardHeader from "@material-ui/core/CardHeader";
+
+const variantIcon = {
+  success: CheckCircleIcon,
+  error: ErrorIcon,
+};
+
+const styles = (theme) => ({
+  paperRoot: {
+
+    width: "80%",
+    margin: '20px auto',
+    padding: '10px 20px'
+
+  },
+
+  textField: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+  },
+  backButton: {
+    marginRight: theme.spacing(1),
+  },
+  gridRoot: {
+    flexGrow: 1,
+    marginTop: 20,
+  },
+  listRoot: {
+    width: '100%',
+    maxWidth: 360,
+  },
+  close: {
+    padding: theme.spacing.unit / 2,
+  },
+  input: {
+    marginLeft: 8,
+    flex: 1,
+  },
+  cardHeader: {
+    padding: theme.spacing(1, 2),
+
+  },
+  list: {
+    /*  width: 200, */
+    height: 300,
+    backgroundColor: theme.palette.background.paper,
+    overflow: "auto"
+  },
+  button: {
+    margin: theme.spacing(1, 1),
+    justify: "right",
+  },
+  bottomBtn: {
+    justifyContent: 'flex-end',
+    display: 'flex',
+    marginTop: 10
+  },
+  selectOne: {
+    display: 'flex',
+  },
+  trainingTitle: {
+    padding: "15px 20px"
   }
+});
+
+
+const styles1 = theme => ({
+  success: {
+    backgroundColor: green[600],
+  },
+  error: {
+    backgroundColor: theme.palette.error.dark,
+  },
+  info: {
+    backgroundColor: theme.palette.primary.dark,
+  },
+  icon: {
+    fontSize: 20,
+  },
+  iconVariant: {
+    opacity: 0.9,
+    marginRight: theme.spacing.unit,
+  },
+  message: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+});
+
+function MySnackbarContent(props) {
+  const { classes, className, message, onClose, variant, ...other } = props;
+  const Icon = variantIcon[variant];
+
+  return (
+    <SnackbarContent
+      className={classNames(classes[variant], className)}
+      aria-describedby="client-snackbar"
+      message={
+        <span id="client-snackbar" className={classes.message}>
+          <Icon className={classNames(classes.icon, classes.iconVariant)} />
+          {message}
+        </span>
+      }
+      action={[
+        <IconButton
+          key="close"
+          aria-label="Close"
+          color="inherit"
+          className={classes.close}
+          onClick={onClose}
+        >
+          <CloseIcon className={classes.icon} />
+        </IconButton>,
+      ]}
+      {...other}
+    />
+  );
+}
+
+MySnackbarContent.propTypes = {
+  classes: PropTypes.object.isRequired,
+  className: PropTypes.string,
+  message: PropTypes.node,
+  onClose: PropTypes.func,
+  variant: PropTypes.oneOf(['success', 'warning', 'error', 'info']).isRequired,
+};
+
+const MySnackbarContentWrapper = withStyles(styles1)(MySnackbarContent);
+
+
+class CandidateSelection extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      errors: {},
+      trainingList: [],
+      selectedTraining: null,
+      checked: [],
+      newChecked: [],
+      candidatesList: [],
+      batchDetailsList: [],
+      snackbaropen: false,
+      snackmsg: '',
+      snackvariant: '',
+      query: '',
+      selectall: false,
+      checked: [],
+      left: [],
+      right: [],
+      batchSelected: null,
+    }
+    this.candidatesList = [];
+  }
+
   componentDidMount() {
-    this.props.getTrainingList().then((response) => {
-      if (response && response.arrRes) {
-        const eventList = response.arrRes.map(list => {
+    this.getTrainingList();
+  }
+
+  getTrainingList = () => {
+    this.props.getTrainingList().then(response => {
+      if (response && response.errCode === 200) {
+        const trainingList = response.arrRes.map(list => {
           return {
             value: list.id,
-            label: list.training_name,
-
+            id: list.id,
+            label: list.training_name
           }
         });
-        this.setState({ EventDetailsList: eventList, loading: false });
+        this.setState({ trainingList });
       } else {
-        this.setState({ showToast: true, toastMsg: 'Something went Wrong. Please try again later.' })
+        this.setState({ snackbaropen: true, snackmsg: 'Something went Wrong. Please try again later', snackvariant: "error" })
       }
-    });
+    })
   }
 
-  onChangeTraining = (eventSelected) => {
-    console.log("Onchange", eventSelected.target);
-    this.candidateList = [];
-    this.setState({ eventSelected: eventSelected.target, batchDetailsList: [], batchSelected: null, candidateList: [] });
-    const tID = eventSelected.target.value;
-    this.getBatchList(tID);
-  }
-  getBatchList = (id) => {
-    const reqObj = {
-      training_id: id
-    };
+  selectTrainingChange = (selectedTraining) => {
+    this.setState({ selectedTraining: selectedTraining.target, candidatesList: [], batchSelected: null });
+    const reqObj = { training_id: selectedTraining.target.value };
     this.props.getBatchList(reqObj).then((response) => {
       if (response && response.errCode === 200) {
         const batchList = response.arrRes.map(list => {
@@ -70,258 +203,337 @@ class BatchFormation extends React.Component {
             label: list.batch_name
           }
         });
-        this.setState({ batchDetailsList: batchList});
+        this.setState({ batchDetailsList: batchList, candidatesList: this.candidatesList, selectall: false, left: [], right: [] });
       } else {
-        this.setState({ showToast: true, toastMsg: 'Something went Wrong. Please try again later.' })
-      }
-    });
-  }
-
-  addBatchName = () => {
-    this.setState({ showUserModal: true });
-  }
-  handleClose = () => this.setState({ showUserModal: false });
-
-  batchNameOnChange = (e) => {
-    this.setState({ newBatchName: e.target.value })
-  }
-  batchCntOnChange = (e) => {
-    this.setState({ newBatchCount: e.target.value })
-  }
-  handleNewBatchSubmit = () => {
-    const { newBatchName, eventSelected, newBatchCount } = this.state;
-    console.log('EventName', eventSelected);
-
-    const reqObj = {
-      training_id: eventSelected.value,
-      batch_name: newBatchName,
-      batch_count: newBatchCount,
-      created_by: 1
-    }
-    console.log('-RequestObject-', reqObj);
-
-    this.props.addBatchName(reqObj).then((response) => {
-      if (response && response.errCode === 200) {
-        console.log("--Response--", response.Result);
-        this.getBatchList(eventSelected.value);
-        this.setState({ showUserModal: false });
-      }
-    });
-
-  }
-
-  onChangeBatch = (batchSelected) => {
-
-    this.setState({ batchSelected: batchSelected.target });
-
-    const reqObj = {
-      training_id: this.state.eventSelected.value,
-      batch_id: batchSelected.target.value
-    }
-    console.log("---OnBatchChange---", reqObj);
-
-    this.props.getCandidateMapList(reqObj).then((response) => {
-      if (response && response.errCode === 200) {
-
-        const candidateList = response.arrRes;
-        let assignedCan = candidateList.filter(batch => batch.batch_id > 0);
-        this.candidateList = candidateList;
-        this.setState({ candidateList });
-      }
-    });
-
-
-  }
-
-  handleCandidateSelection = (e, list) => {
-    const { candidateList, batchSelected } = this.state;
-    const candidateIndex = candidateList && candidateList.findIndex((lst) => list.id === lst.id);
-    const updatedcandidateList = [...candidateList];
-    updatedcandidateList[candidateIndex].batch_id = e.target.checked ? batchSelected.value : '';
-    this.setState({
-      candidateList: updatedcandidateList
-    });
-  }
-  submitForm = (e) => {
-    const { eventSelected, batchSelected } = this.state;
-    const reqObj = {
-      batch_id: batchSelected.value,
-      candidate_ids: this.CandidateIDs,
-      // EventID: eventSelected.value,
-      created_by: 1,
-
-    }
-
-    console.log(this.CandidateIDs, 'reqObj---', reqObj);
-
-    this.props.insertCandidateBatchMap(reqObj).then((response) => {
-      if (response && response.errCode === 200) {
-        console.log("SUBMIT", response);
+        this.setState({ snackbaropen: true, snackmsg: 'Something went Wrong. Please try again later', snackvariant: "error" })
       }
     })
   }
 
+  onChangeBatch = (batchSelected) => {
+    this.setState({ batchSelected: batchSelected.target });
+    const reqObj = {
+      training_id: this.state.selectedTraining.value,
+      batch_id: batchSelected.target.value
+    }
+
+    this.props.getCandidateMapList(reqObj).then((response) => {
+      if (response && response.errCode === 200) {
+        this.candidatesList = [...response.batchCandidate, ...response.nonBatchCnadidate];
+        this.setState({
+          candidatesList: this.candidatesList, selectall: false, left: response.nonBatchCnadidate, right: response.batchCandidate
+        });
+      } else {
+        this.setState({ snackbaropen: true, snackmsg: 'Something went Wrong. Please try again later', snackvariant: "error" })
+      }
+    });
+  }
+
+  handleCandidateSelection = (e, list) => {
+    const { candidatesList, selectedTraining } = this.state;
+    const candidateIndex = candidatesList && candidatesList.findIndex((lst) => list.id === lst.id);
+    const updatedcandidateList = [...candidatesList];
+    updatedcandidateList[candidateIndex].training_id = e.target.checked ? selectedTraining.value : '';
+    this.setState({
+      candidatesList: updatedcandidateList
+    });
+  }
+
+
+  insertCandidates = () => {
+    const { candidatesList, right, batchSelected } = this.state;
+    const candidateIDs = [];
+    right.forEach((candidate) => {
+      if (candidate.id !== '' && candidate.id !== null) {
+        candidateIDs.push(candidate.id)
+      }
+    });
+    const user_id = 1;
+    if (candidateIDs.length !== 0) {
+
+      const reqObj = {
+        batch_id: batchSelected.value,
+        candidate_ids: candidateIDs,
+        created_by: 1,
+      }
+
+      this.props.insertCandidateBatchMap(reqObj).then((response) => {
+        if (response && response.errCode === 200) {
+          this.setState({ candidatesList: [], selectall: false, batchSelected: null, selectedTraining: null, left: [], right: [], snackbaropen: true, snackmsg: "Candidates Assigned Successfully", snackvariant: "success" });
+        } else {
+          this.setState({ candidatesList: [], selectall: false, batchSelected: null, selectedTraining: null, left: [], right: [], snackbaropen: true, snackmsg: 'Something went Wrong. Please try again later.', snackvariant: "error" })
+        }
+      })
+
+    } else {
+      this.setState({ snackbaropen: true, snackmsg: 'Please Select Atleast One Candidate.', snackvariant: "error" })
+    }
+  }
+
   searchCandidate = (e) => {
-    console.log('searchCandidate---', this.candidateList);
     const query = e.target.value;
     const lowerCaseQuery = query.toLowerCase();
     const searchedData = (query
-      ? this.candidateList.filter((list) =>
+      ? this.candidatesList.filter((list) =>
         list['first_name']
           .toLowerCase()
           .includes(lowerCaseQuery)
       )
-      : this.candidateList);
-    this.setState({ candidateList: searchedData, query });
+      : this.candidatesList);
+    this.setState({ candidatesList: searchedData, query });
   }
 
 
+  handleClick = () => {
+    this.setState({ snackbaropen: true });
+  };
+
+  handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    this.setState({ snackbaropen: false });
+  };
+
+
+  not = (a, b) => {
+    return a.filter((value) => b.indexOf(value) === -1);
+  };
+
+  intersection = (a, b) => {
+    return a.filter((value) => b.indexOf(value) !== -1);
+  };
+
+  union = (a, b) => {
+    return [...a, ...this.not(b, a)];
+  };
+
+  numberOfChecked = (items) =>
+    this.intersection(this.state.checked, items).length;
+
+  handleToggle = (value) => () => {
+    const currentIndex = this.state.checked.indexOf(value);
+    const newChecked = [...this.state.checked];
+
+    if (currentIndex === -1) {
+      newChecked.push(value);
+    } else {
+      newChecked.splice(currentIndex, 1);
+    }
+    this.setState({
+      checked: newChecked
+    });
+  };
+
+  handleToggleAll = (items) => () => {
+    if (this.numberOfChecked(items) === items.length) {
+      // setChecked();
+      this.setState({
+        checked: this.not(this.state.checked, items)
+      });
+    } else {
+      this.setState({
+        checked: this.union(this.state.checked, items)
+      });
+    }
+  };
+
+  handleCheckedRight = () => {
+
+    this.leftChecked[0].training_id = this.state.selectedTraining.value;
+    this.setState({
+      right: this.state.right.concat(this.leftChecked),
+      left: this.not(this.state.left, this.leftChecked),
+      checked: this.not(this.state.checked, this.leftChecked)
+    });
+  };
+
+  handleCheckedLeft = () => {
+    this.setState({
+      left: this.state.left.concat(this.rightChecked),
+      right: this.not(this.state.right, this.rightChecked),
+      checked: this.not(this.state.checked, this.rightChecked)
+    });
+  };
+
+
+  customList = (title, items) => {
+    const { classes } = this.props;
+    const { checked } = this.state;
+
+    return (
+      <Card>
+        <CardHeader
+          className={classes.cardHeader}
+          avatar={
+            <Checkbox
+              onClick={this.handleToggleAll(items)}
+              checked={
+                this.numberOfChecked(items) === items.length &&
+                items.length !== 0
+              }
+              indeterminate={
+                this.numberOfChecked(items) !== items.length &&
+                this.numberOfChecked(items) !== 0
+              }
+              disabled={items.length === 0}
+              inputProps={{ "aria-label": "all items selected" }}
+            />
+          }
+          title={title}
+          subheader={`Count: ${items.length} `}
+        />
+        <Divider />
+        <List className={classes.list} dense component="div" role="list">
+          {items.map((value) => {
+            const labelId = `transfer-list-all-item-${value}-label`;
+
+            return (
+              <ListItem
+                key={value.id}
+                role="listitem"
+                button
+                onClick={this.handleToggle(value)}
+              >
+                <ListItemIcon>
+                  <Checkbox
+                    checked={checked.indexOf(value) !== -1}
+                    tabIndex={-1}
+                    disableRipple
+                    inputProps={{ "aria-labelledby": labelId }}
+                  />
+                </ListItemIcon>
+                <ListItemText id={labelId} primary={value.first_name} />
+              </ListItem>
+            );
+          })}
+          <ListItem />
+        </List>
+      </Card>
+    );
+  };
+
   render() {
-    const { eventSelected, EventDetailsList, query, batchSelected, batchDetailsList, showUserModal, newBatchName, newBatchCount, candidateList } = this.state;
+    const { classes, variant } = this.props;
+    const { trainingList, selectedTraining, candidatesList, snackbaropen, snackmsg, snackvariant, query, selectall, checked, left, right, batchSelected, batchDetailsList } = this.state;
+
+    this.leftChecked = this.intersection(checked, left);
+    this.rightChecked = this.intersection(checked, right);
+
     this.CandidateIDs = [];
-    candidateList.forEach(list => {
-      if (list.batch_id !== null && list.batch_id !== '') {
+    candidatesList.forEach(list => {
+      if (list.training_id !== null && list.training_id !== '') {
         this.CandidateIDs.push(list.id);
       }
     })
 
+
     return (
-      <div className="batchFormation_container">
-        <section className="blue_theme">
-          <Container>
-            <Row>
-              <Col xs={12} md={12} lg="12" >
-                <h2 className="text-center">Batch Formation
-                <i onClick={this.addBatchName} className="addUser fa fa-plus"></i></h2>
-              </Col>
-            </Row>
+      <div className="exTraining_container">
+        {/*   <Grid item > */}
+        <Paper className={classes.paperRoot} elevation={3}>
+          <Typography variant="h4" className="text-center" gutterBottom>
+            Batch Formation
+          </Typography>
+          <div className={classes.selectOne}>
+            <Typography variant="h6" className={classes.trainingTitle}> Training List </Typography >
+            <Grid item xs={12} sm={4} md={3}>
+              <SelectOne
+                fieldLabel=""
+                id="training"
+                name="training"
+                placeholder="Training"
+                value={selectedTraining ? selectedTraining : null}
+                options={trainingList}
+                onChange={this.selectTrainingChange}
+                errorMessage={this.state.errors.training === "" ? null : this.state.errors.training}
 
-            <Row>
-              <Col > Training list   </Col>
-              <Col  >
-                <SelectOne
-                  value={eventSelected}
-                  onChange={this.onChangeTraining}
-                  options={EventDetailsList}
-                  defaultValue={eventSelected}
-                  placeholder="Select Training"
-                  aria-label="training"
-                  aria-describedby="training"
-                  id="training"
-                />
-              </Col>
-            </Row>
-            <Row>
-              <Col>Batch list</Col>
-              <Col>
-                <SelectOne
-                  value={batchSelected}
-                  onChange={this.onChangeBatch}
-                  options={batchDetailsList}
-                  defaultValue={batchSelected}
-                  placeholder="Select Batch"
-                  aria-label="batch"
-                  aria-describedby="batch"
-                  id="batch"
-                />
-              </Col>
-              {/* {eventSelected && <Col>
-                <Buttons
-                  className="float-right"
-                  value="Add"
-                  onClick={this.addBatchName} />
+              />
+            </Grid>
+            <Typography variant="h6" className={classes.trainingTitle}> Batch list </Typography >
+            <Grid item xs={12} sm={4} md={3}>
+              <SelectOne
+                value={batchSelected}
+                onChange={this.onChangeBatch}
+                options={batchDetailsList}
+                defaultValue={batchSelected}
+                placeholder="Select Batch"
+                aria-label="batch"
+                aria-describedby="batch"
+                id="batch"
+              />
+            </Grid>
+          </div>
 
-              </Col>} */}
-            </Row>
-            {this.candidateList && this.candidateList.length > 0 && <div>
-              <p className='memberLabel'>Candidate List: Count - {this.CandidateIDs.length} </p>
-              <InputGroup className="mb-3">
-                <FormControl
-                  placeholder="Search Candidates"
-                  aria-label="Username"
-                  aria-describedby="basic-addon1"
-                  value={query}
-                  onChange={this.searchCandidate}
-                />
-                <InputGroup.Append>
-                  <InputGroup.Text id="basic-addon1" >
-                    <i className="fa fa-search" aria-hidden="true"></i>
-                  </InputGroup.Text>
-                </InputGroup.Append>
-              </InputGroup>
-            </div>}
+          {selectedTraining && batchSelected &&
+            <Grid
+              container
+              spacing={4}
+              justify="center"
+              alignItems="center"
+              className={classes.gridRoot}
+            >
+              <Grid item xs={5} sm={5}>{this.customList("Non-Registered", left)}</Grid>
+              <Grid item>
+                <Grid container direction="column" alignItems="center">
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    className={classes.button}
+                    onClick={this.handleCheckedRight}
+                    disabled={this.leftChecked.length === 0}
+                    aria-label="move selected right"
+                  >
+                    &gt;
+                    </Button>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    className={classes.button}
+                    onClick={this.handleCheckedLeft}
+                    disabled={this.rightChecked.length === 0}
+                    aria-label="move selected left"
+                  >
+                    &lt;
+                    </Button>
+                </Grid>
+              </Grid>
+              <Grid item xs={5} sm={5}>{this.customList("Registered", right)}</Grid>
+            </Grid>
 
-            {candidateList && candidateList.length > 0 && <div className="candidateList">
-              <ListGroup className="userListGroup">
-                {candidateList.map(list =>
-                  <ListGroup.Item key={list.id} className="userList">
-                    <div className="candidateDetails">
-                      <p>{list.first_name} {list.last_name} </p>
-                      {/*   <p className="email">{list.SkillName}</p> */}
-                    </div>
-                    <Form.Check
-                      type="checkbox"
-                      size="lg"
-                      id={list.id}
-                      checked={list.batch_id !== null && list.batch_id !== ''}
-                      label=""
-                      className='toggleUser'
-                      onChange={(e) => this.handleCandidateSelection(e, list)}
-                    />
-                  </ListGroup.Item>
-                )}
-              </ListGroup>
-            </div>}
-            {candidateList && candidateList.length > 0 && <Row>
-              <Col>
-                <Buttons
-                  className="submitBtn float-right"
-                  value="Submit"
-                  disabled={this.CandidateIDs.length === 0}
-                  onClick={this.submitForm} />
-              </Col>
-            </Row>}
-          </Container>
-        </section>
-        <Modal className='eventModal' show={showUserModal} centered onHide={this.handleClose}>
-          <Modal.Header closeButton>
-            <Modal.Title>Batch Name</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <Textbox
-              value={newBatchName}
-              fieldLabel="Batch Name"
-              id="batchName"
-              type="text"
-              placeholder="Batch Name"
-              name="batchName"
-              onChange={this.batchNameOnChange}
+          }
+
+          {selectedTraining && batchSelected &&
+            <div className={classes.bottomBtn}>
+              <Button variant="contained" color="primary" onClick={this.insertCandidates} >
+                Submit
+                </Button>
+            </div>
+
+          }
+          <Snackbar
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left',
+            }}
+            open={snackbaropen}
+            autoHideDuration={3000}
+            onClose={this.handleClose}
+          >
+            <MySnackbarContentWrapper
+              onClose={this.handleClose}
+              variant={snackvariant}
+              message={snackmsg}
             />
-            <Textbox
-              fieldLabel="Count"
-              value={newBatchCount}
-              id="count"
-              type="number"
-              placeholder="Count"
-              name="count"
-              onChange={this.batchCntOnChange}
-            />
-          </Modal.Body>
-          <Modal.Footer>
-            <Buttons
-              className="float-right"
-              value="Submit"
-              disabled={newBatchName.length === 0}
-              onClick={this.handleNewBatchSubmit}
-            />
+          </Snackbar>
+        </Paper>
+        {/* </Grid> */}
 
-          </Modal.Footer>
-        </Modal>
       </div>
-
-    )
+    );
   }
 }
 
 
-export default BatchFormation;
+export default withStyles(styles)(CandidateSelection);
