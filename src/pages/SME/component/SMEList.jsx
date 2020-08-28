@@ -92,7 +92,6 @@ class SMEList extends React.Component {
 
     componentDidMount() {
         this.props.getSMEList().then((response) => {
-            console.log(response.arrRes);
             if (response && response.arrRes) {
                 this.setState({
                     smeListVal: response.arrRes,
@@ -158,9 +157,6 @@ class SMEList extends React.Component {
     editSubmit = (newData, oldData) => {
 
         const skillIds = newData.SkillName.map(skill => skill.id);
-        console.log(skillIds);
-        console.log(this.state.smeListVal);
-        console.log(newData);
         const reqObj = {
             id: newData.id,
             name: newData.name,
@@ -170,11 +166,9 @@ class SMEList extends React.Component {
             phone_number: newData.phone_number,
             updated_by: "1"
         }
-
-        console.log(reqObj);
+        const filteredItems = this.state.skillList.filter(skill => reqObj.skills.includes(skill.id))
+        const skillNames = filteredItems.map(item => item.label);
         this.props.editSMEList(reqObj).then(response => {
-            console.log(this.state.smeListVal);
-            console.log(response);
             if (response && response.errCode === 200) {
                 this.setState(prevState => ({
                     smeListVal: prevState.smeListVal.map(
@@ -183,7 +177,7 @@ class SMEList extends React.Component {
                             name: newData.name,
                             email: newData.email,
                             sap_id: newData.sap_id,
-                            SkillName: response.skill_name,
+                            SkillName: skillNames.toString(),
                             phone_number: newData.phone_number
                         } : el
                     )
@@ -213,7 +207,6 @@ class SMEList extends React.Component {
 
     handleModalSubmit = () => {
         const { formValues } = this.state;
-        console.log(formValues);
         const reqObj = {
             name: formValues.smeName.value,
             sapid: formValues.sapId.value,
@@ -223,20 +216,12 @@ class SMEList extends React.Component {
             created_by: 1,
             updated_by: 1
         }
-        
-
-      
+        const filteredItems = this.state.skillList.filter(skill => reqObj.skills.includes(skill.id))
+        const skillNames = filteredItems.map(item => item.label);
         this.props.addSMEList(reqObj).then(response => {
-            console.log(response);
-            console.log(this.state.smeListVal);
             if (response && response.errCode === 200) {
-                const skillNames = [];
-                this.state.skillList.forEach(list => {
-                    if(formValues.skills.value.includes(list.id)) {
-                        skillNames.push(list.label)
-                    }
-                })
                 const myObj = {
+                    id: response.arrRes,
                     name: formValues.smeName.value,
                     sap_id: formValues.sapId.value,
                     phone_number: formValues.contactNumber.value,
@@ -275,7 +260,7 @@ class SMEList extends React.Component {
     };
 
     handleModalClose = () => {
-        this.setState({ showAddSMEModal: false, SmeName: '' })
+        this.setState({ showAddSMEModal: false, formValues: { ...smeRegForm } })
     }
 
     inputFieldChange = (e) => {
@@ -317,7 +302,7 @@ class SMEList extends React.Component {
                 isValid = pattern.test(value) && isValid
             }
             if (inputName === "sapId") {
-                const pattern = RegExp(/^([+]\d{2})?\d{8}$/);
+                const pattern = RegExp(/^\d{7}|\d{8}$/);
                 isValid = pattern.test(value) && isValid
             }
             if (inputName === "contactNumber") {
