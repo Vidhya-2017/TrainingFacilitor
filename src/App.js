@@ -28,6 +28,7 @@ import CandidateRegistrationContainer from './pages/CandidateRegistration/contai
 import BatchFormationContainer from './pages/BatchFormation/container/BatchFormationContainer';
 import CandidateSelectionContainer from './pages/CandidateSelection/container/CandidateSelectionContainer';
 import TrainingListContainer from './pages/TrainingList/container/TrainingListContainer';
+import SMECompletedTopicsContainer from './pages/SMECompletedTopics/container/SMECompletedTopics';
 import Home from './pages/Home/container/HomeContainer';
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer'; 
@@ -92,6 +93,7 @@ class App extends React.Component {
               <Route path="/candidateRegistration" component={CandidateRegistrationContainer} />  
               <Route path="/candidateSelection" component={CandidateSelectionContainer} />  
               <Route path="/trainingList" component={TrainingListContainer}/>
+              <Route path="/smeTopicsCovered" component={SMECompletedTopicsContainer}/>
             </Switch>
             </div>
             <Footer />
