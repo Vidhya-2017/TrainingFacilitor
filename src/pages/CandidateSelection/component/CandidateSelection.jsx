@@ -1,11 +1,10 @@
 import React, { Component } from 'react'
-import { Paper, Typography, List, Grid, ListItem, ListItemIcon, Checkbox, ListItemText, IconButton, withStyles } from '@material-ui/core';
+import { Paper, Typography, List, Grid, ListItem, ListItemIcon, Checkbox, InputBase, ListItemText, IconButton, withStyles } from '@material-ui/core';
 import Snackbar from '@material-ui/core/Snackbar';
 import CloseIcon from '@material-ui/icons/Close';
 import Button from '@material-ui/core/Button';
 import SelectOne from '../../../components/UI_Component/Select/SelectOne';
-import '../scss/CandidateSelection.scss'
-
+import SearchIcon from '@material-ui/icons/Search';
 import green from '@material-ui/core/colors/green';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import ErrorIcon from '@material-ui/icons/Error';
@@ -17,6 +16,7 @@ import classNames from 'classnames';
 import Divider from "@material-ui/core/Divider";
 import Card from "@material-ui/core/Card";
 import CardHeader from "@material-ui/core/CardHeader";
+import '../scss/CandidateSelection.scss';
 
 const variantIcon = {
   success: CheckCircleIcon,
@@ -31,13 +31,19 @@ const styles = (theme) => ({
     padding: '10px 20px'
 
   },
-
   textField: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
   },
   backButton: {
     marginRight: theme.spacing(1),
+  },
+  searchRoot: {
+    padding: '4px',
+    display: 'flex',
+    alignItems: 'center',
+    border: 'solid 1px lightgrey',
+    height: 40,
   },
   gridRoot: {
     flexGrow: 1,
@@ -49,6 +55,7 @@ const styles = (theme) => ({
   },
   input: {
     marginLeft: 8,
+    marginTop: 11,
     flex: 1,
   },
   cardHeader: {
@@ -155,13 +162,15 @@ class CandidateSelection extends Component {
       candidatesList: [],
       snackbaropen: false,
       snackmsg: '',
-      snackvariant: 'success',
+      snackvariant: '',
       query: '',
       selectall: false,
       left: [],
       right: []
     }
     this.candidatesList = [];
+    this.left = [];
+    this.right = [];
   }
 
   componentDidMount() {
@@ -191,8 +200,10 @@ class CandidateSelection extends Component {
     this.props.getCandidatesByTrainingList(reqObj).then((response) => {
       if (response && response.errCode === 200) {
         this.candidatesList = [...response.trainingCandidates, ...response.nonTrainingCandidates];
+        this.left = response.nonTrainingCandidates;
+        this.right = response.trainingCandidates;
         this.setState({
-          candidatesList: this.candidatesList, selectall: false, left: response.nonTrainingCandidates, right: response.trainingCandidates
+          candidatesList: this.candidatesList, selectall: false, left: response.nonTrainingCandidates, right: response.trainingCandidates, query: ''
         });
       }
     })
@@ -244,14 +255,22 @@ class CandidateSelection extends Component {
   searchCandidate = (e) => {
     const query = e.target.value;
     const lowerCaseQuery = query.toLowerCase();
-    const searchedData = (query
-      ? this.candidatesList.filter((list) =>
+    const searchedLeftData = (query
+      ? this.left.filter((list) =>
         list['first_name']
           .toLowerCase()
           .includes(lowerCaseQuery)
       )
-      : this.candidatesList);
-    this.setState({ candidatesList: searchedData, query });
+      : this.left);
+
+    const searchedRightData = (query
+      ? this.right.filter((list) =>
+        list['first_name']
+          .toLowerCase()
+          .includes(lowerCaseQuery)
+      )
+      : this.right);
+    this.setState({ left: searchedLeftData, right: searchedRightData, query });
   }
 
 
@@ -311,7 +330,8 @@ class CandidateSelection extends Component {
   };
 
   handleCheckedRight = () => {
-
+    this.right = this.right.concat(this.leftChecked);
+    this.left = this.not(this.left, this.leftChecked);
     this.leftChecked[0].training_id = this.state.selectedTraining.value;
     this.setState({
       right: this.state.right.concat(this.leftChecked),
@@ -321,6 +341,8 @@ class CandidateSelection extends Component {
   };
 
   handleCheckedLeft = () => {
+    this.right = this.not(this.right, this.leftChecked);
+    this.left = this.left.concat(this.leftChecked);
     this.setState({
       left: this.state.left.concat(this.rightChecked),
       right: this.not(this.state.right, this.rightChecked),
@@ -333,7 +355,7 @@ class CandidateSelection extends Component {
     const { checked } = this.state;
 
     return (
-      <Card>
+      <Card variant="outlined">
         <CardHeader
           className={classes.cardHeader}
           avatar={
@@ -374,7 +396,7 @@ class CandidateSelection extends Component {
                     inputProps={{ "aria-labelledby": labelId }}
                   />
                 </ListItemIcon>
-                <ListItemText id={labelId} primary={value.first_name} />
+                <ListItemText id={labelId} primary={value.first_name} secondary={value.email} />
               </ListItem>
             );
           })}
@@ -404,8 +426,8 @@ class CandidateSelection extends Component {
             Candidate Selection
           </Typography>
           <div className={classes.selectOne}>
-            <Typography variant="h6" className={classes.trainingTitle}>Training List </Typography >
-            <Grid item xs={12} sm={4} md={3}>
+            <Typography variant="body1" className={classes.trainingTitle}>Training List </Typography >
+            <Grid item xs={12} sm={4} md={4}>
               <SelectOne
                 fieldLabel=""
                 id="training"
@@ -418,6 +440,28 @@ class CandidateSelection extends Component {
 
               />
             </Grid>
+            {(this.left.length > 0 || this.right.length > 0) && <Grid item xs={12} sm={6} md={4}>
+            <Paper component="form" className={classes.searchRoot}>
+                <InputBase
+                  className={classes.input}
+                  placeholder="Search "
+                  onChange={this.searchCandidate}
+                  value={query}
+                />
+                <IconButton disabled className={classes.iconButton} aria-label="search">
+                  <SearchIcon />
+                </IconButton>
+              </Paper>
+              {/* <TextField
+                className={classes.input}
+                placeholder="Search "
+                value={query}
+                onChange={this.searchCandidate}
+              />
+              <IconButton type="submit" className={classes.iconButton} >
+                <SearchIcon />
+              </IconButton> */}
+            </Grid>}
           </div>
 
           {selectedTraining &&

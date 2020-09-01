@@ -56,7 +56,7 @@ export const TrainingCreationAction = {
     },
     getTrainingList: async () => {
         try {
-            const response = await clients.axiosAPI.get('/TrainingList.php');
+            const response = await clients.axiosAPI.get('TrainingListAll.php');
             return (response.data);
         }
         catch (error) {
@@ -65,7 +65,7 @@ export const TrainingCreationAction = {
     },
     getBatchList: async (data) => {
         try {
-            const response = await clients.axiosAPI.post('/BatchMasterList.php', data);
+            const response = await clients.axiosAPI.post('BatchMasterList.php', data);
             return (response.data);
         }
         catch (error) {
@@ -84,7 +84,7 @@ export const TrainingCreationAction = {
 
     addBatchName: async (data) => {
         try {
-            const response = await clients.axiosAPI.post('/BatchMasterAdd.php', data);
+            const response = await clients.axiosAPI.post('BatchMasterAdd.php', data);
             return (response.data);
         }
         catch (error) {
@@ -93,7 +93,7 @@ export const TrainingCreationAction = {
     },
     insertCandidate: async (data) => {
         try {
-            const response = await clients.axiosAPI.post('/CandidateRegistration.php', data);
+            const response = await clients.axiosAPI.post('CandidateRegistration.php', data);
             return (response.data);
         }
         catch (error) {
@@ -102,7 +102,7 @@ export const TrainingCreationAction = {
     },
     getLobList: async () => {
         try {
-            const response = await clients.axiosAPI.get('/ListLOB.php');
+            const response = await clients.axiosAPI.get('ListLOB.php');
             return (response.data);
         }
         catch (error) {
@@ -111,7 +111,7 @@ export const TrainingCreationAction = {
     },
     getCandidateMapList: async (data) => {
         try {
-            const response = await clients.axiosAPI.post('/BatchMapCandidateList.php', data);
+            const response = await clients.axiosAPI.post('BatchMapCandidateList.php', data);
             return (response.data);
         }
         catch (error) {
@@ -120,7 +120,7 @@ export const TrainingCreationAction = {
     },
     insertCandidateBatchMap: async (data) => {
         try {
-            const response = await clients.axiosAPI.post('/CandidateBatchMapAdd.php', data);
+            const response = await clients.axiosAPI.post('CandidateBatchMapAdd.php', data);
             return (response.data);
         }
         catch (error) {

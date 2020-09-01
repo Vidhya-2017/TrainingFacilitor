@@ -1,10 +1,11 @@
 import React, { Component } from 'react'
-import { Paper, Typography, List, Grid, ListItem, ListItemIcon, Checkbox, ListItemText, IconButton, withStyles } from '@material-ui/core';
+import { Paper, Typography, List, Grid, ListItem, ListItemIcon, Checkbox, TextField, ListItemText, IconButton, withStyles } from '@material-ui/core';
 import Snackbar from '@material-ui/core/Snackbar';
 import CloseIcon from '@material-ui/icons/Close';
 import Button from '@material-ui/core/Button';
 import SelectOne from '../../../components/UI_Component/Select/SelectOne';
-import '../scss/BatchFormation.scss'
+import '../scss/BatchFormation.scss';
+import SearchIcon from '@material-ui/icons/Search';
 
 import green from '@material-ui/core/colors/green';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
@@ -49,6 +50,7 @@ const styles = (theme) => ({
   },
   input: {
     marginLeft: 8,
+    marginTop: 11,
     flex: 1,
   },
   cardHeader: {
@@ -74,7 +76,8 @@ const styles = (theme) => ({
     display: 'flex',
   },
   trainingTitle: {
-    padding: "15px 20px"
+    padding: "15px 20px",
+    fontWeigth:700,
   }
 });
 
@@ -160,12 +163,13 @@ class BatchFormation extends Component {
       snackvariant: '',
       query: '',
       selectall: false,
-      checked: [],
       left: [],
       right: [],
       batchSelected: null,
     }
     this.candidatesList = [];
+    this.left =[];
+    this.right =[];
   }
 
   componentDidMount() {
@@ -200,7 +204,7 @@ class BatchFormation extends Component {
             label: list.batch_name
           }
         });
-        this.setState({ batchDetailsList: batchList, candidatesList: this.candidatesList, selectall: false, left: [], right: [] });
+        this.setState({ batchDetailsList: batchList, candidatesList: this.candidatesList, selectall: false, left: [], right: [],query:''});
       } else {
         this.setState({ snackbaropen: true, snackmsg: 'Something went Wrong. Please try again later', snackvariant: "error" })
       }
@@ -217,6 +221,8 @@ class BatchFormation extends Component {
     this.props.getCandidateMapList(reqObj).then((response) => {
       if (response && response.errCode === 200) {
         this.candidatesList = [...response.batchCandidate, ...response.nonBatchCnadidate];
+        this.left= response.nonBatchCnadidate;
+        this.right= response.batchCandidate;
         this.setState({
           candidatesList: this.candidatesList, selectall: false, left: response.nonBatchCnadidate, right: response.batchCandidate
         });
@@ -268,16 +274,27 @@ class BatchFormation extends Component {
   }
 
   searchCandidate = (e) => {
+    console.log('searchLeft---', this.left);
+    console.log('searchRight---', this.right);
+
     const query = e.target.value;
     const lowerCaseQuery = query.toLowerCase();
-    const searchedData = (query
-      ? this.candidatesList.filter((list) =>
+    const searchedLeftData = (query
+      ? this.left.filter((list) =>
         list['first_name']
           .toLowerCase()
           .includes(lowerCaseQuery)
       )
-      : this.candidatesList);
-    this.setState({ candidatesList: searchedData, query });
+      : this.left);
+
+      const searchedRightData = (query
+        ? this.right.filter((list) =>
+          list['first_name']
+            .toLowerCase()
+            .includes(lowerCaseQuery)
+        )
+        : this.right);
+    this.setState({ left: searchedLeftData, right: searchedRightData, query }); 
   }
 
 
@@ -344,14 +361,22 @@ class BatchFormation extends Component {
       left: this.not(this.state.left, this.leftChecked),
       checked: this.not(this.state.checked, this.leftChecked)
     });
+    
+    this.right = this.right.concat(this.leftChecked);
+    this.left = this.not(this.left, this.leftChecked);
   };
 
   handleCheckedLeft = () => {
+
     this.setState({
       left: this.state.left.concat(this.rightChecked),
       right: this.not(this.state.right, this.rightChecked),
       checked: this.not(this.state.checked, this.rightChecked)
     });
+    
+    this.right = this.not(this.right, this.leftChecked); 
+    this.left = this.left.concat(this.leftChecked);
+
   };
 
 
@@ -412,10 +437,12 @@ class BatchFormation extends Component {
   };
 
   render() {
-    const { classes } = this.props;
+    const { classes, variant } = this.props;
     const { trainingList, selectedTraining, candidatesList, snackbaropen, snackmsg, snackvariant, query, selectall, checked, left, right, batchSelected, batchDetailsList } = this.state;
+
     this.leftChecked = this.intersection(checked, left);
     this.rightChecked = this.intersection(checked, right);
+
     this.CandidateIDs = [];
     candidatesList.forEach(list => {
       if (list.training_id !== null && list.training_id !== '') {
@@ -423,14 +450,16 @@ class BatchFormation extends Component {
       }
     })
 
+
     return (
       <div className="exTraining_container">
-        {/* <Paper className={classes.paperRoot} elevation={3}> */}
-          {/* <Typography variant="h4" className="text-center" gutterBottom>
+        {/*   <Grid item > */}
+        <Paper className={classes.paperRoot} elevation={3}>
+          <Typography variant="h4" className="text-center" gutterBottom>
             Batch Formation
-          </Typography> */}
+          </Typography>
           <div className={classes.selectOne}>
-            <Typography variant="h6" className={classes.trainingTitle}> Training List </Typography >
+            <Typography className={classes.trainingTitle}> Training List </Typography >
             <Grid item xs={12} sm={4} md={3}>
               <SelectOne
                 fieldLabel=""
@@ -444,7 +473,7 @@ class BatchFormation extends Component {
 
               />
             </Grid>
-            <Typography variant="h6" className={classes.trainingTitle}> Batch list </Typography >
+            <Typography className={classes.trainingTitle}> Batch List </Typography >
             <Grid item xs={12} sm={4} md={3}>
               <SelectOne
                 value={batchSelected}
@@ -457,6 +486,18 @@ class BatchFormation extends Component {
                 id="batch"
               />
             </Grid>
+            {(this.left.length > 0 || this.right.length> 0 ) && <Grid item xs={12} sm={4} md={3}>
+              <TextField
+              className={classes.input}
+              placeholder="Search "
+              value={query}
+              onChange={this.searchCandidate}
+              id="standard-basic"
+              />
+              <IconButton disabled className={classes.iconButton} >
+                <SearchIcon />
+              </IconButton>
+            </Grid>}
           </div>
 
           {selectedTraining && batchSelected &&
@@ -520,7 +561,7 @@ class BatchFormation extends Component {
               message={snackmsg}
             />
           </Snackbar>
-        {/* </Paper> */}
+        </Paper>
         {/* </Grid> */}
 
       </div>

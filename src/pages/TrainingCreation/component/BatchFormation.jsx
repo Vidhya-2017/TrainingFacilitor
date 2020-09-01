@@ -1,10 +1,14 @@
 import React, { Component } from 'react'
-import { Paper, Typography, List, Grid, ListItem, ListItemIcon, Checkbox, ListItemText, IconButton, withStyles } from '@material-ui/core';
+import {
+  Paper, Typography, List, Grid, ListItem, InputBase, ListItemIcon, Checkbox,
+  ListItemText, IconButton, withStyles, Dialog, DialogTitle, TextField, DialogActions, DialogContent
+} from '@material-ui/core';
 import Snackbar from '@material-ui/core/Snackbar';
 import CloseIcon from '@material-ui/icons/Close';
 import Button from '@material-ui/core/Button';
 import SelectOne from '../../../components/UI_Component/Select/SelectOne';
 // import '../scss/BatchFormation.scss'
+import SearchIcon from '@material-ui/icons/Search';
 
 import green from '@material-ui/core/colors/green';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
@@ -28,9 +32,35 @@ const styles = (theme) => ({
     width: "100%",
     margin: '20px auto',
     padding: '10px 20px'
-
   },
-
+  searchAddGrid: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    [theme.breakpoints.down('xs')]: {
+      marginTop: 5,
+    },
+    [theme.breakpoints.down('sm')]: {
+      marginTop: 25,
+    },
+    [theme.breakpoints.up('md')]: {
+      marginTop: 25,
+    },
+    [theme.breakpoints.up('lg')]: {
+      marginTop: 25,
+    },
+    paddingBottom: 10
+  },
+  addBtn: {
+    height: 40,
+    margin: '0 10px'
+  },
+  searchRoot: {
+    padding: '4px',
+    display: 'flex',
+    alignItems: 'center',
+    border: 'solid 1px lightgrey',
+    height: 40,
+  },
   textField: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
@@ -61,7 +91,6 @@ const styles = (theme) => ({
   },
   button: {
     margin: theme.spacing(1, 1),
-    justify: "right",
   },
   bottomBtn: {
     justifyContent: 'flex-end',
@@ -158,12 +187,16 @@ class BatchFormation extends Component {
       snackvariant: '',
       query: '',
       selectall: false,
-      checked: [],
       left: [],
       right: [],
       batchSelected: null,
+      showAddBatchModal: false,
+      newBatchName: '',
+      newBatchCount: ''
     }
     this.candidatesList = [];
+    this.left = [];
+    this.right = [];
   }
 
   componentDidMount() {
@@ -189,7 +222,11 @@ class BatchFormation extends Component {
 
   selectTrainingChange = (selectedTraining) => {
     this.setState({ selectedTraining: selectedTraining.target, candidatesList: [], batchSelected: null });
-    const reqObj = { training_id: selectedTraining.target.value };
+    this.getBatchList(selectedTraining.target.value);
+  }
+
+  getBatchList = (training_id) => {
+    const reqObj = { training_id };
     this.props.getBatchList(reqObj).then((response) => {
       if (response && response.errCode === 200) {
         const batchList = response.arrRes.map(list => {
@@ -198,23 +235,23 @@ class BatchFormation extends Component {
             label: list.batch_name
           }
         });
-        this.setState({ batchDetailsList: batchList, candidatesList: this.candidatesList, selectall: false, left: [], right: [] });
+        this.setState({ batchDetailsList: batchList, candidatesList: this.candidatesList, selectall: false, left: [], right: [], query: '' });
       } else {
         this.setState({ snackbaropen: true, snackmsg: 'Something went Wrong. Please try again later', snackvariant: "error" })
       }
     })
   }
-
   onChangeBatch = (batchSelected) => {
     this.setState({ batchSelected: batchSelected.target });
     const reqObj = {
       training_id: this.state.selectedTraining.value,
       batch_id: batchSelected.target.value
     }
-
     this.props.getCandidateMapList(reqObj).then((response) => {
       if (response && response.errCode === 200) {
         this.candidatesList = [...response.batchCandidate, ...response.nonBatchCnadidate];
+        this.left = response.nonBatchCnadidate;
+        this.right = response.batchCandidate;
         this.setState({
           candidatesList: this.candidatesList, selectall: false, left: response.nonBatchCnadidate, right: response.batchCandidate
         });
@@ -236,30 +273,27 @@ class BatchFormation extends Component {
 
 
   insertCandidates = () => {
-    const { candidatesList, right, batchSelected } = this.state;
+    const { right, batchSelected } = this.state;
     const candidateIDs = [];
     right.forEach((candidate) => {
       if (candidate.id !== '' && candidate.id !== null) {
         candidateIDs.push(candidate.id)
       }
     });
-    const user_id = 1;
     if (candidateIDs.length !== 0) {
-
       const reqObj = {
         batch_id: batchSelected.value,
         candidate_ids: candidateIDs,
         created_by: 1,
       }
-
-      this.props.insertCandidateBatchMap(reqObj).then((response) => {
+      return this.props.insertCandidateBatchMap(reqObj).then((response) => {
         if (response && response.errCode === 200) {
           this.setState({ candidatesList: [], selectall: false, batchSelected: null, selectedTraining: null, left: [], right: [], snackbaropen: true, snackmsg: "Candidates Assigned Successfully", snackvariant: "success" });
         } else {
           this.setState({ candidatesList: [], selectall: false, batchSelected: null, selectedTraining: null, left: [], right: [], snackbaropen: true, snackmsg: 'Something went Wrong. Please try again later.', snackvariant: "error" })
         }
+        return response.errCode;
       })
-
     } else {
       this.setState({ snackbaropen: true, snackmsg: 'Please Select Atleast One Candidate.', snackvariant: "error" })
     }
@@ -268,14 +302,21 @@ class BatchFormation extends Component {
   searchCandidate = (e) => {
     const query = e.target.value;
     const lowerCaseQuery = query.toLowerCase();
-    const searchedData = (query
-      ? this.candidatesList.filter((list) =>
+    const searchedLeftData = (query
+      ? this.left.filter((list) =>
         list['first_name']
           .toLowerCase()
           .includes(lowerCaseQuery)
       )
-      : this.candidatesList);
-    this.setState({ candidatesList: searchedData, query });
+      : this.left);
+    const searchedRightData = (query
+      ? this.right.filter((list) =>
+        list['first_name']
+          .toLowerCase()
+          .includes(lowerCaseQuery)
+      )
+      : this.right);
+    this.setState({ left: searchedLeftData, right: searchedRightData, query });
   }
 
 
@@ -342,6 +383,9 @@ class BatchFormation extends Component {
       left: this.not(this.state.left, this.leftChecked),
       checked: this.not(this.state.checked, this.leftChecked)
     });
+    this.right = this.right.concat(this.leftChecked);
+    this.left = this.not(this.left, this.leftChecked);
+
   };
 
   handleCheckedLeft = () => {
@@ -350,13 +394,14 @@ class BatchFormation extends Component {
       right: this.not(this.state.right, this.rightChecked),
       checked: this.not(this.state.checked, this.rightChecked)
     });
-  };
+    this.right = this.not(this.right, this.leftChecked);
+    this.left = this.left.concat(this.leftChecked);
 
+  };
 
   customList = (title, items) => {
     const { classes } = this.props;
     const { checked } = this.state;
-
     return (
       <Card variant="outlined">
         <CardHeader
@@ -399,7 +444,7 @@ class BatchFormation extends Component {
                     inputProps={{ "aria-labelledby": labelId }}
                   />
                 </ListItemIcon>
-                <ListItemText id={labelId} primary={value.first_name} />
+                <ListItemText id={labelId} primary={value.first_name} secondary={value.email}/>
               </ListItem>
             );
           })}
@@ -409,9 +454,37 @@ class BatchFormation extends Component {
     );
   };
 
+  addBatch = () => {
+    this.setState({ showAddBatchModal: true });
+  }
+
+  handleModalSubmit = () => {
+    const { newBatchName, selectedTraining, newBatchCount } = this.state;
+    const reqObj = {
+      training_id: selectedTraining.value,
+      batch_name: newBatchName,
+      batch_count: newBatchCount,
+      created_by: 1
+    }
+    this.props.addBatchName(reqObj).then((response) => {
+      if (response && response.errCode === 200) {
+        this.getBatchList(selectedTraining.value);
+        this.setState({ showAddBatchModal: false, showToast: true, toastMsg: 'Batch Creation is successful.' })
+      } else {
+        this.setState({ showToast: true, toastMsg: 'Something went Wrong. Please try again later.' })
+      }
+    });
+  }
+
+  handleModalClose = () => {
+    this.setState({ showAddBatchModal: false, newBatchName: '', newBatchCount: '' })
+  }
+
   render() {
     const { classes } = this.props;
-    const { trainingList, selectedTraining, candidatesList, snackbaropen, snackmsg, snackvariant, query, selectall, checked, left, right, batchSelected, batchDetailsList } = this.state;
+    const { trainingList, selectedTraining, candidatesList, snackbaropen, snackmsg,
+      snackvariant, query, checked, left, right, batchSelected,
+      batchDetailsList, showAddBatchModal, newBatchName, newBatchCount } = this.state;
     this.leftChecked = this.intersection(checked, left);
     this.rightChecked = this.intersection(checked, right);
     this.CandidateIDs = [];
@@ -420,103 +493,143 @@ class BatchFormation extends Component {
         this.CandidateIDs.push(list.id);
       }
     })
-
     return (
-        <Paper className={classes.paperRoot} elevation={0}>
-          {/* <Typography variant="h4" className="text-center" gutterBottom>
-            Batch Formation
-          </Typography> */}
-          <div className={classes.selectOne}>
-            <Typography variant="body1" className={classes.trainingTitle}> Training List </Typography >
-            <Grid item xs={12} sm={5} md={4}>
-              <SelectOne
-                fieldLabel=""
-                id="training"
-                name="training"
-                placeholder="Training"
-                value={selectedTraining ? selectedTraining : null}
-                options={trainingList}
-                onChange={this.selectTrainingChange}
-                errorMessage={this.state.errors.training === "" ? null : this.state.errors.training}
-
-              />
-            </Grid>
-            <Typography variant="body1" className={classes.trainingTitle}> Batch list </Typography >
-            <Grid item xs={12} sm={5} md={4}>
-              <SelectOne
-                value={batchSelected}
-                onChange={this.onChangeBatch}
-                options={batchDetailsList}
-                defaultValue={batchSelected}
-                placeholder="Select Batch"
-                aria-label="batch"
-                aria-describedby="batch"
-                id="batch"
-              />
-            </Grid>
-          </div>
-
-          {selectedTraining && batchSelected &&
-            <Grid
-              container
-              spacing={4}
-              justify="center"
-              alignItems="center"
-              className={classes.gridRoot}
-            >
-              <Grid item xs={5} sm={5}>{this.customList("Non-Registered", left)}</Grid>
-              <Grid item>
-                <Grid container direction="column" alignItems="center">
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    className={classes.button}
-                    onClick={this.handleCheckedRight}
-                    disabled={this.leftChecked.length === 0}
-                    aria-label="move selected right"
-                  >
-                    &gt;
-                    </Button>
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    className={classes.button}
-                    onClick={this.handleCheckedLeft}
-                    disabled={this.rightChecked.length === 0}
-                    aria-label="move selected left"
-                  >
-                    &lt;
-                    </Button>
-                </Grid>
-              </Grid>
-              <Grid item xs={5} sm={5}>{this.customList("Registered", right)}</Grid>
-            </Grid>
-
-          }
-
-          {/* {selectedTraining && batchSelected &&
-            <div className={classes.bottomBtn}>
-              <Button variant="contained" color="primary" onClick={this.insertCandidates} >
-                Submit
-                </Button>
-            </div>
-          } */}
-          <Snackbar
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'left',
-            }}
-            open={snackbaropen}
-            autoHideDuration={3000}
-            onClose={this.handleClose}
-          >
-            <MySnackbarContentWrapper
-              onClose={this.handleClose}
-              variant={snackvariant}
-              message={snackmsg}
+      <Paper className={classes.paperRoot} elevation={0}>
+        <Grid container spacing={3} >
+          <Grid item md={4}>
+            <SelectOne
+              fieldLabel="Training List"
+              id="training"
+              name="training"
+              placeholder="Training"
+              value={selectedTraining ? selectedTraining : null}
+              options={trainingList}
+              onChange={this.selectTrainingChange}
+              errorMessage={this.state.errors.training === "" ? null : this.state.errors.training}
             />
-          </Snackbar>
-        </Paper>
+          </Grid>
+          {selectedTraining && <Grid item md={4}>
+            <SelectOne
+              fieldLabel="Batch list"
+              value={batchSelected}
+              onChange={this.onChangeBatch}
+              options={batchDetailsList}
+              defaultValue={batchSelected}
+              placeholder="Select Batch"
+              aria-label="batch"
+              aria-describedby="batch"
+              id="batch"
+            />
+          </Grid>}
+          <Grid item md className={classes.searchAddGrid}>
+            {selectedTraining && <Button variant="contained" className={classes.addBtn} onClick={this.addBatch} color="primary">
+              Add
+            </Button>}
+            {(this.left.length > 0 || this.right.length > 0) &&
+              <Paper component="form" className={classes.searchRoot}>
+                <InputBase
+                  className={classes.input}
+                  placeholder="Search "
+                  onChange={this.searchCandidate}
+                  value={query}
+                />
+                <IconButton disabled className={classes.iconButton} aria-label="search">
+                  <SearchIcon />
+                </IconButton>
+              </Paper>
+            }
+          </Grid>
+        </Grid>
+
+        {selectedTraining && batchSelected &&
+          <Grid
+            container
+            spacing={2}
+            justify="center"
+            alignItems="center"
+          >
+            <Grid item xs={5} sm={5}>{this.customList("Non-Registered", left)}</Grid>
+            <Grid item xs={2} sm={2}>
+              <Grid container direction="column" alignItems="center">
+                <Button
+                  variant="outlined"
+                  size="small"
+                  className={classes.button}
+                  onClick={this.handleCheckedRight}
+                  disabled={this.leftChecked.length === 0}
+                  aria-label="move selected right"
+                > &gt; </Button>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  className={classes.button}
+                  onClick={this.handleCheckedLeft}
+                  disabled={this.rightChecked.length === 0}
+                  aria-label="move selected left"
+                >  &lt;  </Button>
+              </Grid>
+            </Grid>
+            <Grid item xs={5} sm={5}>{this.customList("Registered", right)}</Grid>
+          </Grid>
+        }
+        <Snackbar
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'left',
+          }}
+          open={snackbaropen}
+          autoHideDuration={3000}
+          onClose={this.handleClose}
+        >
+          <MySnackbarContentWrapper
+            onClose={this.handleClose}
+            variant={snackvariant}
+            message={snackmsg}
+          />
+        </Snackbar>
+        <Dialog
+          disableBackdropClick
+          maxWidth="xs"
+          fullWidth={true}
+          open={showAddBatchModal}
+          onClose={this.handleModalClose}
+        >
+          <DialogTitle id="form-dialog-title">Add new Batch</DialogTitle>
+          <DialogContent >
+            <div style={{ display: 'flex' }}>
+              <Typography style={{ padding: '15px 15px 10px 0' }}>Batch Name:</Typography>
+              <TextField
+                autoFocus
+                variant="outlined"
+                margin="dense"
+                placeholder="Batch Name"
+                type="text"
+                value={newBatchName}
+                onChange={(e) => this.setState({ newBatchName: e.target.value })}
+              />
+            </div>
+            <div style={{ display: 'flex' }}>
+              <Typography style={{ padding: '15px 15px 10px 0' }}>Batch Count:</Typography>
+              <TextField
+                variant="outlined"
+                margin="dense"
+                placeholder="Batch Count"
+                type="number"
+                value={newBatchCount}
+                onChange={(e) => this.setState({ newBatchCount: e.target.value })}
+              />
+            </div>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={this.handleModalClose} variant="contained" color="primary">
+              Cancel
+            </Button>
+            <Button onClick={this.handleModalSubmit} disabled={newBatchName === '' || newBatchCount === ''} variant="contained" color="primary">
+              Submit
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </Paper>
     );
   }
 }

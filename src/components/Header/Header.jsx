@@ -37,6 +37,7 @@ class Header extends React.Component {
     <Nav><Link className="clr_black" to="/assesmentType"> Assessment Scale</Link></Nav> 
     <Nav><Link className="clr_black" to="/trainingType"> Training Type</Link></Nav>
     <Nav><Link className="clr_black" to="/durationMaster"> duration master </Link></Nav>
+    <Nav><Link className="clr_black" to="/lob"> LOB </Link></Nav>
     </NavDropdown> 
       <Nav><Link  to="/login" onClick ={this.logout}>Logout </Link></Nav>
     </Nav>

@@ -1,14 +1,13 @@
 import React, { Fragment } from 'react';
 import moment from 'moment';
 import {
-  Paper, Stepper, Dialog, DialogTitle, TextField, DialogActions, DialogContent,
-  Slide, IconButton, Grid, Step, Button, Typography,
-  StepLabel, withStyles, AppBar, Toolbar, List, ListItem, ListItemText, Divider
+  Paper, Stepper, Dialog, Slide, IconButton, Grid, Step, Button, Typography,
+  StepLabel, withStyles, AppBar, Toolbar,
 } from '@material-ui/core';
 import CloseIcon from '@material-ui/icons/Close';
-import DeleteIcon from '@material-ui/icons/Delete';
 import HomeContainer from '../../Home/container/HomeContainer';
 import CandidateRegistration from './CandidateRegistration';
+import Curriculum from './Curriculum';
 import BatchFormation from './BatchFormation';
 import Textbox from '../../../components/UI_Component/Textbox/Textbox';
 import SelectOne from '../../../components/UI_Component/Select/SelectOne';
@@ -49,7 +48,7 @@ const trainingRegForm = {
 
 const styles = (theme) => ({
   paperRoot: {
-    width: '70%',
+    width: '80%',
     margin: '20px auto',
     padding: '10px 20px'
   },
@@ -93,7 +92,7 @@ class TrainingCreation extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      activeStep: 0,
+      activeStep: 3,
       errors: {},
       formValues: { ...trainingRegForm },
       showToast: false,
@@ -113,7 +112,6 @@ class TrainingCreation extends React.Component {
       selectedlocation: null,
       batchDetailsList: [],
       formIsValid: false,
-      showAddBatchModal: false,
       newBatchName: '',
       newBatchCount: '',
       showCandidateUpload: false,
@@ -123,6 +121,7 @@ class TrainingCreation extends React.Component {
     }
     this.candidateRegRef = React.createRef();
     this.batchFormationRef = React.createRef();
+    this.curriculumRef = React.createRef();
   }
 
   componentDidMount() {
@@ -312,19 +311,17 @@ class TrainingCreation extends React.Component {
     if (e.target.name === 'location') {
       this.setState({ selectedLocation: e.target });
     }
-
     if (e.target.name === 'account') {
       this.setState({ selectedAccount: e.target });
     }
     if (e.target.name === 'trainingType') {
       this.setState({ selectedTrainingType: e.target });
     }
-
     if (e.target.name === 'programManager') {
       this.setState({ selectedProgramManager: e.target });
     }
     if (e.target.name === 'skills') {
-      this.setState({ smesListOption: [] }, ()=> {
+      this.setState({ smesListOption: [] }, () => {
         const { smesList } = this.state;
         const TemSme = [];
         const onchangeSkill = e.target.value;
@@ -348,17 +345,20 @@ class TrainingCreation extends React.Component {
   getSteps = () => ['Registration', 'Candidate Registration', 'Batch Creation', 'Curriculum'];
 
   handleStep = (index) => {
-    if (index === 2) {
-      this.getTrainingList();
-    }
     this.setState({ activeStep: index, batchDetailsList: [], eventSelected: null });
   }
+
   handleNext = async () => {
     if (this.state.activeStep === 0) {
       this.submitForm();
     } else if (this.state.activeStep === 1) {
       await this.candidateRegRef.current.submitForm().then(res => {
-        console.log('-isFormSubmittedSuccess--', res);
+        if (res === 200) {
+          this.setState(prev => ({ activeStep: prev.activeStep + 1, CRFormIsValid: false, batchDetailsList: [], eventSelected: null }));
+        }
+      });
+    } else if (this.state.activeStep === 2) {
+      await this.batchFormationRef.current.insertCandidates().then(res => {
         if (res === 200) {
           this.setState(prev => ({ activeStep: prev.activeStep + 1, CRFormIsValid: false, batchDetailsList: [], eventSelected: null }));
         }
@@ -367,19 +367,9 @@ class TrainingCreation extends React.Component {
       console.log('-isFormSubmittedSuccess-again-');
       this.setState(prev => ({ activeStep: prev.activeStep + 1, CRFormIsValid: false, batchDetailsList: [], eventSelected: null }));
     }
-    if (this.state.activeStep + 1 === 2) {
-      this.getTrainingList();
-    }
-    if (this.state.activeStep === 3) {
-      console.log('---finished---');
-    }
   }
 
   handleBack = async () => {
-    if (this.state.activeStep - 1 === 2) {
-      this.getTrainingList();
-    }
-
     this.setState(prev => ({ activeStep: prev.activeStep - 1, CRFormIsValid: false, batchDetailsList: [], eventSelected: null }));
   }
 
@@ -389,9 +379,7 @@ class TrainingCreation extends React.Component {
   }
 
   getBatchList = (id) => {
-    const reqObj = {
-      training_id: id
-    };
+    const reqObj = { training_id: id };
     this.props.getBatchList(reqObj).then((response) => {
       if (response && response.errCode === 200) {
         const batchDetailsList = response.arrRes.map(list => {
@@ -401,7 +389,6 @@ class TrainingCreation extends React.Component {
             trID: list.training_id
           }
         })
-
         this.setState({ batchDetailsList });
       } else {
         this.setState({ showToast: true, toastMsg: 'Something went Wrong. Please try again later.' })
@@ -409,36 +396,10 @@ class TrainingCreation extends React.Component {
     });
   }
 
-  handleModalClose = () => {
-    this.setState({ showAddBatchModal: false, newBatchName: '', newBatchCount: '' })
-  }
-
-  addBatch = () => {
-    this.setState({ showAddBatchModal: true });
-
-  }
-
   showCandidateUpload = () => {
     this.setState({ showCandidateUpload: true });
   }
-  handleModalSubmit = () => {
-    const { newBatchName, eventSelected, newBatchCount } = this.state;
-    const reqObj = {
-      training_id: eventSelected.value,
-      batch_name: newBatchName,
-      batch_count: newBatchCount,
-      created_by: 1
-    }
-    this.props.addBatchName(reqObj).then((response) => {
-      if (response && response.errCode === 200) {
-        this.getBatchList(eventSelected.value);
-        this.setState({ showAddBatchModal: false, showToast: true, toastMsg: 'Batch Creation is successful.' })
-      } else {
-        this.setState({ showToast: true, toastMsg: 'Something went Wrong. Please try again later.' })
-      }
-    });
 
-  }
   handleCandidateUploadClose = () => {
     this.setState({ showCandidateUpload: false });
   }
@@ -446,8 +407,8 @@ class TrainingCreation extends React.Component {
   onBatchChange = (batchSelected) => {
     this.setState({ batchSelected: batchSelected.target })
   }
+
   checkAllFieldsValid = (CRFormIsValid) => {
-    console.log('-formisValid--', CRFormIsValid);
     this.setState({ CRFormIsValid })
   }
 
@@ -634,7 +595,6 @@ class TrainingCreation extends React.Component {
           </Grid>
         </Grid>}
         {activeStep === 1 &&
-
           <Fragment>
             <div style={{ float: 'right' }}><Button variant="contained" onClick={this.showCandidateUpload} color="primary">Candidate Upload</Button></div>
             <Dialog fullScreen open={showCandidateUpload} onClose={this.handleCandidateUploadClose} TransitionComponent={Transition}>
@@ -663,101 +623,37 @@ class TrainingCreation extends React.Component {
           <BatchFormation
             getTrainingList={this.props.getTrainingList}
             getBatchList={this.props.getBatchList}
+            addBatchName={this.props.addBatchName}
             getCandidateMapList={this.props.getCandidateMapList}
             insertCandidateBatchMap={this.props.insertCandidateBatchMap}
             ref={this.batchFormationRef}
           />
-          {/* <Grid item xs={12} sm={4}>
-            <SelectOne
-              fieldLabel="Training List"
-              value={eventSelected}
-              name="trainingList"
-              onChange={this.onChangeTraining}
-              options={EventDetailsList}
-              defaultValue={eventSelected}
-              placeholder="Select Training"
-              aria-label="training"
-              aria-describedby="training"
-              id="training"
-            />
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <SelectOne
-              fieldLabel="Batch List"
-              value={batchSelected}
-              name="batchList"
-              onChange={this.onBatchChange}
-              options={batchDetailsList}
-              defaultValue={batchSelected}
-              placeholder="Select Batch"
-              id="batchList"
-            />
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <Button variant="contained" disabled={eventSelected === '' || eventSelected === null} className={classes.addBtn} onClick={this.addBatch} color="primary">
-              Add
-          </Button>
-          </Grid> */}
         </Grid>}
-        {activeStep === 3 && <div>Curriculum</div>}
-        <Dialog
-          disableBackdropClick
-          maxWidth="xs"
-          fullWidth={true}
-          open={showAddBatchModal}
-          onClose={this.handleModalClose}
-        >
-          <DialogTitle id="form-dialog-title">Add new Batch</DialogTitle>
-          <DialogContent >
-            <div style={{ display: 'flex' }}>
-              <Typography style={{ padding: '15px 15px 10px 0' }}>Batch Name:</Typography>
-              <TextField
-                autoFocus
-                variant="outlined"
-                margin="dense"
-                placeholder="Batch Name"
-                type="text"
-                value={newBatchName}
-                onChange={(e) => this.setState({ newBatchName: e.target.value })}
-              />
-            </div>
-            <div style={{ display: 'flex' }}>
-              <Typography style={{ padding: '15px 15px 10px 0' }}>Batch Count:</Typography>
-              <TextField
-                autoFocus
-                variant="outlined"
-                margin="dense"
-                placeholder="Batch Count"
-                type="number"
-                value={newBatchCount}
-                onChange={(e) => this.setState({ newBatchCount: e.target.value })}
-              />
-            </div>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={this.handleModalClose} variant="contained" color="primary">
-              Cancel
-            </Button>
-            <Button onClick={this.handleModalSubmit} disabled={newBatchName === '' || newBatchCount === ''} variant="contained" color="primary">
-              Submit
-            </Button>
-          </DialogActions>
-        </Dialog>
-        <div className={classes.bottomBtn}>
-          <Button
-            disabled={activeStep === 0}
-            onClick={this.handleBack}
-            className={classes.backButton}
-          >Back</Button>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={this.handleNext}
-            disabled={disableSubmitBtn}>
-            {activeStep === 2 ? 'Next' : 'Submit'}
+
+        {activeStep === 3 &&
+
+        <Grid container spacing={3} className={classes.gridRoot}>
+          <Curriculum
+            ref={this.curriculumRef}
+            getTrainingList={this.props.getTrainingList}
+          />
+        </Grid>
+        }
+      <div className={classes.bottomBtn}>
+        <Button
+          disabled={activeStep === 0}
+          onClick={this.handleBack}
+          className={classes.backButton}
+        >Back</Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={this.handleNext}
+          disabled={disableSubmitBtn}>
+            Submit
           </Button>
-        </div>
-      </Paper>
+        </div >
+      </Paper >
     )
   }
 }

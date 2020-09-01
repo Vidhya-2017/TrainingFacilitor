@@ -253,7 +253,6 @@ class CandidateRegistration extends React.Component {
         for (let inputIdentifier in resetRegisterCandidate) {
             formData[inputIdentifier] = resetRegisterCandidate[inputIdentifier].value;
         }
-
         let reqObj = {
             training_id: formData.trainingid,
             sap_id: formData.sapid,
@@ -266,7 +265,6 @@ class CandidateRegistration extends React.Component {
             account_id: formData.account,
             created_by: 1,
         }
-
         if (this.state.selectedTraining.trainingType === '1') {
             reqObj = {
                 ...reqObj,
