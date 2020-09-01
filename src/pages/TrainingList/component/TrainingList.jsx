@@ -127,15 +127,54 @@ class TrainingList extends React.Component {
         title: "SME",
         field: "sme_name",
         editComponent: props => {
-          const defaultValue = this.state.smeList.filter(sme => props.rowData.sme.includes(sme.id))
+          let TemSme = this.state.smeList;
+          let smeValue = [];
+          let isSkillUpdate = false;
+          if(props.rowData.skill_name && typeof props.rowData.skill_name === "object") {
+            TemSme = [];
+            smeValue = [];
+            isSkillUpdate = true;
+            this.state.smeList.forEach((list, index) => {
+              const indexSkill = props.rowData.skill_name.filter(skill => list.skillsId.includes(skill.value));
+              if(indexSkill.length > 0) {
+                  TemSme.push({
+                    value: list.id,
+                    id: list.id,
+                    skill: list.skill,
+                    skillsId: list.skillsId,
+                    label: list.label
+                  });
+                }
+            }); 
+          } else if( typeof props.rowData.skill_name === "string"){
+            TemSme = [];
+            smeValue = [];
+            this.state.smeList.forEach((list, index) => {
+              const indexSkill = list.skillsId.filter(id => props.rowData.skills.includes(id));
+              if(indexSkill.length > 0) {
+                  TemSme.push({
+                    value: list.id,
+                    id: list.id,
+                    skill: list.skill,
+                    skillsId: list.skillsId,
+                    label: list.label 
+                  });
+                }
+            }); 
+          } else {
+            isSkillUpdate = true;
+          }
+          if(typeof props.value === 'string' && !isSkillUpdate) {
+            smeValue = this.state.smeList.filter(sme => props.rowData.sme.includes(sme.id))
+          }
           return (
             <Select
             placeholder="SME"
-            onChange={e => props.onChange(e)}
-            options={this.state.smeList}
+            value={smeValue}
+            options={TemSme}
             styles={SelectStyles()}
             isMulti
-            defaultValue={defaultValue}
+            onChange={e => props.onChange(e)}
           />
           )
         }
@@ -214,6 +253,21 @@ class TrainingList extends React.Component {
       {
         title: "Requested By",
         field: "request_by",
+        validate: rowData => rowData.request_by !== '',
+      },
+      {
+        title: "Requested By Sapid",
+        field: "requestedby_sapid",
+        validate: rowData => rowData.request_by !== '',
+      },
+      {
+        title: "Program Manager",
+        field: "program_manager",
+        validate: rowData => rowData.request_by !== '',
+      },
+      {
+        title: "Program Manager Sapid",
+        field: "program_mngr_sapid",
         validate: rowData => rowData.request_by !== '',
       },
     ]
@@ -317,7 +371,9 @@ class TrainingList extends React.Component {
           return {
             value: list.id,
             id: list.id,
-            label: list.name
+            label: list.name,
+            skill:list.SkillName,
+            skillsId: list.skill_ids
           }
         });
         this.setState({ smeList });
@@ -379,6 +435,9 @@ class TrainingList extends React.Component {
       plannedEndDate: updatedData.planned_end_date,
       duration: updatedData.duration,
       requestBy: updatedData.request_by,
+      requestBySapid:updatedData.requestedby_sapid,
+      programManager:updatedData.program_manager,
+      programManagerSapid:updatedData.program_mngr_sapid,
       UpdatedBy: 1
     }
     this.props.EditTrainingList(reqObj).then(response => {

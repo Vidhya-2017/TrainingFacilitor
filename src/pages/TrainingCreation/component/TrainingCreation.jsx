@@ -33,12 +33,14 @@ const trainingRegForm = {
   trainingType: { ...inputField },
   duration: { ...inputField },
   location: { ...inputField },
-  requestBy: { ...inputField },
   account: { ...inputField },
   count: { ...inputField },
   skills: { ...inputField },
   assignSME: { ...inputField },
   programManager: { ...inputField },
+  programManagerSapid: { ...inputField },
+  requestBy: { ...inputField },
+  requestBySapid: { ...inputField },
   plannedEndDate: { ...inputField },
   plannedStDate: { ...inputField },
   actualEndDate: { ...inputField },
@@ -91,15 +93,17 @@ class TrainingCreation extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      activeStep: 2,
+      activeStep: 0,
       errors: {},
       formValues: { ...trainingRegForm },
       showToast: false,
       toastMsg: '',
       skillList: [],
+      smesList: [],
       locationList: [],
       accountList: [],
       selectedSkill: [],
+      selectedSME: [],
       EventDetailsList: [],
       trainingTypeList: [],
       eventSelected: null,
@@ -114,7 +118,8 @@ class TrainingCreation extends React.Component {
       newBatchCount: '',
       showCandidateUpload: false,
       CRFormIsValid: false,
-      batchSelected: null
+      batchSelected: null,
+      smesListOption: [],
     }
     this.candidateRegRef = React.createRef();
     this.batchFormationRef = React.createRef();
@@ -125,6 +130,7 @@ class TrainingCreation extends React.Component {
     this.getLocation();
     this.getAccount();
     this.getTrainingType();
+    this.getSmesList();
   }
   getAccount = () => {
     this.props.getAccount().then(response => {
@@ -186,6 +192,25 @@ class TrainingCreation extends React.Component {
           }
         });
         this.setState({ skillList });
+      } else {
+        this.setState({ showToast: true, toastMsg: 'Something went Wrong. Please try again later.' })
+      }
+    })
+  }
+  getSmesList = () => {
+    this.props.getSmeList().then(response => {
+      if (response && response.errCode === 200) {
+        const smesList = response.arrRes.map(list => {
+          return {
+            value: list.id,
+            id: list.id,
+            label: list.name,
+            skill: list.SkillName,
+            skillsId: list.skill_ids
+          }
+        });
+        console.log(smesList);
+        this.setState({ smesList });
       } else {
         this.setState({ showToast: true, toastMsg: 'Something went Wrong. Please try again later.' })
       }
@@ -266,15 +291,19 @@ class TrainingCreation extends React.Component {
       trainingType: formData.trainingType,
       plannedEndDate: moment(formData.plannedEndDate).format("YYYY-MM-DD HH:mm:ss"),
       plannedStDate: moment(formData.plannedStDate).format("YYYY-MM-DD HH:mm:ss"),
-      requestBy: formData.requestBy,
       skills: formData.skills,
+      smeIds: formData.assignSME,
+      programManager: formData.programManager,
+      programManagerSapid: formData.programManagerSapid,
+      requestBy: formData.requestBy,
+      requestBySapid: formData.requestBySapid,
       CreatedBy: 1,
       UpdatedBy: 1
     }
     this.props.registerTraining(reqObj).then(result => {
       this.setState({
         formValues: { ...trainingRegForm }, selectedAccount: null, selectedTrainingType: null, selectedLocation: null,
-        selectedSkill: null
+        selectedSkill: null, selectedSME: null
       });
     })
   }
@@ -294,6 +323,24 @@ class TrainingCreation extends React.Component {
     if (e.target.name === 'programManager') {
       this.setState({ selectedProgramManager: e.target });
     }
+    if (e.target.name === 'skills') {
+      this.setState({ smesListOption: [] }, ()=> {
+        const { smesList } = this.state;
+        const TemSme = [];
+        const onchangeSkill = e.target.value;
+        smesList.forEach((list, index) => {
+          const Indexkill = list.skillsId.filter(element => onchangeSkill.includes(element));
+          if (Indexkill.length > 0) {
+            TemSme.push({
+              value: list.id,
+              id: list.id,
+              label: list.label.concat("-").concat(list.skill)
+            });
+          }
+        });
+        this.setState({ smesListOption: TemSme });
+      });
+    }
 
     this.inputFieldChange(e);
   }
@@ -307,14 +354,16 @@ class TrainingCreation extends React.Component {
     this.setState({ activeStep: index, batchDetailsList: [], eventSelected: null });
   }
   handleNext = async () => {
-    if (this.state.activeStep === 1) {
+    if (this.state.activeStep === 0) {
+      this.submitForm();
+    } else if (this.state.activeStep === 1) {
       await this.candidateRegRef.current.submitForm().then(res => {
         console.log('-isFormSubmittedSuccess--', res);
         if (res === 200) {
-          this.setState(prev => ({ activeStep: prev.activeStep + 1,  CRFormIsValid: false, batchDetailsList: [], eventSelected: null }));
+          this.setState(prev => ({ activeStep: prev.activeStep + 1, CRFormIsValid: false, batchDetailsList: [], eventSelected: null }));
         }
       });
-    } else if (this.state.activeStep < 3 && this.state.activeStep !== 1) {
+    } else if (this.state.activeStep < 3) {
       console.log('-isFormSubmittedSuccess-again-');
       this.setState(prev => ({ activeStep: prev.activeStep + 1, CRFormIsValid: false, batchDetailsList: [], eventSelected: null }));
     }
@@ -406,7 +455,7 @@ class TrainingCreation extends React.Component {
     const { classes } = this.props;
     const { skillList, showAddBatchModal, newBatchName, batchSelected, batchDetailsList, EventDetailsList,
       eventSelected, activeStep, showCandidateUpload, CRFormIsValid, selectedProgramManager, newBatchCount, selectedTrainingType,
-      selectedAccount, selectedLocation, locationList, accountList, trainingTypeList, formValues } = this.state;
+      selectedAccount, selectedLocation, locationList, accountList, trainingTypeList, formValues, smesList, smesListOption } = this.state;
     const steps = this.getSteps();
     let disableSubmitBtn = false;
     if (activeStep === 1) {
@@ -478,6 +527,16 @@ class TrainingCreation extends React.Component {
                 errorMessage={this.state.errors.account === "" ? null : this.state.errors.account}
               />
               <Textbox
+                fieldLabel="Candidates Count"
+                value={formValues.count.value}
+                id="count"
+                type="number"
+                placeholder="Count"
+                errorMessage={this.state.errors.count === "" ? null : this.state.errors.count}
+                name="count"
+                onChange={this.inputFieldChange}
+              />
+              <Textbox
                 fieldLabel="Requested By"
                 value={formValues.requestBy.value}
                 id="requestBy"
@@ -487,28 +546,37 @@ class TrainingCreation extends React.Component {
                 name="requestBy"
                 onChange={this.inputFieldChange}
               />
-              <SelectOne
-                fieldLabel="Program Manager"
-                id="programManager"
-                name="programManager"
-                placeholder="Program Manager"
-                value={selectedProgramManager}
-                options={skillList}
-                onChange={this.selectFieldChange}
-                errorMessage={this.state.errors.programManager === "" ? null : this.state.errors.programManager}
+              <Textbox
+                fieldLabel="Requested By Sapid"
+                value={formValues.requestBySapid.value}
+                id="requestBySapid"
+                type="text"
+                placeholder="Requested By Sapid"
+                errorMessage={this.state.errors.requestBySapid === "" ? null : this.state.errors.requestBySapid}
+                name="requestBySapid"
+                onChange={this.inputFieldChange}
               />
             </div>
           </Grid>
           <Grid item xs={12} sm={6}>
-
             <Textbox
-              fieldLabel="Count"
-              value={formValues.count.value}
-              id="count"
-              type="number"
-              placeholder="Count"
-              errorMessage={this.state.errors.count === "" ? null : this.state.errors.count}
-              name="count"
+              fieldLabel="Program Manager"
+              id="programManager"
+              name="programManager"
+              type="text"
+              placeholder="Program Manager"
+              value={formValues.programManager.value}
+              onChange={this.inputFieldChange}
+              errorMessage={this.state.errors.programManager === "" ? null : this.state.errors.programManager}
+            />
+            <Textbox
+              fieldLabel="program Manager Sapid"
+              value={formValues.programManagerSapid.value}
+              id="programManagerSapid"
+              type="text"
+              placeholder="program Manager Sapid"
+              errorMessage={this.state.errors.programManagerSapid === "" ? null : this.state.errors.programManagerSapid}
+              name="programManagerSapid"
               onChange={this.inputFieldChange}
             />
             <SelectOne
@@ -529,7 +597,7 @@ class TrainingCreation extends React.Component {
               placeholder="Assign SME"
               value={formValues.assignSME && formValues.assignSME.value}
               isMulti={true}
-              options={skillList}
+              options={smesListOption}
               onChange={this.selectFieldChange}
               errorMessage={this.state.errors.assignSME === "" ? null : this.state.errors.assignSME}
             />
@@ -593,10 +661,10 @@ class TrainingCreation extends React.Component {
         }
         {activeStep === 2 && <Grid container spacing={3} className={classes.gridRoot}>
           <BatchFormation
-           getTrainingList={this.props.getTrainingList}
-           getBatchList={this.props.getBatchList}
-           getCandidateMapList={this.props.getCandidateMapList}
-           insertCandidateBatchMap={this.props.insertCandidateBatchMap}
+            getTrainingList={this.props.getTrainingList}
+            getBatchList={this.props.getBatchList}
+            getCandidateMapList={this.props.getCandidateMapList}
+            insertCandidateBatchMap={this.props.insertCandidateBatchMap}
             ref={this.batchFormationRef}
           />
           {/* <Grid item xs={12} sm={4}>
@@ -631,7 +699,6 @@ class TrainingCreation extends React.Component {
           </Button>
           </Grid> */}
         </Grid>}
-        
         {activeStep === 3 && <div>Curriculum</div>}
         <Dialog
           disableBackdropClick
@@ -688,7 +755,6 @@ class TrainingCreation extends React.Component {
             onClick={this.handleNext}
             disabled={disableSubmitBtn}>
             {activeStep === 2 ? 'Next' : 'Submit'}
-            
           </Button>
         </div>
       </Paper>

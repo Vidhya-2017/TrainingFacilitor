@@ -70,7 +70,7 @@ export const TrainingListAction = {
     },
      getSMEList: async () => {
         try {
-            const response = await clients.axiosAPI.post('/Smesearch.php');
+            const response = await clients.axiosAPI.post('/ListSmelist.php');
             return (response.data);
         }
         catch (error) {

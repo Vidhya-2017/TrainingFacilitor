@@ -16,6 +16,7 @@ const mapDispatchToProps = (dispatch) => {
     insertCandidate: TrainingCreationAction.insertCandidate,
     getCandidateMapList: TrainingCreationAction.getCandidateMapList,
     insertCandidateBatchMap: TrainingCreationAction.insertCandidateBatchMap,
+    getSmeList: TrainingCreationAction.getSmeList,
     
   };
 };

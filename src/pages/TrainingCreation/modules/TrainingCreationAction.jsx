@@ -19,7 +19,7 @@ export const TrainingCreationAction = {
     },
     getSkillList: async (data) => {
         try {
-            const response = await clients.axiosAPI.post('ListSkillsList.php', data);
+            const response = await clients.axiosAPI.post('/ListSkillsList.php', data);
             return (response.data);
         }
         catch (error) {
@@ -28,7 +28,7 @@ export const TrainingCreationAction = {
     },
     getLocation: async (data) => {
         try {
-            const response = await clients.axiosAPI.post('ListLocation.php', data);
+            const response = await clients.axiosAPI.post('/ListLocation.php', data);
             return (response.data);
         }
         catch (error) {
@@ -38,7 +38,7 @@ export const TrainingCreationAction = {
 
     getAccount: async (data) => {
         try {
-            const response = await clients.axiosAPI.post('ListAccount.php', data);
+            const response = await clients.axiosAPI.post('/ListAccount.php', data);
             return (response.data);
         }
         catch (error) {
@@ -47,7 +47,7 @@ export const TrainingCreationAction = {
     },
     registerTraining: async (data) => {
         try {
-            const response = await clients.axiosAPI.post('AddTrainingList.php', data);
+            const response = await clients.axiosAPI.post('/AddTrainingList.php', data);
             return (response.data);
         }
         catch (error) {
@@ -121,6 +121,15 @@ export const TrainingCreationAction = {
     insertCandidateBatchMap: async (data) => {
         try {
             const response = await clients.axiosAPI.post('/CandidateBatchMapAdd.php', data);
+            return (response.data);
+        }
+        catch (error) {
+            return (error.response);
+        }
+    },
+    getSmeList: async () => {
+        try {
+            const response = await clients.axiosAPI.get('/ListSmelist.php');
             return (response.data);
         }
         catch (error) {
