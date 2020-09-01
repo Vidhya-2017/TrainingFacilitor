@@ -43,6 +43,7 @@ class SMEList extends React.Component {
             formValues: { ...smeRegForm },
             smeListVal: [],
             showToast: false,
+            defaultValue: [],
             toastMsg: '',
             skillList: [],
             showAddSMEModal: false,
@@ -57,23 +58,26 @@ class SMEList extends React.Component {
             {
                 title: "Contact Number",
                 field: "phone_number",
-                validate: rowData => rowData.phone_number !== ''
+                validate: rowData => this.editValidate(rowData, "phone")
             },
             {
                 title: "Sap Id",
                 field: "sap_id",
-                validate: rowData => rowData.sap_id !== ''
+                validate: rowData => this.editValidate(rowData, "sap_id")
             },
             {
                 title: "Email id",
                 field: "email",
-                validate: rowData => rowData.email !== ''
+                validate: rowData => this.editValidate(rowData, "email")
             },
+
             {
                 title: "Skills",
                 field: "SkillName",
                 editComponent: props => {
-                    const defaultValue = this.state.skillList.filter(skill => props.rowData.skills.includes(skill.id))
+
+                    const defaultValue = this.state.skillList.filter(skill => props.rowData.skill_ids.includes(skill.id))
+
                     return (
                         <Select
                             placeholder="Skills"
@@ -89,6 +93,40 @@ class SMEList extends React.Component {
             }
         ]
     }
+
+    
+
+    editValidate(data, action) {
+        switch (action) {
+            case "phone":
+                const phonePattern = RegExp(/^([+]\d{2})?\d{10}$/);
+                if (phonePattern.test(data.phone_number)) {
+                    return true;
+                }
+                else
+                    return false;
+                break;
+            case "sap_id":
+                const sapidPattern = RegExp(/^\d{7}|\d{8}$/);
+                if (sapidPattern.test(data.sap_id)) {
+                    return true;
+                }
+                else
+                    return false;
+                break;
+            case "email":
+                const emailPattern = RegExp(/^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i);
+                if (emailPattern.test(data.email)) {
+                    return true;
+                }
+                else
+                    return false;
+                break;
+            default:
+                return false;
+        }
+    }
+
 
     componentDidMount() {
         this.props.getSMEList().then((response) => {
@@ -155,7 +193,6 @@ class SMEList extends React.Component {
     }
 
     editSubmit = (newData, oldData) => {
-
         const skillIds = newData.SkillName.map(skill => skill.id);
         const reqObj = {
             id: newData.id,
@@ -177,6 +214,7 @@ class SMEList extends React.Component {
                             name: newData.name,
                             email: newData.email,
                             sap_id: newData.sap_id,
+                            skill_ids: reqObj.skills,
                             SkillName: skillNames.toString(),
                             phone_number: newData.phone_number
                         } : el
@@ -226,6 +264,7 @@ class SMEList extends React.Component {
                     sap_id: formValues.sapId.value,
                     phone_number: formValues.contactNumber.value,
                     email: formValues.emailId.value,
+                    skill_ids: reqObj.skills,
                     SkillName: skillNames.toString()
                 }
                 const updatedItems = [...this.state.smeListVal, myObj];
@@ -240,7 +279,7 @@ class SMEList extends React.Component {
             }
             else if (response && response.errCode === 404) {
                 this.setState({
-                    SmeName: '',
+                    formValues: { ...smeRegForm },
                     add: false,
                     showAddSMEModal: false,
                     showToast: true,
@@ -439,6 +478,3 @@ class SMEList extends React.Component {
 }
 
 export default withStyles(styles, { withTheme: true })(SMEList);
-
-
-
