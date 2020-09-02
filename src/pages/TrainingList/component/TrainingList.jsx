@@ -110,6 +110,7 @@ class TrainingList extends React.Component {
         field: "skill_name",
         editComponent: props => {
           const defaultValue = this.state.skillList.filter(skill => props.rowData.skills.includes(skill.id))
+          props.rowData.sme_name = [];
           return (
             <Select
             placeholder="Skills"
@@ -146,9 +147,14 @@ class TrainingList extends React.Component {
                   });
                 }
             }); 
+            if(typeof props.value === "object" && isSkillUpdate) {
+              smeValue = props.value;
+              props.rowData.sme_name = props.value;
+            } else {
+              smeValue = null;
+            }
           } else if( typeof props.rowData.skill_name === "string"){
             TemSme = [];
-            smeValue = [];
             this.state.smeList.forEach((list, index) => {
               const indexSkill = list.skillsId.filter(id => props.rowData.skills.includes(id));
               if(indexSkill.length > 0) {
@@ -161,7 +167,10 @@ class TrainingList extends React.Component {
                   });
                 }
             }); 
+            smeValue = props.value;
+            props.rowData.sme_name = props.value;
           } else {
+            smeValue = null;
             isSkillUpdate = true;
           }
           if(typeof props.value === 'string' && !isSkillUpdate) {
