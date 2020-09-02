@@ -77,7 +77,10 @@ class SkillList extends React.Component {
         })
       }
     });
+    this.getCurriculumList();
+  }
 
+  getCurriculumList() {
     this.props.getCurriculumList().then((response) => {
       if (response && response.errCode === 200) {
         this.curriculumListVal = response.arrRes;
@@ -100,19 +103,23 @@ class SkillList extends React.Component {
     const filteredItems = this.state.skillListVal.filter((item) => item.id !== id);
     const reqObj = {
       id: id,
-      updated_by: 1
     }
     this.props.deleteSkillList(reqObj).then(response => {
       if (response.errCode === 200) {
         this.setState({
           skillListVal: filteredItems,
+          curriculumListVal: [],
+          selectedSkillVal: '',
+          showAddSkillModal: false,
           showToast: true,
           toastMessage: "Skill name deleted successfully",
         });
+        this.getCurriculumList();
       }
       else {
         this.setState({
           showToast: true,
+          showAddSkillModal: false,
           toastMessage: "Error in Skill name deletion"
         });
       }
@@ -121,14 +128,12 @@ class SkillList extends React.Component {
   }
 
   editSubmit = (newData, oldData) => {
-    console.log(newData);
-    console.log(this.state.skillListVal, "Val")
     const reqObj = {
       id: newData.id,
       skill_name: newData.skill_name,
       updated_by: this.state.updated_by
     }
-    console.log(reqObj);
+
     this.props.editSkillList(reqObj).then(response => {
       if (response.errCode === 200) {
         this.setState(prevState => ({
@@ -167,15 +172,49 @@ class SkillList extends React.Component {
   handleModalSubmit = (e) => {
     const { newSkillName } = this.state;
     const date = moment().format("YYYY-MM-DD");
-    const reqObj = {
-      skill_name: newSkillName,
-      created_by: 1,
-      updated_by: 1,
-      created_date: date
-    }
+
     if (this.state.skillEdit === true) {
-      //   console.log(e)
+      const reqObj = {
+        id: this.state.skillId,
+        skill_name: this.state.newSkillName,
+        updated_by: this.state.updated_by
+      }
+      this.props.editSkillList(reqObj).then(response => {
+        if (response.errCode === 200) {
+          this.componentDidMount();
+          const updatedItems = [...this.state.skillListVal, reqObj];
+          this.setState({
+            skillListVal: updatedItems,
+            selectedSkillVal: newSkillName,
+            showToast: true,
+            showAddSkillModal: false,
+            toastMessage: "Skill name updated successfully",
+          });
+        }
+        else if (response.errCode === 404) {
+          this.setState({
+            showToast: true,
+            showAddSkillModal: false,
+            toastMessage: " failed in updating Skill name "
+          });
+        }
+        else {
+          this.setState({
+            showToast: true,
+            showAddSkillModal: false,
+            toastMessage: "error in updating the Skill name"
+          });
+        }
+      });
+    } else if (this.state.delSkill === true) {
+      this.handleDelete(this.state.skillId)
     } else {
+      const reqObj = {
+        skill_name: newSkillName,
+        created_by: 1,
+        updated_by: 1,
+        created_date: date
+      }
       this.props.addSkillList(reqObj).then(response => {
         if (response && response.errCode === 200) {
           const myObj = {
@@ -220,22 +259,20 @@ class SkillList extends React.Component {
     }
     this.props.addCurriculum(reqObj).then(response => {
       if (response && response.errCode === 200) {
-        console.log('--response-', response);
         const myObj = {
           id: response.AddedCurriculumId.toString(),
           skill_id: skillId,
           name: newCurriculumName,
-          skill_name: newCurriculumName  
+          skill_name: newCurriculumName
         }
-        console.log('--myObj-', myObj);
         this.curriculumListVal = [...this.state.curriculumListVal, myObj];
-        console.log('--curriculumListVal-', this.curriculumListVal);
 
         const updatedItems = [...this.state.curriculumListVal, myObj];
-        console.log('--updatedItems-', updatedItems);
+
         this.setState({
           showAddCurriculumModal: false,
           curriculumListVal: updatedItems,
+          newCurriculumName: '',
           showToast: true,
           toastMessage: "Curriculum name added successfully!"
         })
@@ -266,27 +303,27 @@ class SkillList extends React.Component {
     }
 
     this.props.editCurriculum(reqObj).then(response => {
-      if (response.errCode === 200) {
+      if (response && response.errCode === 200) {
+        const data = [...this.state.curriculumListVal];
+        data[data.indexOf(oldData)] = newData;
         this.setState(prevState => ({
-          curriculumListVal: prevState.curriculumListVal.map(
-            el => el.id === newData.id ? { ...el, name: newData.name } : el
-          )
-        }))
-        this.setState({
+          ...prevState, curriculumListVal: data,
           showToast: true,
-          toastMessage: "Skill name updated successfully",
-        });
+          toastMessage: "Curriculum name updated successfully",
+        }))
+       
+        this.getCurriculumList();
       }
       else if (response.errCode === 404) {
         this.setState({
           showToast: true,
-          toastMessage: " failed in updating Skill name "
+          toastMessage: " failed in updating Curriculum name "
         });
       }
       else {
         this.setState({
           showToast: true,
-          toastMessage: "error in updating the Skill name"
+          toastMessage: "error in updating the Curriculum name"
         });
       }
     });
@@ -305,6 +342,7 @@ class SkillList extends React.Component {
           showToast: true,
           toastMessage: "Curriculum name deleted successfully",
         });
+        this.getCurriculumList();
       }
       else {
         this.setState({
@@ -321,14 +359,32 @@ class SkillList extends React.Component {
       skill.skill_id === e.target.value
     )
 
-    this.setState({ curriculumListVal: filteredCurriculum, skillId: e.target.value})
+    this.setState({
+      curriculumListVal: filteredCurriculum, skillId: e.target.value,
+      selectedSkillVal: e.nativeEvent.target.textContent
+    })
   }
 
 
   render() {
     const { skillListVal, showAddSkillModal, newSkillName, curriculumListVal, skillId,
-      newCurriculumName, showAddCurriculumModal } = this.state;
+      newCurriculumName, showAddCurriculumModal, selectedSkillVal, skillEdit, delSkill } = this.state;
     const { classes } = this.props;
+
+    let title = '', disabled = false;
+
+    if (delSkill === true) {
+      title = 'Delete Skill';
+      disabled = false;
+    } else {
+      disabled = (newSkillName === '' || newSkillName === null) ? true : false
+      if (skillEdit === true) {
+        title = 'Edit Skill Name'
+      } else {
+        title = 'Add Skill Name'
+      }
+    }
+
 
     return (
       <div className="SkillList_container">
@@ -340,30 +396,38 @@ class SkillList extends React.Component {
           onClose={this.handleModalClose}
           aria-labelledby="Skill-Name"
         >
-          <DialogTitle id="Skill-Name">Add Skill Name</DialogTitle>
-          <DialogContent >
-            <div style={{ display: 'flex' }}>
-              <Typography style={{ padding: '15px 15px 10px 0' }}>Skill Name:</Typography>
-              <TextField
-                autoFocus
-                variant="outlined"
-                margin="dense"
-                placeholder="Skill Name"
-                type="text"
-                value={newSkillName}
-                onChange={(e) => this.setState({ newSkillName: e.target.value })}
-              />
-            </div>
-          </DialogContent>
+          <DialogTitle id="Skill-Name">{title}</DialogTitle>
+          {this.state.delSkill !== true ?
+            <DialogContent >
+              <div style={{ display: 'flex' }}>
+                <Typography style={{ padding: '15px 15px 10px 0' }}>Skill Name:</Typography>
+                <TextField
+                  autoFocus
+                  variant="outlined"
+                  margin="dense"
+                  placeholder="Skill Name"
+                  type="text"
+                  value={newSkillName}
+                  onChange={(e) => this.setState({ newSkillName: e.target.value })}
+                />
+              </div>
+            </DialogContent>
+            :
+            <DialogContent>
+              Are you Sure to delete skill {selectedSkillVal} ?
+            </DialogContent>
+          }
           <DialogActions>
             <Button onClick={this.handleModalClose} variant="contained" color="primary">
               Cancel
                 </Button>
-            <Button onClick={this.handleModalSubmit} disabled={newSkillName === '' || newSkillName === null} variant="contained" color="primary">
+            <Button onClick={this.handleModalSubmit} disabled={disabled} variant="contained" color="primary">
               Submit
                 </Button>
           </DialogActions>
         </Dialog>
+
+
         <Dialog
           disableBackdropClick
           maxWidth="xs"
@@ -419,9 +483,11 @@ class SkillList extends React.Component {
               'padding': '15px 0px 26px 5px',
               'verticalAlign': 'bottom'
             }} >
-            <Button onClick={(event) => this.setState({ showAddSkillModal: true, skillEdit: false })}><AddIcon fontSize="small" /></Button>
-            <Button onClick={(event) => this.setState({ showAddSkillModal: true, skillEdit: true })}><CreateIcon fontSize="small" /></Button>
-            <Button><DeleteIcon fontSize="small" /></Button>
+            <Button onClick={(event) => this.setState({ showAddSkillModal: true, skillEdit: false, delSkill: false, newSkillName: '' })}><AddIcon fontSize="small" /></Button>
+            <Button onClick={(event) => this.setState({ showAddSkillModal: true, skillEdit: true, delSkill: false, newSkillName: selectedSkillVal })}
+              disabled={selectedSkillVal === '' || selectedSkillVal === undefined}><CreateIcon fontSize="small" /></Button>
+            <Button onClick={(event) => this.setState({ showAddSkillModal: true, skillEdit: false, delSkill: true })}
+              disabled={selectedSkillVal === '' || selectedSkillVal === undefined}> <DeleteIcon fontSize="small" /></Button>
           </ButtonGroup>
           {/* </div> */}
           <MaterialTable
@@ -436,9 +502,10 @@ class SkillList extends React.Component {
             actions={skillId ? [
               {
                 icon: 'add',
-                tooltip: 'Add Skill Name',
+                tooltip: 'Add Curriculum Name',
                 isFreeAction: true,
-                onClick: (event) => this.setState({ showAddCurriculumModal: true })
+                onClick: (event) => this.setState({ showAddCurriculumModal: true }),
+                disabled: selectedSkillVal === '' || selectedSkillVal === undefined
               },
 
             ] : []}

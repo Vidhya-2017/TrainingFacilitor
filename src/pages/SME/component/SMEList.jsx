@@ -58,11 +58,13 @@ class SMEList extends React.Component {
             {
                 title: "Contact Number",
                 field: "phone_number",
+                type: "Numeric",
                 validate: rowData => this.editValidate(rowData, "phone")
             },
             {
                 title: "Sap Id",
                 field: "sap_id",
+                type: "Numeric",
                 validate: rowData => this.editValidate(rowData, "sap_id")
             },
             {
@@ -89,12 +91,12 @@ class SMEList extends React.Component {
                         />
                     )
                 },
-                validate: rowData => rowData.skills !== '',
+                validate: rowData => this.editValidate(rowData, "skill")
             }
         ]
     }
 
-    
+
 
     editValidate(data, action) {
         switch (action) {
@@ -111,6 +113,12 @@ class SMEList extends React.Component {
                 if (sapidPattern.test(data.sap_id)) {
                     return true;
                 }
+                else
+                    return false;
+                break;
+            case "skill":
+                if (data.SkillName !== null)
+                    return true;
                 else
                     return false;
                 break;
@@ -136,6 +144,7 @@ class SMEList extends React.Component {
                     showToast: true,
                     toastMsg: "SME Data loaded successfully"
                 })
+
             } else {
                 this.setState({
                     smeListVal: [],
@@ -174,16 +183,14 @@ class SMEList extends React.Component {
         this.props.deleteSMEList(reqObj).then(response => {
             if (response && response.errCode === 200) {
                 this.setState({
-                    smeName: '',
+
                     smeListVal: filteredItems,
-                    deleteModal: false,
                     showToast: true,
                     toastMsg: "SME deleted successfully",
                 });
             }
             else {
                 this.setState({
-                    smeName: '', deleteModal: false,
                     showToast: true,
                     toastMsg: "Error in SME deletion"
                 });
@@ -221,21 +228,18 @@ class SMEList extends React.Component {
                     )
                 }))
                 this.setState({
-                    SmeName: '',
                     showToast: true,
                     toastMsg: "SME Details updated successfully",
                 });
             }
             else if (response && response.errCode === 404) {
                 this.setState({
-                    SmeName: '',
                     showToast: true,
                     toastMsg: " Failed in updating SME Details "
                 });
             }
             else {
                 this.setState({
-                    SmeName: '',
                     showToast: true,
                     toastMsg: "Error in updating the SME Details"
                 });
@@ -269,7 +273,6 @@ class SMEList extends React.Component {
                 }
                 const updatedItems = [...this.state.smeListVal, myObj];
                 this.setState({
-                    add: false,
                     formValues: { ...smeRegForm },
                     showAddSMEModal: false,
                     smeListVal: updatedItems,
@@ -280,7 +283,6 @@ class SMEList extends React.Component {
             else if (response && response.errCode === 404) {
                 this.setState({
                     formValues: { ...smeRegForm },
-                    add: false,
                     showAddSMEModal: false,
                     showToast: true,
                     toastMsg: " SME Already exists!"
@@ -288,8 +290,6 @@ class SMEList extends React.Component {
             }
             else {
                 this.setState({
-                    SmeName: '',
-                    add: false,
                     showAddSMEModal: false,
                     showToast: true,
                     toastMsg: "Error in adding SME!"
@@ -303,6 +303,7 @@ class SMEList extends React.Component {
     }
 
     inputFieldChange = (e) => {
+
         const targetName = e.target.name;
         const targetValue = e.target.value;
         const targetType = e.target.type ? e.target.type : '';
@@ -321,6 +322,8 @@ class SMEList extends React.Component {
         }
         this.setState({ formValues: updatedRegForm, formIsValid });
     }
+
+
 
     checkValidity(inputValue, rules, inputType, inputName) {
         if (inputValue) {
@@ -384,7 +387,7 @@ class SMEList extends React.Component {
                                 variant="outlined"
                                 margin="dense"
                                 placeholder="Sap Id"
-                                type="text"
+                                type="Number"
                                 name="sapId"
                                 value={formValues.sapId.value}
                                 onChange={this.inputFieldChange}
@@ -404,7 +407,7 @@ class SMEList extends React.Component {
                                 variant="outlined"
                                 margin="dense"
                                 placeholder="Contact Number"
-                                type="text"
+                                type="Number"
                                 name="contactNumber"
                                 value={formValues.contactNumber.value}
                                 onChange={this.inputFieldChange}

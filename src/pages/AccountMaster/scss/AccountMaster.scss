@@ -1,6 +1,4 @@
-/* Made with love by Mutiullah Samim*/
-
-.SMEList_container{
+.AccountMaster_container{
     .container{
         width: 60%;
         border: solid 1px lightgrey;
@@ -10,7 +8,6 @@
     .blue_theme{
         height: 100%;
     }
-
     $breakpoint-tablet: 775px;
     @media (max-width: $breakpoint-tablet) {
         .container{width: 100%; height: auto; }
@@ -28,4 +25,3 @@
         }
     }
 } 
-
