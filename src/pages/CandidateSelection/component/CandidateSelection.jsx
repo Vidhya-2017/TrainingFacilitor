@@ -55,7 +55,7 @@ const styles = (theme) => ({
   },
   input: {
     marginLeft: 8,
-    marginTop: 11,
+    // marginTop: 11,
     flex: 1,
   },
   cardHeader: {
@@ -69,8 +69,8 @@ const styles = (theme) => ({
     overflow: "auto"
   },
   button: {
-    margin: theme.spacing(1, 1),
-    justify: "right",
+    margin: theme.spacing(1, 0),
+    // justify: "right",
   },
   bottomBtn: {
     justifyContent: 'flex-end',
@@ -78,10 +78,13 @@ const styles = (theme) => ({
     marginTop: 10
   },
   selectOne: {
-    display: 'flex',
+    width: '100%'
   },
   trainingTitle: {
     padding: "15px 20px"
+  },
+  searchAlign: {
+    float: 'right'
   }
 });
 
@@ -426,22 +429,23 @@ class CandidateSelection extends Component {
             Candidate Selection
           </Typography>
           <div className={classes.selectOne}>
-            <Typography variant="body1" className={classes.trainingTitle}>Training List </Typography >
-            <Grid item xs={12} sm={4} md={4}>
+            {/* <Typography variant="body1" className={classes.trainingTitle}>Training List </Typography > */}
+            <Grid item xs={12} sm={4} md={4} style={{ 'display': 'inline-block' }}>
               <SelectOne
+                className="inline"
                 fieldLabel=""
                 id="training"
                 name="training"
-                placeholder="Training"
+                placeholder="Training List"
                 value={selectedTraining ? selectedTraining : null}
                 options={trainingList}
                 onChange={this.selectTrainingChange}
                 errorMessage={this.state.errors.training === "" ? null : this.state.errors.training}
-
               />
             </Grid>
-            {(this.left.length > 0 || this.right.length > 0) && <Grid item xs={12} sm={6} md={4}>
-            <Paper component="form" className={classes.searchRoot}>
+            {(this.left.length > 0 || this.right.length > 0) && <Grid item xs={12} sm={6} md={4}
+              style={{ 'display': 'inline-block' }} className={classes.searchAlign}>
+              <Paper component="form" className={classes.searchRoot}>
                 <InputBase
                   className={classes.input}
                   placeholder="Search "
@@ -472,8 +476,8 @@ class CandidateSelection extends Component {
               alignItems="center"
               className={classes.gridRoot}
             >
-              <Grid item xs={5} sm={5}>{this.customList("Non-Registered", left)}</Grid>
-              <Grid item>
+              <Grid item xs={12} sm={5}>{this.customList("Non-Registered", left)}</Grid>
+              <Grid item xs={12} sm={2}>
                 <Grid container direction="column" alignItems="center">
                   <Button
                     variant="outlined"
@@ -497,7 +501,7 @@ class CandidateSelection extends Component {
                     </Button>
                 </Grid>
               </Grid>
-              <Grid item xs={5} sm={5}>{this.customList("Registered", right)}</Grid>
+              <Grid item xs={12} sm={5}>{this.customList("Registered", right)}</Grid>
             </Grid>
 
           }
@@ -526,7 +530,7 @@ class CandidateSelection extends Component {
             />
           </Snackbar>
         </Paper>
-      </div>
+      </div >
     );
   }
 }

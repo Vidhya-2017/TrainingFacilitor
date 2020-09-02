@@ -72,8 +72,8 @@ class LOBList extends React.Component {
         this.props.addLOB(reqObj).then(response => {
             if (response && response.errCode === 200) {
                 const myObj = {
-                    id: response.arrRes,
-                    lob_name: newLOBName
+                    id: response.arrResid,
+                    lob_name: response.arrRes
                 }
                 const updatedItems = [...this.state.LOBListVal, myObj];
                 this.setState({
