@@ -9,6 +9,91 @@ import { MakeColumns } from '../MakeColumns';
 import ArrowDown from '../../../common/icons/ArrowDown';
 import ArrowUp from '../../../common/icons/ArrowUp';
 import '../scss/Home.scss';
+import SelectStyles from '../../../components/UI_Component/Select/SelectStyles';
+
+import { Paper, Typography, List, Grid, ListItem, ListItemIcon, Checkbox, TextField, ListItemText, IconButton, withStyles } from '@material-ui/core';
+import green from '@material-ui/core/colors/green';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import ErrorIcon from '@material-ui/icons/Error';
+import SnackbarContent from '@material-ui/core/SnackbarContent';
+import PropTypes from 'prop-types';
+import classNames from 'classnames';
+import Snackbar from '@material-ui/core/Snackbar';
+import CloseIcon from '@material-ui/icons/Close';
+
+import MaterialTable from "material-table";
+
+const variantIcon = {
+  success: CheckCircleIcon,
+  error: ErrorIcon,
+};
+
+
+const styles1 = theme => ({
+  success: {
+    backgroundColor: green[600],
+  },
+  error: {
+    backgroundColor: theme.palette.error.dark,
+  },
+  info: {
+    backgroundColor: theme.palette.primary.dark,
+  },
+  icon: {
+    fontSize: 20,
+  },
+  iconVariant: {
+    opacity: 0.9,
+    marginRight: theme.spacing(1),
+  },
+  message: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+});
+
+function MySnackbarContent(props) {
+  const { classes, className, message, onClose, variant, ...other } = props;
+  const Icon = variantIcon[variant];
+
+  return (
+    <SnackbarContent
+      className={classNames(classes[variant], className)}
+      aria-describedby="client-snackbar"
+      message={
+        <span id="client-snackbar" className={classes.message}>
+          <Icon className={classNames(classes.icon, classes.iconVariant)} />
+          {message}
+        </span>
+      }
+      action={[
+        <IconButton
+          key="close"
+          aria-label="Close"
+          color="inherit"
+          className={classes.close}
+          onClick={onClose}
+        >
+          <CloseIcon className={classes.icon} />
+        </IconButton>,
+      ]}
+      {...other}
+    />
+  );
+}
+
+MySnackbarContent.propTypes = {
+  classes: PropTypes.object.isRequired,
+  className: PropTypes.string,
+  message: PropTypes.node,
+  onClose: PropTypes.func,
+  variant: PropTypes.oneOf(['success', 'warning', 'error', 'info']).isRequired,
+};
+
+const MySnackbarContentWrapper = withStyles(styles1)(MySnackbarContent);
+
+const months = [{ value: 'January', label: 'January' }, { value: 'February', label: 'February' }, { value: 'March', label: 'March' }, { value: 'April', label: 'April' }, { value: 'May', label: 'May' }, { value: 'June', label: 'June' }, { value: 'July', label: 'July' }, { value: 'August', label: 'August' }, { value: 'September', label: 'September' }, { value: 'October', label: 'October' }, { value: 'November', label: 'November' }, { value: 'December', label: 'December' }]
+
 
 class Home extends Component {
 
@@ -19,8 +104,36 @@ class Home extends Component {
       data: [],
       cols: [],
       selectedSheet: null,
-      sheetOptions: []
+      selectedTraining: null,
+      trainingList: [],
+      sheetOptions: [],
+      snackbaropen: false,
+      snackmsg: '',
+      snackvariant: '',
     }
+    this.columnFields = [
+
+    ]
+  }
+
+  componentDidMount() {
+    this.getTrainingList();
+  }
+
+  getTrainingList = () => {
+    this.props.getTrainingList().then(response => {
+      if (response && response.arrRes) {
+        const trainingList = response.arrRes.map(list => {
+          return {
+            value: list.id,
+            label: list.training_name
+          }
+        });
+        this.setState({ trainingList });
+      } else {
+        this.setState({ snackbaropen: true, snackmsg: 'Something went Wrong. Please try again later', snackvariant: "error" })
+      }
+    })
   }
 
   getFileDetails = (e) => {
@@ -53,27 +166,48 @@ class Home extends Component {
   }
 
   submitSheet = () => {
-    const { file } = this.state;
-    var reader = new FileReader();
-    reader.onload = (e) => {
-      var binaryData = e.target.result;
-      var base64String = window.btoa(binaryData);
-      const reqObj = {
-        mime: file.type,
-        data: base64String,
-        sheetname : this.state.selectedSheet.label,
-        updated_by: 1
-        
-      }
-      console.log(reqObj);
-      this.props.importExcel(reqObj);   
-    };
-    reader.readAsBinaryString(file);
+
+    if (this.state.selectedTraining !== null) {
+
+      const { file, data, selectedTraining } = this.state;
+      var reader = new FileReader();
+      reader.onload = (e) => {
+        var binaryData = e.target.result;
+        var base64String = window.btoa(binaryData);
+        const reqObj = {
+          // mime: file.type,
+          details: data,
+          created_by: 1,
+          training_id: selectedTraining.value,
+          // sheetname : this.state.selectedSheet.label,
+          updated_by: 1
+
+        }
+
+        this.props.insertCandidates(reqObj).then((response) => {
+
+          if (response && response.errCode === 200) {
+
+            this.setState({ sheetOptions: [], file: {}, data: [], selectedTraining: null, snackbaropen: true, snackmsg: 'Candidates Uploaded Successfully', snackvariant: "success" });
+          } else if (response.errCode === 404) {
+
+            const snackmsg = 'We have ' + `${response.Email_exist.length}` + ' Existing Data and ' + `${response.Format_error_list.length}` + ' Format Error Data and Remaining Data has been Uploaded Successfully';
+            this.setState({ sheetOptions: [], file: {}, data: [], selectedTraining: null, snackbaropen: true, snackmsg, snackvariant: "success" })
+
+          }
+        });
+      };
+      reader.readAsBinaryString(file);
+    } else {
+      this.setState({ snackbaropen: true, snackmsg: 'Please Select a Training', snackvariant: "error" })
+    }
   }
 
   handleChange = selectedSheet => {
+
     const { file } = this.state;
     this.setState({ selectedSheet: selectedSheet, data: [], cols: [] });
+    this.columnFields = [];
     const reader = new FileReader();
     const rABS = !!reader.readAsBinaryString;
     reader.onload = (e) => {
@@ -89,21 +223,75 @@ class Home extends Component {
       });
       if (sheetData.length > 0) {
         columns = sheetData[0].map(col => {
+
           return {
             dataField: col.toString().trim(),
             text: col,
             sort: true,
             filter: false,
             sortCaret: (order, column) => {
-              if (!order) return (<span><ArrowUp/><ArrowDown/></span>);
-              else if (order === 'asc') return (<span><ArrowUp/></span>);
-              else if (order === 'desc') return (<span><ArrowDown/></span>);
+              if (!order) return (<span><ArrowUp /><ArrowDown /></span>);
+              else if (order === 'asc') return (<span><ArrowUp /></span>);
+              else if (order === 'desc') return (<span><ArrowDown /></span>);
               return null;
             }
           }
         });
       }
       const data = XLSX.utils.sheet_to_json(ws, { raw: false });
+
+      Object.keys(data[0]).forEach((key, index) => {
+        if (key === 'Expected Joining Date') {
+          this.columnFields.push(
+            {
+              title: key,
+              field: key,
+              editComponent: props => (
+                <TextField
+                  id="Expected Joining Date"
+                  name="Expected Joining Date"
+                  type="date"
+                  value={props.value}
+                  onChange={e => props.onChange(e.target.value)}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+              ),
+            },
+          )
+        } else if (key === 'Joining Month') {
+          this.columnFields.push(
+            {
+              title: key,
+              field: key,
+              editComponent: props => {
+                console.log(props);
+                const defaultLabel = (typeof props.rowData["Joining Month"] === 'string') ? props.rowData["Joining Month"] : props.rowData["Joining Month"].label;
+                return (
+                  <Select
+                    placeholder="Joining Month"
+                    onChange={e => props.onChange(e)}
+                    options={months}
+                    styles={SelectStyles()}
+                    defaultValue={{ value: props.value, label: defaultLabel }}
+                  />
+                )
+              },
+            },
+          )
+        } else {
+          this.columnFields.push(
+            {
+              title: key,
+              field: key,
+
+            },
+          )
+        }
+
+      });
+
       this.setState({ data: data, cols: columns });
     };
     if (rABS) {
@@ -115,17 +303,17 @@ class Home extends Component {
 
   showFilter = (e) => {
     const { cols } = this.state;
-    console.log('----e---', cols);
+
     let filterOptions = [...cols];
-    if(e.target.checked) {
+    if (e.target.checked) {
       filterOptions = filterOptions.map(item => {
         item.filter = textFilter({
-            delay: 1000,
-            className: 'filterTextField',
-            placeholder: item.dataField,
-            onClick: e => console.log(e)
-          });
-          return item;
+          delay: 1000,
+          className: 'filterTextField',
+          placeholder: item.dataField,
+          onClick: e => console.log(e)
+        });
+        return item;
       });
     } else {
       filterOptions = filterOptions.map(item => {
@@ -135,8 +323,49 @@ class Home extends Component {
     }
     this.setState({ cols: filterOptions });
   }
+
+  editSubmit = (newData, oldData) => {
+    const data = [...this.state.data];
+    data[data.indexOf(oldData)] = newData;
+    this.setState(prevState => ({
+      data: prevState.data.map(
+        el => el.Email === newData.Email ? {
+          ...el,
+          id: newData.id,
+          "Joining Month": newData['Joining Month'].value ? newData['Joining Month'].value : newData['Joining Month'],
+        } : el
+      )
+    }))
+  }
+
+  handleDelete = (oldData) => {
+    const data = [...this.state.data];
+    data.splice(data.indexOf(oldData), 1);
+    this.setState({
+      data: data,
+    });
+
+  }
+
+  selectChange = selectoption => {
+    this.setState({ selectedTraining: selectoption });
+  };
+
+  handleClick = () => {
+    this.setState({ snackbaropen: true });
+  };
+
+  handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    this.setState({ snackbaropen: false });
+  };
+
   render() {
-    const { file, data, cols, selectedSheet, sheetOptions } = this.state;
+    const { file, data, cols, snackbaropen, snackvariant, snackmsg, selectedTraining, trainingList, selectedSheet, sheetOptions } = this.state;
+
     const recordPerPageVal = Math.ceil(data.length / 10) * 10;
     const recordPerPageOptions = [
       { text: "10", page: 10 },
@@ -263,17 +492,24 @@ class Home extends Component {
             {file && file.name && <span className='fileName'>{file.name}</span>}
           </div>
           {sheetOptions.length > 0 && <Select
+            value={selectedTraining}
+            onChange={this.selectChange}
+            options={trainingList}
+            styles={selectStyles}
+            placeholder='Select the Training'
+          />}
+          {sheetOptions.length > 0 && <Select
             value={selectedSheet}
             onChange={this.handleChange}
             options={sheetOptions}
             styles={selectStyles}
             placeholder='Select the Sheet'
-          />} 
+          />}
           {data.length > 0 &&
             <div className="custom-control custom-switch filterSwitch">
-            <input type="checkbox" className="custom-control-input" onChange={this.showFilter} id="customSwitch1" />
-            <label className="custom-control-label" for="customSwitch1">Show Filter Options</label>
-          </div>
+              <input type="checkbox" className="custom-control-input" onChange={this.showFilter} id="customSwitch1" />
+              <label className="custom-control-label" for="customSwitch1">Show Filter Options</label>
+            </div>
           }
           {sheetOptions.length > 0 && <div className='uploadBtn'>
             <Button disabled={data.length === 0} className='file-upload fileUploadBtn btn shadow' onClick={this.submitSheet}>Submit</Button>
@@ -284,21 +520,51 @@ class Home extends Component {
 
         {data.length > 0 &&
           <div className='candidateListTable'>
-            <BootstrapTable
-              keyField='id'
+            <MaterialTable
+              title=""
+              columns={this.columnFields}
               data={data}
-              columns={cols}
-              wrapperClasses='listTable'
-              rowClasses='rowlist'
-              headerClasses="listHeader"
-              pagination={paginationFactory(paginationOptions)}
-              filter={ filterFactory() }
+              style={{ boxShadow: 'none', border: 'solid 1px #ccc' }}
+              options={{
+                actionsColumnIndex: -1,
+                pageSizeOptions: []
+              }}
+              editable={{
+                onRowUpdate: (newData, oldData) =>
+                  new Promise((resolve) => {
+                    resolve();
+                    if (oldData) {
+                      console.log('--oldData-', oldData);
+                      this.editSubmit(newData, oldData);
+                    }
+                  }),
+                onRowDelete: (oldData) =>
+                  new Promise((resolve) => {
+                    resolve();
+                    this.handleDelete(oldData);
+                  })
+              }}
             />
           </div>
         }
         {data.length > 0 && <Alert className='noteContainer' variant='secondary'>
           ** Please check the candidate data and then click <b>Submit</b> to save the excel sheet.
         </Alert>}
+        <Snackbar
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'left',
+          }}
+          open={snackbaropen}
+          autoHideDuration={4000}
+          onClose={this.handleClose}
+        >
+          <MySnackbarContentWrapper
+            onClose={this.handleClose}
+            variant={snackvariant}
+            message={snackmsg}
+          />
+        </Snackbar>
       </div>
     );
   }

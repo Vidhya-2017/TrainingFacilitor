@@ -2,7 +2,16 @@ import clients from '../../../common/clients';
 import * as actionTypes from "../../../common/actionTypes/Home.actiontype";
 
 export const HomeActions = {
-    importExcel: (data) => {
+  importExcel: async (data) => {
+    try {
+      const response = await clients.axiosAPI.post('/importCandidates.php',data);
+      return (response.data);
+    }
+    catch (error) {
+      return (error.response);
+    }
+  }, 
+   /*  importExcel: (data) => {
         return async (dispatch) => {
           return clients.axiosAPI.post('importCandidates.php', data).then(res =>{
             dispatch({
@@ -13,10 +22,26 @@ export const HomeActions = {
             ).catch(
               error => {
               return (error.response.data);   
-            }
+            } 
             );
           }
+      }, */
+      getTrainingList: async () => {
+        try {
+          const response = await clients.axiosAPI.get('/TrainingList.php');
+          return (response.data);
+        }
+        catch (error) {
+          return (error.response);
+        }
       },
-    
-    
+      insertCandidates: async (data) => {
+        try {
+          const response = await clients.axiosAPI.post('/CandidateUpload.php',data);
+          return (response.data);
+        }
+        catch (error) {
+          return (error.response);
+        }
+      },
 }

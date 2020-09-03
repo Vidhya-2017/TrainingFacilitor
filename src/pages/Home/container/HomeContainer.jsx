@@ -4,15 +4,17 @@ import HomeList from '../component/Home';
 
 
 const mapDispatchToProps = (dispatch) => {
-  return {
-    importExcel: (data) => dispatch(HomeActions.importExcel(data))
+  return {    
+    insertCandidates:HomeActions.insertCandidates,
+    getTrainingList:HomeActions.getTrainingList,
+    // importExcel: (data) => dispatch(HomeActions.importExcel(data))
   };
 };
 
 
 const mapStateToProps = (state) => {
   return {
-    importDetails: state.HomeReducer
+    // importDetails: state.HomeReducer
   }
 }
 
