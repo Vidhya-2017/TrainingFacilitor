@@ -10,7 +10,6 @@
     .blue_theme{
         height: 100%;
     }
-
     $breakpoint-tablet: 775px;
     @media (max-width: $breakpoint-tablet) {
         .container{width: 100%; height: auto; }

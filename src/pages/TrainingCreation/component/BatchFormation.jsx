@@ -90,7 +90,7 @@ const styles = (theme) => ({
     overflow: "auto"
   },
   button: {
-    margin: theme.spacing(1, 1),
+    margin: theme.spacing(1,0),
   },
   bottomBtn: {
     justifyContent: 'flex-end',
@@ -548,8 +548,8 @@ class BatchFormation extends Component {
             justify="center"
             alignItems="center"
           >
-            <Grid item xs={5} sm={5}>{this.customList("Non-Registered", left)}</Grid>
-            <Grid item xs={2} sm={2}>
+            <Grid item xs={12} sm={5}>{this.customList("Non-Registered", left)}</Grid>
+            <Grid item xs={12} sm={2}>
               <Grid container direction="column" alignItems="center">
                 <Button
                   variant="outlined"
@@ -569,7 +569,7 @@ class BatchFormation extends Component {
                 >  &lt;  </Button>
               </Grid>
             </Grid>
-            <Grid item xs={5} sm={5}>{this.customList("Registered", right)}</Grid>
+            <Grid item xs={12} sm={5}>{this.customList("Registered", right)}</Grid>
           </Grid>
         }
         <Snackbar

@@ -58,13 +58,13 @@ class SMEList extends React.Component {
             {
                 title: "Contact Number",
                 field: "phone_number",
-                type: "Numeric",
+                type: "numeric",
                 validate: rowData => this.editValidate(rowData, "phone")
             },
             {
                 title: "Sap Id",
                 field: "sap_id",
-                type: "Numeric",
+                type: "numeric",
                 validate: rowData => this.editValidate(rowData, "sap_id")
             },
             {
@@ -200,7 +200,7 @@ class SMEList extends React.Component {
     }
 
     editSubmit = (newData, oldData) => {
-        const skillIds = newData.SkillName.map(skill => skill.id);
+        var skillIds = (newData.SkillName === oldData.SkillName) ? newData.skill_ids : newData.SkillName.map(skill => skill.id)
         const reqObj = {
             id: newData.id,
             name: newData.name,
