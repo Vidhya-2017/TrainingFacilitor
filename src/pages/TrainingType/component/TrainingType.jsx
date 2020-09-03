@@ -318,7 +318,7 @@ class TrainingType extends React.Component {
                 onClick: (event) => this.setState({ showTrainingModal: true })
               },
             ]} */
-            editable={{
+            /* editable={{
               onRowUpdate: (newData, oldData) =>
                 new Promise((resolve) => {
                   resolve();
@@ -331,7 +331,7 @@ class TrainingType extends React.Component {
                   resolve();
                   this.handleDelete(oldData);
                 })
-            }}
+            }} */
           />
           <Snackbar
           anchorOrigin={{
