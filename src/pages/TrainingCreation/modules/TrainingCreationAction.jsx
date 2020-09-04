@@ -136,4 +136,22 @@ export const TrainingCreationAction = {
             return (error.response);
         }
     },
+    getTopicList: async (data) => {
+        try {
+            const response = await clients.axiosAPI.post('/TrainingBasedCurriculum.php', data);
+            return (response.data);
+        }
+        catch (error) {
+            return (error.response);
+        }
+    },
+    submitCurriculum: async (data) => {
+        try {
+            const response = await clients.axiosAPI.post('/AddTrainingSkillCurriculumMapping.php', data);
+            return (response.data);
+        }
+        catch (error) {
+            return (error.response);
+        }
+    },
 }

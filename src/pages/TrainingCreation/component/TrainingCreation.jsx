@@ -636,6 +636,8 @@ class TrainingCreation extends React.Component {
           <Curriculum
             ref={this.curriculumRef}
             getTrainingList={this.props.getTrainingList}
+            getTopicList ={this.props.getTopicList}
+            submitCurriculum ={this.props.submitCurriculum}
           />
         </Grid>
         }
@@ -649,8 +651,7 @@ class TrainingCreation extends React.Component {
           variant="contained"
           color="primary"
           onClick={this.handleNext}
-          disabled={disableSubmitBtn}>
-            Submit
+          disabled={disableSubmitBtn}>Submit
           </Button>
         </div >
       </Paper >
