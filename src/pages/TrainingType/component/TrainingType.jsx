@@ -2,89 +2,12 @@ import React from 'react';
 import MaterialTable from "material-table";
 import {
   Paper, withStyles, Typography, Dialog, DialogTitle, TextField, DialogActions, DialogContent,
-  Button,IconButton
+  Button
 } from '@material-ui/core';
 import '../scss/TrainingType.scss';
 import moment from 'moment';
 
-
-import green from '@material-ui/core/colors/green';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import ErrorIcon from '@material-ui/icons/Error';
-import SnackbarContent from '@material-ui/core/SnackbarContent';
-import PropTypes from 'prop-types';
-import classNames from 'classnames';
-import Snackbar from '@material-ui/core/Snackbar';
-import CloseIcon from '@material-ui/icons/Close';
-
-const variantIcon = {
-  success: CheckCircleIcon,
-  error: ErrorIcon,
-};
-
-const styles1 = theme => ({
-  success: {
-    backgroundColor: green[600],
-  },
-  error: {
-    backgroundColor: theme.palette.error.dark,
-  },
-  info: {
-    backgroundColor: theme.palette.primary.dark,
-  },
-  icon: {
-    fontSize: 20,
-  },
-  iconVariant: {
-    opacity: 0.9,
-    marginRight: theme.spacing(1),
-  },
-  message: {
-    display: 'flex',
-    alignItems: 'center',
-  },
-});
-
-function MySnackbarContent(props) {
-  const { classes, className, message, onClose, variant, ...other } = props;
-  const Icon = variantIcon[variant];
-
-  return (
-    <SnackbarContent
-      className={classNames(classes[variant], className)}
-      aria-describedby="client-snackbar"
-      message={
-        <span id="client-snackbar" className={classes.message}>
-          <Icon className={classNames(classes.icon, classes.iconVariant)} />
-          {message}
-        </span>
-      }
-      action={[
-        <IconButton
-          key="close"
-          aria-label="Close"
-          color="inherit"
-          className={classes.close}
-          onClick={onClose}
-        >
-          <CloseIcon className={classes.icon} />
-        </IconButton>,
-      ]}
-      {...other}
-    />
-  );
-}
-
-MySnackbarContent.propTypes = {
-  classes: PropTypes.object.isRequired,
-  className: PropTypes.string,
-  message: PropTypes.node,
-  onClose: PropTypes.func,
-  variant: PropTypes.oneOf(['success', 'warning', 'error', 'info']).isRequired,
-};
-
-const MySnackbarContentWrapper = withStyles(styles1)(MySnackbarContent);
-
+import SnackBar from "../../../components/UI_Component/SnackBar/SnackBar";
 
 const styles = (theme) => ({
   iconRoot: {
@@ -96,6 +19,7 @@ const styles = (theme) => ({
     padding: '10px 20px'
   },
 });
+
 class TrainingType extends React.Component {
   constructor(props) {
     super(props)
@@ -105,7 +29,7 @@ class TrainingType extends React.Component {
       newTrainingType: '',
       showToast: false,
       toastMessage: '',
-      snackbaropen: false,
+      snackBarOpen: false,
       snackmsg:'',
       snackvariant:'',
     }
@@ -122,12 +46,15 @@ class TrainingType extends React.Component {
     this.props.getTrainingTypeList().then((response) => {
       if (response && response.arrRes) {
         this.setState({
-          trainingtypeListVal: response.arrRes
+          trainingtypeListVal: response.arrRes,
+          snackBarOpen: true , 
+          snackmsg:"Training Type Loaded Successfully",
+          snackvariant:"success"
         })
       } else {
         this.setState({
           trainingtypeListVal: [],
-          snackbaropen: true , 
+          snackBarOpen: true , 
           snackmsg:"Error in Loading Training Types",
           snackvariant:"error"
         })
@@ -142,6 +69,7 @@ class TrainingType extends React.Component {
   }
 
   handleModalSubmit = () => {
+    this.setState({ snackBarOpen: false })
     const { newTrainingType } = this.state;
     const date = moment().format("YYYY-MM-DD");
     const reqObj = {
@@ -161,7 +89,7 @@ class TrainingType extends React.Component {
           showTrainingModal: false,
           newTrainingType : '',
           trainingtypeListVal: updatedItems,
-          snackbaropen: true ,
+          snackBarOpen: true ,
           snackmsg:"Training Type Added Successfully",
           snackvariant:"success"
         })
@@ -170,7 +98,7 @@ class TrainingType extends React.Component {
         this.setState({
           showTrainingModal: false,
           newTrainingType : '',
-          snackbaropen: true ,
+          snackBarOpen: true ,
           snackmsg:"Training Type Already Exists",
           snackvariant:"error"
         })
@@ -179,7 +107,7 @@ class TrainingType extends React.Component {
         this.setState({
           showTrainingModal: false,
           newTrainingType : '',
-          snackbaropen: true ,
+          snackBarOpen: true ,
           snackmsg:"Error in Adding Training Type",
           snackvariant:"error"
         })
@@ -188,7 +116,8 @@ class TrainingType extends React.Component {
   };
 
   editSubmit = (updatedTrainingtype, oldData) => {
-    if(oldData.type != updatedTrainingtype.type)
+    this.setState({ snackBarOpen: false })
+    if(oldData.type !== updatedTrainingtype.type)
     {
       const reqObj = {
         id: updatedTrainingtype.id,
@@ -201,21 +130,21 @@ class TrainingType extends React.Component {
           data[data.indexOf(oldData)] = updatedTrainingtype;
           this.setState(prevState => ({
             ...prevState, trainingtypeListVal: data, 
-            snackbaropen: true ,
+            snackBarOpen: true ,
             snackmsg:"Training Type Edited Successfully",
             snackvariant:"success"
           }))
         }
         else if (response && response.errCode === 404 && response.status === 'Training type exists!') {
           this.setState({
-            snackbaropen: true ,
+            snackBarOpen: true ,
             snackmsg:"Training Type Already Exists",
             snackvariant:"error"
           })
         }
         else {
           this.setState({
-            snackbaropen: true ,
+            snackBarOpen: true ,
             snackmsg:"Error in Editing Training Type",
             snackvariant:"error"
           });
@@ -226,6 +155,7 @@ class TrainingType extends React.Component {
   }
 
   handleDelete = (oldData) => {
+    this.setState({ snackBarOpen: false })
     const reqObj = {
       id: oldData.id,
       updated_by: 1
@@ -236,14 +166,14 @@ class TrainingType extends React.Component {
         data.splice(data.indexOf(oldData), 1);
         this.setState({
           trainingtypeListVal: data,
-          snackbaropen: true ,
+          snackBarOpen: true ,
           snackmsg:"Training Type Deleted Successfully",
           snackvariant:"success"
         });
       }
       else {
         this.setState({
-          snackbaropen: true ,
+          snackBarOpen: true ,
           snackmsg:"Error In Deleting Training Type ",
           snackvariant:"error"
         });
@@ -256,11 +186,11 @@ class TrainingType extends React.Component {
       return;
     }
 
-    this.setState({ snackbaropen: false });
+    this.setState({ snackBarOpen: false });
   };
 
   render() {
-    const { trainingtypeListVal, showTrainingModal, newTrainingType, snackbaropen, snackmsg, snackvariant } = this.state;
+    const { trainingtypeListVal, showTrainingModal, newTrainingType, snackBarOpen, snackmsg, snackvariant } = this.state;
     const { classes } = this.props;
     return (
       <div className="TrainingType_container">
@@ -333,21 +263,8 @@ class TrainingType extends React.Component {
                 })
             }} */
           />
-          <Snackbar
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'left',
-          }}
-          open={snackbaropen}
-          autoHideDuration={3000}
-          onClose={this.handleClose}
-        >
-          <MySnackbarContentWrapper
-            onClose={this.handleClose}
-            variant={snackvariant}
-            message={snackmsg}
-          />
-        </Snackbar>
+          {snackBarOpen &&
+                     <SnackBar snackBarOpen={snackBarOpen} snackmsg={snackmsg} snackvariant={snackvariant} />}
         </Paper>
       </div>
     )
