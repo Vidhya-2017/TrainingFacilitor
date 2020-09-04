@@ -23,74 +23,7 @@ import CloseIcon from '@material-ui/icons/Close';
 
 import MaterialTable from "material-table";
 
-const variantIcon = {
-  success: CheckCircleIcon,
-  error: ErrorIcon,
-};
-
-
-const styles1 = theme => ({
-  success: {
-    backgroundColor: green[600],
-  },
-  error: {
-    backgroundColor: theme.palette.error.dark,
-  },
-  info: {
-    backgroundColor: theme.palette.primary.dark,
-  },
-  icon: {
-    fontSize: 20,
-  },
-  iconVariant: {
-    opacity: 0.9,
-    marginRight: theme.spacing(1),
-  },
-  message: {
-    display: 'flex',
-    alignItems: 'center',
-  },
-});
-
-function MySnackbarContent(props) {
-  const { classes, className, message, onClose, variant, ...other } = props;
-  const Icon = variantIcon[variant];
-
-  return (
-    <SnackbarContent
-      className={classNames(classes[variant], className)}
-      aria-describedby="client-snackbar"
-      message={
-        <span id="client-snackbar" className={classes.message}>
-          <Icon className={classNames(classes.icon, classes.iconVariant)} />
-          {message}
-        </span>
-      }
-      action={[
-        <IconButton
-          key="close"
-          aria-label="Close"
-          color="inherit"
-          className={classes.close}
-          onClick={onClose}
-        >
-          <CloseIcon className={classes.icon} />
-        </IconButton>,
-      ]}
-      {...other}
-    />
-  );
-}
-
-MySnackbarContent.propTypes = {
-  classes: PropTypes.object.isRequired,
-  className: PropTypes.string,
-  message: PropTypes.node,
-  onClose: PropTypes.func,
-  variant: PropTypes.oneOf(['success', 'warning', 'error', 'info']).isRequired,
-};
-
-const MySnackbarContentWrapper = withStyles(styles1)(MySnackbarContent);
+import SnackBar from "../../../components/UI_Component/SnackBar/SnackBar";
 
 const months = [{ value: 'January', label: 'January' }, { value: 'February', label: 'February' }, { value: 'March', label: 'March' }, { value: 'April', label: 'April' }, { value: 'May', label: 'May' }, { value: 'June', label: 'June' }, { value: 'July', label: 'July' }, { value: 'August', label: 'August' }, { value: 'September', label: 'September' }, { value: 'October', label: 'October' }, { value: 'November', label: 'November' }, { value: 'December', label: 'December' }]
 
@@ -107,7 +40,7 @@ class Home extends Component {
       selectedTraining: null,
       trainingList: [],
       sheetOptions: [],
-      snackbaropen: false,
+      snackBarOpen: false,
       snackmsg: '',
       snackvariant: '',
     }
@@ -131,7 +64,7 @@ class Home extends Component {
         });
         this.setState({ trainingList });
       } else {
-        this.setState({ snackbaropen: true, snackmsg: 'Something went Wrong. Please try again later', snackvariant: "error" })
+        this.setState({ snackBarOpen: true, snackmsg: 'Something went Wrong. Please try again later', snackvariant: "error" })
       }
     })
   }
@@ -166,7 +99,7 @@ class Home extends Component {
   }
 
   submitSheet = () => {
-
+    this.setState({ snackBarOpen: false })
     if (this.state.selectedTraining !== null) {
 
       const { file, data, selectedTraining } = this.state;
@@ -188,18 +121,18 @@ class Home extends Component {
 
           if (response && response.errCode === 200) {
 
-            this.setState({ sheetOptions: [], file: {}, data: [], selectedTraining: null, snackbaropen: true, snackmsg: 'Candidates Uploaded Successfully', snackvariant: "success" });
+            this.setState({ sheetOptions: [], file: {}, data: [], selectedTraining: null, snackBarOpen: true, snackmsg: 'Candidates Uploaded Successfully', snackvariant: "success" });
           } else if (response.errCode === 404) {
 
             const snackmsg = 'We have ' + `${response.Email_exist.length}` + ' Existing Data and ' + `${response.Format_error_list.length}` + ' Format Error Data and Remaining Data has been Uploaded Successfully';
-            this.setState({ sheetOptions: [], file: {}, data: [], selectedTraining: null, snackbaropen: true, snackmsg, snackvariant: "success" })
+            this.setState({ sheetOptions: [], file: {}, data: [], selectedTraining: null, snackBarOpen: true, snackmsg, snackvariant: "success" })
 
           }
         });
       };
       reader.readAsBinaryString(file);
     } else {
-      this.setState({ snackbaropen: true, snackmsg: 'Please Select a Training', snackvariant: "error" })
+      this.setState({ snackBarOpen: true, snackmsg: 'Please Select a Training', snackvariant: "error" })
     }
   }
 
@@ -352,7 +285,7 @@ class Home extends Component {
   };
 
   handleClick = () => {
-    this.setState({ snackbaropen: true });
+    this.setState({ snackBarOpen: true });
   };
 
   handleClose = (event, reason) => {
@@ -360,11 +293,11 @@ class Home extends Component {
       return;
     }
 
-    this.setState({ snackbaropen: false });
+    this.setState({ snackBarOpen: false });
   };
 
   render() {
-    const { file, data, cols, snackbaropen, snackvariant, snackmsg, selectedTraining, trainingList, selectedSheet, sheetOptions } = this.state;
+    const { file, data, cols, snackBarOpen, snackvariant, snackmsg, selectedTraining, trainingList, selectedSheet, sheetOptions } = this.state;
 
     const recordPerPageVal = Math.ceil(data.length / 10) * 10;
     const recordPerPageOptions = [
@@ -550,21 +483,8 @@ class Home extends Component {
         {data.length > 0 && <Alert className='noteContainer' variant='secondary'>
           ** Please check the candidate data and then click <b>Submit</b> to save the excel sheet.
         </Alert>}
-        <Snackbar
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'left',
-          }}
-          open={snackbaropen}
-          autoHideDuration={4000}
-          onClose={this.handleClose}
-        >
-          <MySnackbarContentWrapper
-            onClose={this.handleClose}
-            variant={snackvariant}
-            message={snackmsg}
-          />
-        </Snackbar>
+        {snackBarOpen &&
+                     <SnackBar snackBarOpen={snackBarOpen} snackmsg={snackmsg} snackvariant={snackvariant} />}
       </div>
     );
   }

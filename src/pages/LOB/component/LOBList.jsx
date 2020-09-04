@@ -3,6 +3,7 @@ import MaterialTable from "material-table";
 import {
     Paper, withStyles, Typography, Dialog, DialogTitle, TextField, DialogActions, DialogContent, Button
 } from '@material-ui/core';
+import SnackBar from "../../../components/UI_Component/SnackBar/SnackBar";
 
 const styles = (theme) => ({
     iconRoot: {
@@ -30,7 +31,10 @@ class LOBList extends React.Component {
             LOBListVal: [],
             showAddLOBModal: false,
             showToast: false,
-            toastMessage: ''
+            toastMessage: '',
+            snackBarOpen: false,
+            snackmsg: '',
+            snackvariant: '',
         }
         this.columnFields = [
             {
@@ -47,14 +51,16 @@ class LOBList extends React.Component {
                 this.setState({
                     LOBListVal: response.arrRes,
                     newLOBName: '',
-                    showToast: true,
-                    toastMessage: "LOB Data loaded successfully"
+                    snackBarOpen: true,
+                    snackmsg: "LOB Data loaded successfully",
+                    snackvariant:"success"
                 })
             } else {
                 this.setState({
                     LOBListVal: [],
-                    showToast: true,
-                    toastMessage: "Error in loading LOB Data"
+                    snackBarOpen: true,
+                    snackmsg: "Error in loading LOB Data",
+                    snackvariant:"error"
                 })
             }
         });
@@ -65,6 +71,7 @@ class LOBList extends React.Component {
     }
 
     handleModalSubmit = () => {
+        this.setState({ snackBarOpen: false })
         const { newLOBName } = this.state;
         const reqObj = {
             lob_name: newLOBName,
@@ -80,58 +87,69 @@ class LOBList extends React.Component {
                     showAddLOBModal: false,
                     LOBListVal: updatedItems,
                     newLOBName: '',
-                    showToast: true,
-                    toastMessage: "LOB name added successfully!"
+                    snackBarOpen: true,
+                    snackmsg: "LOB Data Added successfully",
+                    snackvariant:"success"
                 })
             }
             else if (response && response.errCode === 404) {
                 this.setState({
                     showAddLOBModal: false,
-                    showToast: true,
-                    toastMessage: "Already LOB name exists!"
+                    newLOBName: '',
+                    snackBarOpen: true,
+                    snackmsg: "Already LOB name exists!",
+                    snackvariant:"error"
                 })
             }
             else {
                 this.setState({
                     showAddLOBModal: false,
-                    showToast: true,
-                    toastMessage: "error in adding LOB name!"
+                    snackBarOpen: true,
+                    snackmsg: "error in adding LOB name!",
+                    snackvariant:"error"
                 })
             }
         });
     };
 
     editSubmit = (newData, oldData) => {
+        
+    this.setState({ snackBarOpen: false })
         const reqObj = {
             id: newData.id,
             lob_name: newData.lob_name,
         }
         this.props.editLOB(reqObj).then(response => {
+            console.log(response);
             if (response && response.errCode === 200) {
                 const data = [...this.state.LOBListVal];
                 data[data.indexOf(oldData)] = newData;
                 this.setState(prevState => ({
                     ...prevState, LOBListVal: data, colsassessmentType: '',
-                    showToast: true,
-                    toastMessage: "LOB name updated successfully",
+                    snackBarOpen: true,
+                    snackmsg: "LOB Updated successfully",
+                    snackvariant:"success"
                 }))
             }
             else if (response && response.errCode === 404) {
                 this.setState({
-                    showToast: true,
-                    toastMessage: " failed in updating LOB name"
+                    snackBarOpen: true,
+                    snackmsg: "Error in updating LOB",
+                    snackvariant:"error"
                 });
             }
             else {
                 this.setState({
-                    showToast: true,
-                    toastMessage: "error in updating the LOB name"
+                    snackBarOpen: true,
+                    snackmsg: "Error in updating LOB",
+                    snackvariant:"error"
                 });
             }
         });
     }
 
     handleDelete = (oldData) => {
+        this.setState({ snackBarOpen: false })
         const reqObj = {
             id: oldData.id,
         }
@@ -141,21 +159,23 @@ class LOBList extends React.Component {
                 data.splice(data.indexOf(oldData), 1);
                 this.setState({
                     LOBListVal: data,
-                    showToast: true,
-                    toastMessage: "LOB name deleted successfully",
+                    snackBarOpen: true,
+                    snackmsg: "LOB Deleted Successfully",
+                    snackvariant:"success"
                 });
             }
             else {
                 this.setState({
-                    showToast: true,
-                    toastMessage: "Error in LOB name deletion"
+                    snackBarOpen: true,
+                    snackmsg: "Error in LOB deletion",
+                    snackvariant:"error"
                 });
             }
         });
     }
 
     render() {
-        const { LOBListVal, showAddLOBModal, showToast, toastMessage, newLOBName } = this.state;
+        const { LOBListVal, showAddLOBModal, showToast, toastMessage,snackBarOpen,snackmsg,snackvariant, newLOBName } = this.state;
         const { classes } = this.props;
         return (
             <div className="lob_container">
@@ -227,6 +247,8 @@ class LOBList extends React.Component {
                                 })
                         }}
                     />
+                    {snackBarOpen &&
+                     <SnackBar snackBarOpen={snackBarOpen} snackmsg={snackmsg} snackvariant={snackvariant} />}
                 </Paper>
             </div>
         )
