@@ -4,7 +4,7 @@ import {
   Paper, withStyles, Typography, Dialog, DialogTitle, TextField, DialogActions, DialogContent,
   Button,
 } from '@material-ui/core';
-import ToastBox from '../../../components/UI_Component/Toast/ToastBox';
+import SnackBar from '../../../components/UI_Component/SnackBar/SnackBar';
 
 const styles = (theme) => ({
   iconRoot: {
@@ -26,8 +26,9 @@ class DurationMaster extends React.Component {
       errors: {},
       durationMasterListVal: [],
       showAddDurationMasterModal: false,
-      showToast: false,
-      toastMsg: ''
+      snackvariant: '',
+      snackBarOpen: false,
+      snackmsg: ''
     }
     this.columnFields = [
       {
@@ -40,57 +41,81 @@ class DurationMaster extends React.Component {
 
   componentDidMount() {
     this.props.getDurationMasterList().then((response) => {
-      console.log(response);
-      if (response && response.errCode === 200) {
+
+      if (response === undefined) {
+        this.setState({
+          snackBarOpen: true,
+          snackvariant: 'error',
+          snackmsg: " Server is disconnected"
+        })
+      }
+      else if (response && response.errCode === 200) {
         this.setState({
           durationMasterListVal: response.arrRes,
-          showToast: true,
-          toastMsg: "Duration Master Data loaded successfully"
+          snackBarOpen: true,
+          snackvariant: 'success',
+          snackmsg: "Duration Master Data loaded successfully"
         })
       } else {
         this.setState({
           durationMasterListVal: [],
-          showToast: true,
-          toastMsg: "Error in loading Duration Master Data"
+          snackBarOpen: true,
+          snackvariant: 'error',
+          snackmsg: "Error in loading Duration Master Data"
         })
       }
     });
   }
 
   handleDelete = (id) => {
+
     const filteredItems = this.state.durationMasterListVal.filter((item) => item.id !== id);
     const reqObj = {
       id: id,
       updated_by: 1
     }
     this.props.deleteDurationMasterList(reqObj).then(response => {
-      if (response && response.errCode === 200) {
+      if (response === undefined) {
+        this.setState({
+          snackBarOpen: true,
+          snackvariant: 'error',
+          snackmsg: " Server is disconnected"
+        })
+      }
+      else if (response && response.errCode === 200) {
         this.setState({
           durationMasterListVal: filteredItems,
-          deleteModal: false,
-          showToast: true,
-          toastMsg: "Duration Master deleted successfully",
+          snackvariant: 'success',
+          snackBarOpen: true,
+          snackmsg: "Duration Master deleted successfully",
         });
       }
       else {
         this.setState({
           durationMaster: '', deleteModal: false,
-          showToast: true,
-          toastMsg: "Error in Duration Master deletion"
+          snackBarOpen: true,
+          snackvariant: 'error',
+          snackmsg: "Error in Duration Master deletion"
         });
       }
     });
   }
 
   editSubmit = (newData, oldData) => {
-    console.log(this.state.durationMasterListVal);
     const reqObj = {
       id: newData.id,
       duration: newData.duration,
       updated_by: "1"
     }
     this.props.editDurationMasterList(reqObj).then(response => {
-      if (response && response.errCode === 200) {
+      if (response === undefined) {
+        this.setState({
+          snackBarOpen: true,
+          snackvariant: 'error',
+          snackmsg: " Server is disconnected"
+        })
+      }
+      else if (response && response.errCode === 200) {
         this.setState(prevState => ({
           durationMasterListVal: prevState.durationMasterListVal.map(
             el => el.id === newData.id ? { ...el, duration: newData.duration } : el
@@ -98,22 +123,25 @@ class DurationMaster extends React.Component {
         }))
         this.setState({
           durationMaster: '',
-          showToast: true,
-          toastMsg: "Duration Master updated successfully",
+          snackvariant: 'success',
+          snackBarOpen: true,
+          snackmsg: "Duration Master updated successfully",
         });
       }
       else if (response && response.errCode === 404) {
         this.setState({
           durationMaster: '',
-          showToast: true,
-          toastMsg: " failed in updating Duration Master "
+          snackvariant: 'error',
+          snackBarOpen: true,
+          snackmsg: " failed in updating Duration Master "
         });
       }
       else {
         this.setState({
           durationMaster: '',
-          showToast: true,
-          toastMsg: "error in updating Duration Master"
+          snackvariant: 'error',
+          snackBarOpen: true,
+          snackmsg: "error in updating Duration Master"
         });
       }
     });
@@ -123,6 +151,10 @@ class DurationMaster extends React.Component {
     this.setState({ showAddDurationMasterModal: false, newDurationMaster: '' })
   }
 
+  onCloseSnackBar = () => {
+    this.setState({ snackBarOpen: false });
+  }
+
   handleModalSubmit = () => {
     const { newDurationMaster } = this.state;
     const reqObj = {
@@ -130,21 +162,27 @@ class DurationMaster extends React.Component {
       created_by: 1,
       updated_by: 1,
     }
-    console.log(reqObj);
     this.props.addDurationMasterList(reqObj).then(response => {
-      console.log(response);
-      if (response && response.errCode === 200) {
+      if (response === undefined) {
+        this.setState({
+          snackBarOpen: true,
+          snackvariant: 'error',
+          snackmsg: " Server is disconnected"
+        })
+      }
+      else if (response && response.errCode === 200) {
         const myObj = {
+          id: response.duration_id,
           duration: newDurationMaster
         }
         const updatedItems = [...this.state.durationMasterListVal, myObj];
         this.setState({
           newDurationMaster: '',
-          add: false,
+          snackvariant: 'success',
           showAddDurationMasterModal: false,
           durationMasterListVal: updatedItems,
-          showToast: true,
-          toastMsg: "Duration Master added successfully!"
+          snackBarOpen: true,
+          snackmsg: "Duration Master added successfully!"
         })
       }
       else if (response && response.errCode === 404) {
@@ -152,8 +190,9 @@ class DurationMaster extends React.Component {
           newDurationMaster: '',
           add: false,
           showAddDurationMasterModal: false,
-          showToast: true,
-          toastMsg: " Duration Master Already exists!"
+          snackBarOpen: true,
+          snackvariant: 'error',
+          snackmsg: " Duration Master Already exists!"
         })
       }
       else {
@@ -161,15 +200,16 @@ class DurationMaster extends React.Component {
           newDurationMaster: '',
           add: false,
           showAddDurationMasterModal: false,
-          showToast: true,
-          toastMsg: "Error in adding Duration Master!"
+          snackBarOpen: true,
+          snackvariant: 'error',
+          snackmsg: "Error in adding Duration Master!"
         })
       }
     });
   };
 
   render() {
-    const { durationMasterListVal, showAddDurationMasterModal, newDurationMaster, showToast, toastMsg } = this.state;
+    const { durationMasterListVal, showAddDurationMasterModal, newDurationMaster, snackvariant, snackBarOpen, snackmsg } = this.state;
     const { classes } = this.props;
     return (
       <div className="DurationMaster_container">
@@ -241,10 +281,8 @@ class DurationMaster extends React.Component {
                 })
             }}
           />
-          {
-            showToast &&
-            <ToastBox showToast={showToast} toastMsg={toastMsg} />
-          }
+          {snackBarOpen &&
+            <SnackBar onCloseSnackBar={this.onCloseSnackBar} snackBarOpen={snackBarOpen} snackmsg={snackmsg} snackvariant={snackvariant} />}
         </Paper>
 
       </div>

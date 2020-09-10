@@ -7,7 +7,8 @@ import {
 import Select from 'react-select';
 import SelectStyles from '../../../components/UI_Component/Select/SelectStyles';
 import SelectOne from '../../../components/UI_Component/Select/SelectOne';
-import ToastBox from '../../../components/UI_Component/Toast/ToastBox';
+import SnackBar from '../../../components/UI_Component/SnackBar/SnackBar';
+import '../scss/SMEList.scss';
 
 const styles = (theme) => ({
     iconRoot: {
@@ -42,10 +43,11 @@ class SMEList extends React.Component {
         this.state = {
             formValues: { ...smeRegForm },
             smeListVal: [],
-            showToast: false,
+            snackBarOpen: false,
             defaultValue: [],
-            toastMsg: '',
+            snackmsg: '',
             skillList: [],
+            snackvariant: '',
             showAddSMEModal: false,
             formIsValid: false
         }
@@ -138,18 +140,27 @@ class SMEList extends React.Component {
 
     componentDidMount() {
         this.props.getSMEList().then((response) => {
-            if (response && response.arrRes) {
+            if (response === undefined) {
+                this.setState({
+                    snackBarOpen: true,
+                    snackvariant: 'error',
+                    snackmsg: " Server is disconnected"
+                })
+            }
+            else if (response && response.arrRes) {
                 this.setState({
                     smeListVal: response.arrRes,
-                    showToast: true,
-                    toastMsg: "SME Data loaded successfully"
+                    snackBarOpen: true,
+                    snackvariant: 'success',
+                    snackmsg: "SME Data loaded successfully"
                 })
 
             } else {
                 this.setState({
                     smeListVal: [],
-                    showToast: true,
-                    toastMsg: "Error in loading SME Data"
+                    snackBarOpen: true,
+                    snackvariant: 'error',
+                    snackmsg: "Error in loading SME Data"
                 })
             }
         });
@@ -158,7 +169,14 @@ class SMEList extends React.Component {
 
     getSkillList = () => {
         this.props.getSkillList().then(response => {
-            if (response && response.errCode === 200) {
+            if (response === undefined) {
+                this.setState({
+                    snackBarOpen: true,
+                    snackvariant: 'error',
+                    snackmsg: " Server is disconnected"
+                })
+            }
+            else if (response && response.errCode === 200) {
                 const skillList = response.arrRes.map(list => {
                     return {
                         value: list.id,
@@ -168,7 +186,7 @@ class SMEList extends React.Component {
                 });
                 this.setState({ skillList });
             } else {
-                this.setState({ showToast: true, toastMsg: 'Something went Wrong. Please try again later.' })
+                this.setState({ snackBarOpen: true, snackvariant: 'error', snackmsg: 'Something went Wrong. Please try again later.' })
             }
         })
     }
@@ -181,18 +199,27 @@ class SMEList extends React.Component {
         }
 
         this.props.deleteSMEList(reqObj).then(response => {
-            if (response && response.errCode === 200) {
+            if (response === undefined) {
+                this.setState({
+                    snackBarOpen: true,
+                    snackvariant: 'error',
+                    snackmsg: " Server is disconnected"
+                })
+            }
+            else if (response && response.errCode === 200) {
                 this.setState({
 
                     smeListVal: filteredItems,
-                    showToast: true,
-                    toastMsg: "SME deleted successfully",
+                    snackBarOpen: true,
+                    snackmsg: "SME deleted successfully",
+                    snackvariant: 'success'
                 });
             }
             else {
                 this.setState({
-                    showToast: true,
-                    toastMsg: "Error in SME deletion"
+                    snackBarOpen: true,
+                    snackvariant: 'error',
+                    snackmsg: "Error in SME deletion"
                 });
             }
 
@@ -213,7 +240,14 @@ class SMEList extends React.Component {
         const filteredItems = this.state.skillList.filter(skill => reqObj.skills.includes(skill.id))
         const skillNames = filteredItems.map(item => item.label);
         this.props.editSMEList(reqObj).then(response => {
-            if (response && response.errCode === 200) {
+            if (response === undefined) {
+                this.setState({
+                    snackBarOpen: true,
+                    snackvariant: 'error',
+                    snackmsg: " Server is disconnected"
+                })
+            }
+            else if (response && response.errCode === 200) {
                 this.setState(prevState => ({
                     smeListVal: prevState.smeListVal.map(
                         el => el.id === newData.id ? {
@@ -228,20 +262,23 @@ class SMEList extends React.Component {
                     )
                 }))
                 this.setState({
-                    showToast: true,
-                    toastMsg: "SME Details updated successfully",
+                    snackBarOpen: true,
+                    snackmsg: "SME Details updated successfully",
+                    snackvariant: 'success'
                 });
             }
             else if (response && response.errCode === 404) {
                 this.setState({
-                    showToast: true,
-                    toastMsg: " Failed in updating SME Details "
+                    snackBarOpen: true,
+                    snackvariant: 'error',
+                    snackmsg: " Failed in updating SME Details "
                 });
             }
             else {
                 this.setState({
-                    showToast: true,
-                    toastMsg: "Error in updating the SME Details"
+                    snackBarOpen: true,
+                    snackvariant: 'error',
+                    snackmsg: "Error in updating the SME Details"
                 });
             }
         });
@@ -261,7 +298,14 @@ class SMEList extends React.Component {
         const filteredItems = this.state.skillList.filter(skill => reqObj.skills.includes(skill.id))
         const skillNames = filteredItems.map(item => item.label);
         this.props.addSMEList(reqObj).then(response => {
-            if (response && response.errCode === 200) {
+            if (response === undefined) {
+                this.setState({
+                    snackBarOpen: true,
+                    snackvariant: 'error',
+                    snackmsg: " Server is disconnected"
+                })
+            }
+            else if (response && response.errCode === 200) {
                 const myObj = {
                     id: response.arrRes,
                     name: formValues.smeName.value,
@@ -276,23 +320,26 @@ class SMEList extends React.Component {
                     formValues: { ...smeRegForm },
                     showAddSMEModal: false,
                     smeListVal: updatedItems,
-                    showToast: true,
-                    toastMsg: "SME added successfully!"
+                    snackBarOpen: true,
+                    snackvariant: 'success',
+                    snackmsg: "SME added successfully!"
                 })
             }
             else if (response && response.errCode === 404) {
                 this.setState({
                     formValues: { ...smeRegForm },
                     showAddSMEModal: false,
-                    showToast: true,
-                    toastMsg: " SME Already exists!"
+                    snackBarOpen: true,
+                    snackvariant: 'error',
+                    snackmsg: " SME Already exists!"
                 })
             }
             else {
                 this.setState({
                     showAddSMEModal: false,
-                    showToast: true,
-                    toastMsg: "Error in adding SME!"
+                    snackBarOpen: true,
+                    snackvariant: 'error',
+                    snackmsg: "Error in adding SME!"
                 })
             }
         });
@@ -300,6 +347,10 @@ class SMEList extends React.Component {
 
     handleModalClose = () => {
         this.setState({ showAddSMEModal: false, formValues: { ...smeRegForm } })
+    }
+
+    onCloseSnackBar = () => {
+        this.setState({ snackBarOpen: false });
     }
 
     inputFieldChange = (e) => {
@@ -357,7 +408,7 @@ class SMEList extends React.Component {
 
     render() {
         const { classes } = this.props;
-        const { formIsValid, showToast, toastMsg, skillList, formValues } = this.state;
+        const { formIsValid, snackvariant, snackBarOpen, snackmsg, skillList, formValues } = this.state;
         return (
             <div className="SMEList_container">
                 <Dialog
@@ -470,10 +521,8 @@ class SMEList extends React.Component {
                                 })
                         }}
                     />
-                    {
-                        showToast &&
-                        <ToastBox showToast={showToast} toastMsg={toastMsg} />
-                    }
+                    {snackBarOpen &&
+                        <SnackBar onCloseSnackBar={this.onCloseSnackBar} snackBarOpen={snackBarOpen} snackmsg={snackmsg} snackvariant={snackvariant} />}
                 </Paper>
             </div>
         )

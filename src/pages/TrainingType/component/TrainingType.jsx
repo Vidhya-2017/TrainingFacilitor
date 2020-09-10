@@ -30,8 +30,8 @@ class TrainingType extends React.Component {
       showToast: false,
       toastMessage: '',
       snackBarOpen: false,
-      snackmsg:'',
-      snackvariant:'',
+      snackmsg: '',
+      snackvariant: '',
     }
     this.columnFields = [
       {
@@ -47,29 +47,32 @@ class TrainingType extends React.Component {
       if (response && response.arrRes) {
         this.setState({
           trainingtypeListVal: response.arrRes,
-          snackBarOpen: true , 
-          snackmsg:"Training Type Loaded Successfully",
-          snackvariant:"success"
+          snackBarOpen: true,
+          snackmsg: "Training Type Loaded Successfully",
+          snackvariant: "success"
         })
       } else {
         this.setState({
           trainingtypeListVal: [],
-          snackBarOpen: true , 
-          snackmsg:"Error in Loading Training Types",
-          snackvariant:"error"
+          snackBarOpen: true,
+          snackmsg: "Error in Loading Training Types",
+          snackvariant: "error"
         })
       }
     });
   }
 
- 
+
 
   handleModalClose = () => {
     this.setState({ showTrainingModal: false, newTrainingType: '' })
   }
 
+  onCloseSnackBar = () => {
+    this.setState({ snackBarOpen: false });
+  }
+
   handleModalSubmit = () => {
-    this.setState({ snackBarOpen: false })
     const { newTrainingType } = this.state;
     const date = moment().format("YYYY-MM-DD");
     const reqObj = {
@@ -87,38 +90,36 @@ class TrainingType extends React.Component {
         const updatedItems = [...this.state.trainingtypeListVal, myObj];
         this.setState({
           showTrainingModal: false,
-          newTrainingType : '',
+          newTrainingType: '',
           trainingtypeListVal: updatedItems,
-          snackBarOpen: true ,
-          snackmsg:"Training Type Added Successfully",
-          snackvariant:"success"
+          snackBarOpen: true,
+          snackmsg: "Training Type Added Successfully",
+          snackvariant: "success"
         })
       }
       else if (response && response.errCode === 404 && response.status === 'Training type exists!') {
         this.setState({
           showTrainingModal: false,
-          newTrainingType : '',
-          snackBarOpen: true ,
-          snackmsg:"Training Type Already Exists",
-          snackvariant:"error"
+          newTrainingType: '',
+          snackBarOpen: true,
+          snackmsg: "Training Type Already Exists",
+          snackvariant: "error"
         })
       }
       else {
         this.setState({
           showTrainingModal: false,
-          newTrainingType : '',
-          snackBarOpen: true ,
-          snackmsg:"Error in Adding Training Type",
-          snackvariant:"error"
+          newTrainingType: '',
+          snackBarOpen: true,
+          snackmsg: "Error in Adding Training Type",
+          snackvariant: "error"
         })
       }
     });
   };
 
   editSubmit = (updatedTrainingtype, oldData) => {
-    this.setState({ snackBarOpen: false })
-    if(oldData.type !== updatedTrainingtype.type)
-    {
+    if (oldData.type !== updatedTrainingtype.type) {
       const reqObj = {
         id: updatedTrainingtype.id,
         training_type: updatedTrainingtype.type,
@@ -129,33 +130,32 @@ class TrainingType extends React.Component {
           const data = [...this.state.trainingtypeListVal];
           data[data.indexOf(oldData)] = updatedTrainingtype;
           this.setState(prevState => ({
-            ...prevState, trainingtypeListVal: data, 
-            snackBarOpen: true ,
-            snackmsg:"Training Type Edited Successfully",
-            snackvariant:"success"
+            ...prevState, trainingtypeListVal: data,
+            snackBarOpen: true,
+            snackmsg: "Training Type Edited Successfully",
+            snackvariant: "success"
           }))
         }
         else if (response && response.errCode === 404 && response.status === 'Training type exists!') {
           this.setState({
-            snackBarOpen: true ,
-            snackmsg:"Training Type Already Exists",
-            snackvariant:"error"
+            snackBarOpen: true,
+            snackmsg: "Training Type Already Exists",
+            snackvariant: "error"
           })
         }
         else {
           this.setState({
-            snackBarOpen: true ,
-            snackmsg:"Error in Editing Training Type",
-            snackvariant:"error"
+            snackBarOpen: true,
+            snackmsg: "Error in Editing Training Type",
+            snackvariant: "error"
           });
         }
       });
     }
-    
+
   }
 
   handleDelete = (oldData) => {
-    this.setState({ snackBarOpen: false })
     const reqObj = {
       id: oldData.id,
       updated_by: 1
@@ -166,16 +166,16 @@ class TrainingType extends React.Component {
         data.splice(data.indexOf(oldData), 1);
         this.setState({
           trainingtypeListVal: data,
-          snackBarOpen: true ,
-          snackmsg:"Training Type Deleted Successfully",
-          snackvariant:"success"
+          snackBarOpen: true,
+          snackmsg: "Training Type Deleted Successfully",
+          snackvariant: "success"
         });
       }
       else {
         this.setState({
-          snackBarOpen: true ,
-          snackmsg:"Error In Deleting Training Type ",
-          snackvariant:"error"
+          snackBarOpen: true,
+          snackmsg: "Error In Deleting Training Type ",
+          snackvariant: "error"
         });
       }
     });
@@ -239,32 +239,32 @@ class TrainingType extends React.Component {
               actionsColumnIndex: -1,
               pageSizeOptions: []
             }}
-            /* actions={[
-              {
-                icon: 'add',
-                tooltip: 'Add Training Type',
-                isFreeAction: true,
-                disabled : true,
-                onClick: (event) => this.setState({ showTrainingModal: true })
-              },
-            ]} */
-            /* editable={{
-              onRowUpdate: (newData, oldData) =>
-                new Promise((resolve) => {
-                  resolve();
-                  if (oldData) {
-                    this.editSubmit(newData, oldData);
-                  }
-                }),
-              onRowDelete: (oldData) =>
-                new Promise((resolve) => {
-                  resolve();
-                  this.handleDelete(oldData);
-                })
-            }} */
+          /* actions={[
+            {
+              icon: 'add',
+              tooltip: 'Add Training Type',
+              isFreeAction: true,
+              disabled : true,
+              onClick: (event) => this.setState({ showTrainingModal: true })
+            },
+          ]} */
+          /* editable={{
+            onRowUpdate: (newData, oldData) =>
+              new Promise((resolve) => {
+                resolve();
+                if (oldData) {
+                  this.editSubmit(newData, oldData);
+                }
+              }),
+            onRowDelete: (oldData) =>
+              new Promise((resolve) => {
+                resolve();
+                this.handleDelete(oldData);
+              })
+          }} */
           />
           {snackBarOpen &&
-                     <SnackBar snackBarOpen={snackBarOpen} snackmsg={snackmsg} snackvariant={snackvariant} />}
+            <SnackBar onCloseSnackBar={this.onCloseSnackBar} snackBarOpen={snackBarOpen} snackmsg={snackmsg} snackvariant={snackvariant} />}
         </Paper>
       </div>
     )

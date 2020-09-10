@@ -4,6 +4,7 @@ import {
   Paper, withStyles, Typography, Dialog, DialogTitle, TextField, DialogActions, DialogContent, Button
 } from '@material-ui/core';
 import '../scss/AssesmentType.scss';
+import SnackBar from '../../../components/UI_Component/SnackBar/SnackBar';
 import moment from 'moment';
 
 const styles = (theme) => ({
@@ -31,8 +32,9 @@ class AssesmentType extends React.Component {
       assessmentListVal: [],
       showAddAssessmentModal: false,
       newAssessmentScale: '',
-      showToast: false,
-      toastMessage: ''
+      snackBarOpen: false,
+      snackvariant: '',
+      snackmsg: ''
     }
     this.columnFields = [
       {
@@ -44,42 +46,65 @@ class AssesmentType extends React.Component {
   }
 
   componentDidMount() {
+
     this.props.getAssessmentList().then((response) => {
-      if (response && response.arrRes) {
+      if (response === undefined) {
+        this.setState({
+          snackBarOpen: true,
+          snackvariant: 'error',
+          snackmsg: " Server is disconnected"
+        })
+      }
+      else if (response && response.errCode === 200) {
         this.setState({
           assessmentListVal: response.arrRes,
-          showToast: true,
-          toastMessage: "Assessment Data loaded successfully"
+          snackBarOpen: true,
+          snackvariant: 'success',
+          snackmsg: "Assessment Data loaded successfully"
         })
+        console.log(this.state.assessmentListVal);
       } else {
         this.setState({
           assessmentListVal: [],
-          showToast: true,
-          toastMessage: "Error in loading Assessment Data"
+          snackBarOpen: true,
+          snackvariant: 'error',
+          snackmsg: "Error in loading Assessment Data"
         })
       }
     });
   }
 
-  handleDelete = (oldData) => {
+  onCloseSnackBar = () => {
+    this.setState({ snackBarOpen: false });
+  }
+
+  handleDelete = (id) => {
+    const filteredItems = this.state.assessmentListVal.filter((item) => item.id !== id);
     const reqObj = {
-      id: oldData.id,
+      id: id,
       updated_by: 1
     }
     this.props.DeleteAssesmentTypeList(reqObj).then(response => {
-      if (response && response.errCode === 200) {
-        const data = [...this.state.assessmentListVal];
-        data.splice(data.indexOf(oldData), 1);
+      if (response === undefined) {
         this.setState({
-          assessmentListVal: data,
-          showToast: true,
-          toastMessage: "Assessment name deleted successfully",
+          snackBarOpen: true,
+          snackvariant: 'error',
+          snackmsg: " Server is disconnected"
+        })
+      }
+      else if (response && response.errCode === 200) {
+        this.setState({
+          assessmentListVal: filteredItems,
+          snackBarOpen: true,
+          snackvariant: 'success',
+          snackmsg: "Assessment name deleted successfully",
         });
       }
       else {
         this.setState({
-          showToast: true,
-          toastMessage: "Error in Assessment name deletion"
+          snackBarOpen: true,
+          snackvariant: 'error',
+          snackmsg: "Error in Assessment name deletion"
         });
       }
     });
@@ -89,28 +114,40 @@ class AssesmentType extends React.Component {
     const reqObj = {
       id: updatedScale.id,
       assesment_type_name: updatedScale.assesment_type_name,
-      updated_by: updatedScale.updated_by
+      updated_by: "1"
     }
     this.props.EditAssesmentTypeList(reqObj).then(response => {
-      if (response && response.errCode === 200) {
-        const data = [...this.state.assessmentListVal];
-        data[data.indexOf(oldData)] = updatedScale;
+      if (response === undefined) {
+        this.setState({
+          snackBarOpen: true,
+          snackvariant: 'error',
+          snackmsg: " Server is disconnected"
+        })
+      }
+      else if (response && response.errCode === 200) {
         this.setState(prevState => ({
-          ...prevState, assessmentListVal: data, colsassessmentType: '',
-          showToast: true,
-          toastMessage: "Assessment name updated successfully",
+          assessmentListVal: prevState.assessmentListVal.map(
+            el => el.id === updatedScale.id ? { ...el, assesment_type_name: updatedScale.assesment_type_name } : el
+          )
         }))
+        this.setState({
+          snackBarOpen: true,
+          snackvariant: 'success',
+          snackmsg: "Assessment name updated successfully",
+        })
       }
       else if (response && response.errCode === 404) {
         this.setState({
-          showToast: true,
-          toastMessage: " failed in updating Assessment name"
+          snackBarOpen: true,
+          snackvariant: 'error',
+          snackmsg: " failed in updating Assessment name"
         });
       }
       else {
         this.setState({
-          showToast: true,
-          toastMessage: "error in updating the Assessment name"
+          snackBarOpen: true,
+          snackvariant: 'error',
+          snackmsg: "error in updating the Assessment name"
         });
       }
     });
@@ -130,38 +167,50 @@ class AssesmentType extends React.Component {
       created_date: date
     }
     this.props.setAddAssesmentTypeList(reqObj).then(response => {
-      if (response && response.errCode === 200) {
+      if (response === undefined) {
+        this.setState({
+          snackBarOpen: true,
+          snackvariant: 'error',
+          snackmsg: " Server is disconnected"
+        })
+      }
+      else if (response && response.errCode === 200) {
+        console.log(response);
         const myObj = {
           id: response.AssessmentTypeId,
           assesment_type_name: response.AssessmentTypeName
         }
         const updatedItems = [...this.state.assessmentListVal, myObj];
         this.setState({
+          newAssessmentScale: '',
           showAddAssessmentModal: false,
           assessmentListVal: updatedItems,
-          showToast: true,
-          toastMessage: "Assessment name added successfully!"
+          snackBarOpen: true,
+          snackvariant: 'success',
+          snackmsg: "Assessment name added successfully!"
         })
       }
       else if (response && response.errCode === 404) {
         this.setState({
           showAddAssessmentModal: false,
-          showToast: true,
-          toastMessage: "Already Assessment type name exists!"
+          snackBarOpen: true,
+          snackvariant: 'error',
+          snackmsg: "Already Assessment type name exists!"
         })
       }
       else {
         this.setState({
           showAddAssessmentModal: false,
-          showToast: true,
-          toastMessage: "error in adding aseessment name!"
+          snackBarOpen: true,
+          snackvariant: 'error',
+          snackmsg: "error in adding aseessment name!"
         })
       }
     });
   };
 
   render() {
-    const { assessmentListVal, showAddAssessmentModal, newAssessmentScale, showToast, toastMessage } = this.state;
+    const { assessmentListVal, showAddAssessmentModal, newAssessmentScale, snackvariant, snackBarOpen, snackmsg } = this.state;
     const { classes } = this.props;
     return (
       <div className="AssesmentType_container">
@@ -229,10 +278,12 @@ class AssesmentType extends React.Component {
               onRowDelete: (oldData) =>
                 new Promise((resolve) => {
                   resolve();
-                  this.handleDelete(oldData);
+                  this.handleDelete(oldData.id);
                 })
             }}
           />
+          {snackBarOpen &&
+            <SnackBar onCloseSnackBar={this.onCloseSnackBar} snackBarOpen={snackBarOpen} snackmsg={snackmsg} snackvariant={snackvariant} />}
         </Paper>
       </div>
     )

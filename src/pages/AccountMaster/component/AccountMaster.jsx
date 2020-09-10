@@ -4,7 +4,8 @@ import {
     Paper, withStyles, Typography, Dialog, DialogTitle, TextField, DialogActions, DialogContent,
     Button
 } from '@material-ui/core';
-import ToastBox from '../../../components/UI_Component/Toast/ToastBox';
+import SnackBar from '../../../components/UI_Component/SnackBar/SnackBar';
+import '../scss/AccountMaster.scss';
 
 const styles = (theme) => ({
     iconRoot: {
@@ -32,8 +33,9 @@ class AccountMaster extends React.Component {
         super(props)
         this.state = {
             accountMasterListVal: [],
-            showToast: false,
-            toastMsg: '',
+            snackBarOpen: false,
+            snackvariant: '',
+            snackmsg: '',
             accountName: '',
             showAddAccountMasterModal: false,
             formIsValid: false
@@ -50,22 +52,26 @@ class AccountMaster extends React.Component {
     componentDidMount() {
         this.props.getAccountMasterList().then((response) => {
             if (response && response.arrRes) {
-                console.log(response);
                 this.setState({
                     accountMasterListVal: response.arrRes,
-                    showToast: true,
-                    toastMsg: "Account Master Data loaded successfully"
+                    snackBarOpen: true,
+                    snackvariant: 'success',
+                    snackmsg: "Account Master Data loaded successfully"
                 })
             } else {
                 this.setState({
                     accountMasterListVal: [],
-                    showToast: true,
-                    toastMsg: "Error in loading Account Master Data"
+                    snackBarOpen: true,
+                    snackvariant: 'error',
+                    snackmsg: "Error in loading Account Master Data"
                 })
             }
         });
     }
 
+    onCloseSnackBar = () =>{
+        this.setState({snackBarOpen:false});
+    }
 
 
     handleDelete = (id) => {
@@ -79,14 +85,16 @@ class AccountMaster extends React.Component {
             if (response && response.errCode === 200) {
                 this.setState({
                     accountMasterListVal: filteredItems,
-                    showToast: true,
-                    toastMsg: "Account Master deleted successfully",
+                    snackBarOpen: true,
+                    snackvariant: 'success',
+                    snackmsg: "Account Master deleted successfully",
                 });
             }
             else {
                 this.setState({
-                    showToast: true,
-                    toastMsg: "Error in Account Master deletion"
+                    snackBarOpen: true,
+                    snackvariant: 'error',
+                    snackmsg: "Error in Account Master deletion"
                 });
             }
 
@@ -98,8 +106,6 @@ class AccountMaster extends React.Component {
             id: newData.id,
             account_name: newData.account_name
         }
-        console.log(reqObj, "req");
-        console.log(newData, "newData")
         this.props.editAccountMasterList(reqObj).then(response => {
             if (response && response.errCode === 200) {
                 this.setState(prevState => ({
@@ -112,20 +118,23 @@ class AccountMaster extends React.Component {
                     )
                 }))
                 this.setState({
-                    showToast: true,
-                    toastMsg: "Account Master Details updated successfully",
+                    snackBarOpen: true,
+                    snackvariant: 'success',
+                    snackmsg: "Account Master Details updated successfully",
                 });
             }
             else if (response && response.errCode === 404) {
                 this.setState({
-                    showToast: true,
-                    toastMsg: " Failed in updating Account Master Details "
+                    snackBarOpen: true,
+                    snackvariant: 'error',
+                    snackmsg: " Failed in updating Account Master Details "
                 });
             }
             else {
                 this.setState({
-                    showToast: true,
-                    toastMsg: "Error in updating the Account Master Details"
+                    snackBarOpen: true,
+                    snackvariant: 'error',
+                    snackmsg: "Error in updating the Account Master Details"
                 });
             }
         });
@@ -147,24 +156,27 @@ class AccountMaster extends React.Component {
                     accountName: '',
                     showAddAccountMasterModal: false,
                     accountMasterListVal: updatedItems,
-                    showToast: true,
-                    toastMsg: "Account Master added successfully!"
+                    snackBarOpen: true,
+                    snackvariant: 'success',
+                    snackmsg: "Account Master added successfully!"
                 })
             }
             else if (response && response.errCode === 404) {
                 this.setState({
                     accountName: '',
                     showAddAccountMasterModal: false,
-                    showToast: true,
-                    toastMsg: " Account Master Already exists!"
+                    snackBarOpen: true,
+                    snackvariant: 'error',
+                    snackmsg: " Account Master Already exists!"
                 })
             }
             else {
                 this.setState({
                     accountName: '',
                     showAddAccountMasterModal: false,
-                    showToast: true,
-                    toastMsg: "Error in adding Account Master!"
+                    snackBarOpen: true,
+                    snackvariant: 'error',
+                    snackmsg: "Error in adding Account Master!"
                 })
             }
         });
@@ -177,7 +189,7 @@ class AccountMaster extends React.Component {
 
     render() {
         const { classes } = this.props;
-        const { accountName, showToast, toastMsg } = this.state;
+        const { accountName, snackvariant, snackBarOpen, snackmsg } = this.state;
         return (
             <div className="AccountMaster_container">
                 <Dialog
@@ -250,10 +262,8 @@ class AccountMaster extends React.Component {
                                 })
                         }}
                     />
-                    {
-                        showToast &&
-                        <ToastBox showToast={showToast} toastMsg={toastMsg} />
-                    }
+                    {snackBarOpen &&
+                        <SnackBar onCloseSnackBar={this.onCloseSnackBar} snackBarOpen={snackBarOpen} snackmsg={snackmsg} snackvariant={snackvariant} />}
                 </Paper>
             </div>
         )
@@ -261,6 +271,3 @@ class AccountMaster extends React.Component {
 }
 
 export default withStyles(styles, { withTheme: true })(AccountMaster);
-
-
-

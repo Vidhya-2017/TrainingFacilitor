@@ -5,7 +5,7 @@ import {
   Button, ButtonGroup
 } from '@material-ui/core';
 import moment from 'moment';
-import ToastBox from '../../../components/UI_Component/Toast/ToastBox';
+import SnackBar from '../../../components/UI_Component/SnackBar/SnackBar';
 import '../scss/SkillList.scss'
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
@@ -46,9 +46,10 @@ class SkillList extends React.Component {
       showAddCurriculumModal: false,
       newSkillName: '',
       newCurriculumName: '',
-      showToast: false,
+      snackBarOpen: false,
+      snackvariant: '',
       updated_by: '',
-      toastMessage: '',
+      snackmsg: '',
       skillId: ''
     }
     this.curriculumListVal = [];
@@ -66,18 +67,24 @@ class SkillList extends React.Component {
       if (response && response.errCode === 200) {
         this.setState({
           skillListVal: response.arrRes,
-          showToast: true,
-          toastMessage: "Skill Data loaded successfully"
+          snackvariant: 'success',
+          snackBarOpen: true,
+          snackmsg: "Skill Data loaded successfully"
         })
       } else {
         this.setState({
           skillListVal: [],
-          showToast: true,
-          toastMessage: "Error in loading Skill Data"
+          snackvariant: 'error',
+          snackBarOpen: true,
+          snackmsg: "Error in loading Skill Data"
         })
       }
     });
     this.getCurriculumList();
+  }
+
+  onCloseSnackBar = () => {
+    this.setState({ snackBarOpen: false });
   }
 
   getCurriculumList() {
@@ -86,14 +93,16 @@ class SkillList extends React.Component {
         this.curriculumListVal = response.arrRes;
         this.setState({
           // curriculumListVal: response.arrRes,
-          showToast: true,
-          toastMessage: "Skill Data loaded successfully"
+          snackvariant: 'success',
+          snackBarOpen: true,
+          snackmsg: "Skill Data loaded successfully"
         })
       } else {
         this.setState({
           // curriculumListVal: [],
-          showToast: true,
-          toastMessage: "Error in loading Skill Data"
+          snackvariant: 'error',
+          snackBarOpen: true,
+          snackmsg: "Error in loading Skill Data"
         })
       }
     });
@@ -111,16 +120,18 @@ class SkillList extends React.Component {
           curriculumListVal: [],
           selectedSkillVal: '',
           showAddSkillModal: false,
-          showToast: true,
-          toastMessage: "Skill name deleted successfully",
+          snackvariant: 'success',
+          snackBarOpen: true,
+          snackmsg: "Skill name deleted successfully",
         });
         this.getCurriculumList();
       }
       else {
         this.setState({
-          showToast: true,
+          snackvariant: 'error',
+          snackBarOpen: true,
           showAddSkillModal: false,
-          toastMessage: "Error in Skill name deletion"
+          snackmsg: "Error in Skill name deletion"
         });
       }
 
@@ -142,20 +153,23 @@ class SkillList extends React.Component {
           )
         }))
         this.setState({
-          showToast: true,
-          toastMessage: "Skill name updated successfully",
+          snackvariant: 'success',
+          snackBarOpen: true,
+          snackmsg: "Skill name updated successfully",
         });
       }
       else if (response.errCode === 404) {
         this.setState({
-          showToast: true,
-          toastMessage: " failed in updating Skill name "
+          snackvariant: 'error',
+          snackBarOpen: true,
+          snackmsg: " failed in updating Skill name "
         });
       }
       else {
         this.setState({
-          showToast: true,
-          toastMessage: "error in updating the Skill name"
+          snackvariant: 'error',
+          snackBarOpen: true,
+          snackmsg: "error in updating the Skill name"
         });
       }
     });
@@ -186,23 +200,26 @@ class SkillList extends React.Component {
           this.setState({
             skillListVal: updatedItems,
             selectedSkillVal: newSkillName,
-            showToast: true,
+            snackvariant: 'success',
+            snackBarOpen: true,
             showAddSkillModal: false,
-            toastMessage: "Skill name updated successfully",
+            snackmsg: "Skill name updated successfully",
           });
         }
         else if (response.errCode === 404) {
           this.setState({
-            showToast: true,
+            snackvariant: 'error',
+            snackBarOpen: true,
             showAddSkillModal: false,
-            toastMessage: " failed in updating Skill name "
+            snackmsg: " failed in updating Skill name "
           });
         }
         else {
           this.setState({
-            showToast: true,
+            snackvariant: 'error',
+            snackBarOpen: true,
             showAddSkillModal: false,
-            toastMessage: "error in updating the Skill name"
+            snackmsg: "error in updating the Skill name"
           });
         }
       });
@@ -225,22 +242,25 @@ class SkillList extends React.Component {
           this.setState({
             showAddSkillModal: false,
             skillListVal: updatedItems,
-            showToast: true,
-            toastMessage: "Skill name added successfully!"
+            snackvariant: 'success',
+            snackBarOpen: true,
+            snackmsg: "Skill name added successfully!"
           })
         }
         else if (response && response.errCode === 404) {
           this.setState({
             showAddSkillModal: false,
-            showToast: true,
-            toastMessage: "Already Skill name exists!"
+            snackvariant: 'error',
+            snackBarOpen: true,
+            snackmsg: "Already Skill name exists!"
           })
         }
         else {
           this.setState({
             showAddSkillModal: false,
-            showToast: true,
-            toastMessage: "error in adding aseessment name!"
+            snackvariant: 'error',
+            snackBarOpen: true,
+            snackmsg: "error in adding aseessment name!"
           })
         }
       });
@@ -273,22 +293,25 @@ class SkillList extends React.Component {
           showAddCurriculumModal: false,
           curriculumListVal: updatedItems,
           newCurriculumName: '',
-          showToast: true,
-          toastMessage: "Curriculum name added successfully!"
+          snackvariant: 'success',
+          snackBarOpen: true,
+          snackmsg: "Curriculum name added successfully!"
         })
       }
       else if (response && response.errCode === 404) {
         this.setState({
           showAddCurriculumModal: false,
-          showToast: true,
-          toastMessage: "Already Skill name exists!"
+          snackvariant: 'error',
+          snackBarOpen: true,
+          snackmsg: "Already Skill name exists!"
         })
       }
       else {
         this.setState({
           showAddCurriculumModal: false,
-          showToast: true,
-          toastMessage: "error in adding aseessment name!"
+          snackvariant: 'error',
+          snackBarOpen: true,
+          snackmsg: "error in adding aseessment name!"
         })
       }
     });
@@ -308,22 +331,24 @@ class SkillList extends React.Component {
         data[data.indexOf(oldData)] = newData;
         this.setState(prevState => ({
           ...prevState, curriculumListVal: data,
-          showToast: true,
-          toastMessage: "Curriculum name updated successfully",
+          snackvariant: 'success',
+          snackBarOpen: true,
+          snackmsg: "Curriculum name updated successfully",
         }))
-       
         this.getCurriculumList();
       }
       else if (response.errCode === 404) {
         this.setState({
-          showToast: true,
-          toastMessage: " failed in updating Curriculum name "
+          snackvariant: 'error',
+          snackBarOpen: true,
+          snackmsg: " failed in updating Curriculum name "
         });
       }
       else {
         this.setState({
-          showToast: true,
-          toastMessage: "error in updating the Curriculum name"
+          snackvariant: 'error',
+          snackBarOpen: true,
+          snackmsg: "error in updating the Curriculum name"
         });
       }
     });
@@ -336,18 +361,20 @@ class SkillList extends React.Component {
       updated_by: 1
     }
     this.props.delCurriculum(reqObj).then(response => {
-      if (response.errCode === 200) {
+      if (response && response.errCode === 200) {
         this.setState({
           curriculumListVal: filteredItems,
-          showToast: true,
-          toastMessage: "Curriculum name deleted successfully",
+          snackvariant: 'success',
+          snackBarOpen: true,
+          snackmsg: "Curriculum name deleted successfully",
         });
         this.getCurriculumList();
       }
       else {
         this.setState({
-          showToast: true,
-          toastMessage: "Error in Skill name deletion"
+          snackvariant: 'error',
+          snackBarOpen: true,
+          snackmsg: "Error in Skill name deletion"
         });
       }
 
@@ -368,7 +395,7 @@ class SkillList extends React.Component {
 
   render() {
     const { skillListVal, showAddSkillModal, newSkillName, curriculumListVal, skillId,
-      newCurriculumName, showAddCurriculumModal, selectedSkillVal, skillEdit, delSkill } = this.state;
+      newCurriculumName, showAddCurriculumModal, selectedSkillVal, skillEdit, delSkill, snackvariant, snackBarOpen, snackmsg } = this.state;
     const { classes } = this.props;
 
     let title = '', disabled = false;
@@ -524,6 +551,8 @@ class SkillList extends React.Component {
                 })
             } : {}}
           />
+          {snackBarOpen &&
+            <SnackBar onCloseSnackBar={this.onCloseSnackBar} snackBarOpen={snackBarOpen} snackmsg={snackmsg} snackvariant={snackvariant} />}
         </Paper>
       </div >
     )
