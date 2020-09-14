@@ -2,11 +2,13 @@ import React from 'react';
 import MaterialTable from "material-table";
 import {
   Paper, withStyles, Typography, Dialog, DialogTitle, TextField, DialogActions, DialogContent,
-  Button, ButtonGroup
+  Button, ButtonGroup, Grid, Slide, AppBar, Toolbar, IconButton, 
 } from '@material-ui/core';
 import moment from 'moment';
 import SnackBar from '../../../components/UI_Component/SnackBar/SnackBar';
 import '../scss/SkillList.scss'
+import CloseIcon from '@material-ui/icons/Close';
+import HomeContainer from '../../Home/container/HomeContainer';
 import DeleteIcon from '@material-ui/icons/Delete';
 import AddIcon from '@material-ui/icons/Add';
 import CreateIcon from '@material-ui/icons/Create';
@@ -27,6 +29,9 @@ const styles = (theme) => ({
   iconRoot: {
     color: '#6b6b6b'
   },
+  appBar: {
+    position: 'relative',
+  },
   paperRoot: {
     // margin: theme.spacing(6, 18),
     // padding: theme.spacing(4),
@@ -35,6 +40,11 @@ const styles = (theme) => ({
     padding: '10px 20px'
   },
 });
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+
 class SkillList extends React.Component {
   constructor(props) {
     super(props);
@@ -50,7 +60,8 @@ class SkillList extends React.Component {
       snackvariant: '',
       updated_by: '',
       snackmsg: '',
-      skillId: ''
+      skillId: '',
+      curriculumUpload: false
     }
     this.curriculumListVal = [];
     this.columnFields = [
@@ -392,13 +403,22 @@ class SkillList extends React.Component {
     })
   }
 
+  showCurriculumUpload = () => {
+    this.setState({ showCurriculumUpload: true });
+  }
+
+  handleCurriculumUploadClose = () => {
+    this.setState({ showCurriculumUpload: false });
+  }
 
   render() {
     const { skillListVal, showAddSkillModal, newSkillName, curriculumListVal, skillId,
-      newCurriculumName, showAddCurriculumModal, selectedSkillVal, skillEdit, delSkill, snackvariant, snackBarOpen, snackmsg } = this.state;
+      newCurriculumName, snackBarOpen,showAddCurriculumModal, selectedSkillVal, skillEdit, delSkill, showCurriculumUpload, snackvariant, snackmsg } = this.state;
     const { classes } = this.props;
+    const uploadtitle = 'Curriculum Upload';
+    const skillcurriculumUpload = true;
 
-    let title = '', disabled = false;
+    let title = 'Curriculum Upload', disabled = false;
 
     if (delSkill === true) {
       title = 'Delete Skill';
@@ -515,7 +535,25 @@ class SkillList extends React.Component {
               disabled={selectedSkillVal === '' || selectedSkillVal === undefined}><CreateIcon fontSize="small" /></Button>
             <Button onClick={(event) => this.setState({ showAddSkillModal: true, skillEdit: false, delSkill: true })}
               disabled={selectedSkillVal === '' || selectedSkillVal === undefined}> <DeleteIcon fontSize="small" /></Button>
+         
           </ButtonGroup>
+          <FormControl variant="outlined" className={classes.formControl}>
+          <Grid item md={6} xs={12} style={{ margin: 'auto' }}>
+            <div style={{ float: 'right' }}><Button variant="contained" onClick={this.showCurriculumUpload} color="primary">{uploadtitle}</Button></div>
+
+            <Dialog fullScreen open={showCurriculumUpload} onClose={this.handleCurriculumUploadClose} TransitionComponent={Transition}>
+              <AppBar className={classes.appBar}>
+                <Toolbar>
+                  <IconButton edge="start" color="inherit" onClick={this.handleCurriculumUploadClose} aria-label="close">
+                    <CloseIcon />
+                  </IconButton>
+                  <Typography variant="h6" className={classes.title}>{uploadtitle}</Typography>
+                </Toolbar>
+              </AppBar>
+              <HomeContainer skillcurriculumUpload={skillcurriculumUpload} />
+            </Dialog>
+          </Grid>
+          </FormControl>
           {/* </div> */}
           <MaterialTable
             title="Curriculum List"

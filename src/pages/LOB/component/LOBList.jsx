@@ -30,6 +30,8 @@ class LOBList extends React.Component {
         this.state = {
             LOBListVal: [],
             showAddLOBModal: false,
+            showToast: false,
+            toastMessage: '',
             snackBarOpen: false,
             snackmsg: '',
             snackvariant: '',
@@ -69,7 +71,7 @@ class LOBList extends React.Component {
     }
 
     handleModalSubmit = () => {
-        this.setState({ snackBarOpen: false })
+
         const { newLOBName } = this.state;
         const reqObj = {
             lob_name: newLOBName,
@@ -111,7 +113,7 @@ class LOBList extends React.Component {
     };
 
     editSubmit = (newData, oldData) => {
-        this.setState({ snackBarOpen: false })
+
         const reqObj = {
             id: newData.id,
             lob_name: newData.lob_name,
@@ -145,7 +147,7 @@ class LOBList extends React.Component {
     }
 
     handleDelete = (oldData) => {
-        this.setState({ snackBarOpen: false })
+
         const reqObj = {
             id: oldData.id,
         }
@@ -168,6 +170,10 @@ class LOBList extends React.Component {
                 });
             }
         });
+    }
+
+    onCloseSnackBar = () => {
+        this.setState({ snackBarOpen: false });
     }
 
     render() {
@@ -244,7 +250,9 @@ class LOBList extends React.Component {
                         }}
                     />
                     {snackBarOpen &&
-                        <SnackBar snackBarOpen={snackBarOpen} snackmsg={snackmsg} snackvariant={snackvariant} />}
+                        <SnackBar snackBarOpen={snackBarOpen} snackmsg={snackmsg} snackvariant={snackvariant}
+                            onCloseSnackBar={this.onCloseSnackBar}
+                        />}
                 </Paper>
             </div>
         )
