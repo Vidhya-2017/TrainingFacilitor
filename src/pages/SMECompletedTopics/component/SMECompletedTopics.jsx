@@ -455,7 +455,10 @@ class SMECompletedTopics extends React.Component {
             </Row>
             }
 
-            {(this.left.length > 0 || this.right.length > 0) && selectedTraining && selectedSkill &&
+            { left.length === 0 && selectedTraining && selectedSkill  &&
+                   <Typography color='error'> No Curriculum Found </Typography> }
+
+            { left.length > 0 && selectedTraining && selectedSkill &&
             <Row>
             <Col > Day </Col>
             <Col>
@@ -471,24 +474,24 @@ class SMECompletedTopics extends React.Component {
          
             </Row>
             }
-
-            <Row>
-            <Col>
-
-              {(this.left.length > 0 || this.right.length > 0) && selectedTraining && selectedSkill &&
-            <div>
-            <InputBase className={classes.input} placeholder="Search Curriculum" 
-                  value={query}
-                  onChange={this.searchCurriculum} />
-           
+            
+              { left.length > 0 && selectedTraining && selectedSkill &&
+                <Row>
+                <Col>
+                  <InputBase className={classes.input} placeholder="Search Curriculum" 
+                        value={query}
+                        onChange={this.searchCurriculum} />
+                
                   <IconButton className={classes.iconButton} aria-label="Search">
                     <SearchIcon />
                   </IconButton>
-                  </div>
-                }
+                </Col>
+                </Row>
+              }
 
-            {(this.left.length > 0 || this.right.length > 0) && selectedTraining && selectedSkill && 
-          
+            { left.length > 0 && selectedTraining && selectedSkill && 
+          <Row>
+          <Col>
             <Grid
                    container
                    spacing={2}
@@ -524,10 +527,11 @@ class SMECompletedTopics extends React.Component {
                    <Grid item xs={5} sm={5}>{this.customList("Coverd", right)}</Grid>
                  </Grid>
                  
-               }
+               
 
             </Col>
             </Row>
+          }
             <div className={classes.bottomBtn}>
             <Row>
               <Col>

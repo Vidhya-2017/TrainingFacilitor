@@ -80,6 +80,10 @@ const variantIcon = {
 
 const SnackBar = (props) => {
     const [snackBarOpen, setShowSnackBar]= useState(props.snackBarOpen);
+    const onCloseSnackBar = () => {
+      props.onCloseSnackBar();
+      setShowSnackBar(false);
+    }
     return(
         <Snackbar
           anchorOrigin={{
@@ -88,10 +92,10 @@ const SnackBar = (props) => {
           }}
           open={snackBarOpen}
           autoHideDuration={3000}
-          onClose={() => setShowSnackBar(false)}
+          onClose={onCloseSnackBar}
         >
           <MySnackbarContentWrapper
-            onClose={() => setShowSnackBar(false)}
+            onClose={onCloseSnackBar}
             variant={props.snackvariant}
             message={props.snackmsg}
           />

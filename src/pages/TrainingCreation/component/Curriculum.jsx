@@ -1,6 +1,9 @@
 import React, { Fragment } from 'react';
-import { AppBar, Tabs, Tab, Paper, withStyles, Typography, Card, CardContent, CardActions, Button, List, ListItem,  ListItemText, Checkbox, Dialog,DialogActions,DialogContent,DialogContentText,DialogTitle } from '@material-ui/core';
+import { AppBar, Tabs, Tab, Paper, withStyles, Typography, Card, CardContent, CardActions, Button, List, ListItem,  ListItemText, Checkbox, Dialog,DialogActions,DialogContent,DialogContentText,Grid,DialogTitle,Radio,RadioGroup,FormControlLabel,IconButton,Toolbar,Slide} from '@material-ui/core';
 import SelectOne from '../../../components/UI_Component/Select/SelectOne';
+import SnackBar from '../../../components/UI_Component/SnackBar/SnackBar';
+import HomeContainer from '../../Home/container/HomeContainer';
+import CloseIcon from '@material-ui/icons/Close';
 
 const styles = theme => ({
   paperRoot: {
@@ -9,9 +12,15 @@ const styles = theme => ({
   },
   dialogRoot:{
     width: '700px',
-   
+  },
+  radioRoot:{
+    padding: '22px 0px',
   }
+  
 })
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 class Curriculum extends React.Component {
   constructor(props) {
     super(props);
@@ -24,6 +33,14 @@ class Curriculum extends React.Component {
       trainingCurriculumlist: [],
       activeTab: [],
       openDialog: false,
+      snackBarOpen: false,
+      snackmsg: '',
+      snackvariant: '',
+      isUpload: false,
+      selectedRadio: null,
+      curriculumUpload: false,
+      isFormValid: false,
+      isMasterTable: false,
     }
    // this.trainingCurriculumlist = [];
   }
@@ -49,7 +66,7 @@ class Curriculum extends React.Component {
         });
         this.setState({ trainingList, trainingCurriculumlist:[]});
       } else {
-        this.setState({ snackbaropen: true, snackmsg: 'Something went Wrong. Please try again later', snackvariant: "error" })
+        this.setState({ snackBarOpen: true, snackmsg: 'Something went Wrong. Please try again later', snackvariant: "error" })
       }
     })
   }
@@ -57,7 +74,7 @@ class Curriculum extends React.Component {
  
 
   selectTrainingChange = (selectedTraining) => {
-    const { trainingList,curriculumList } = this.state;
+    const { trainingList,curriculumList,selectedRadio } = this.state;
     const skillDetails = selectedTraining.target.skillData.map((list, index) => {
       return {
         skillname: list.skill_name,
@@ -65,13 +82,13 @@ class Curriculum extends React.Component {
       }
     });  
     this.getTopicList(selectedTraining.target.value);
-    this.setState({ selectedTraining: selectedTraining.target, skillList: skillDetails,tabValue: skillDetails[0].skillId});
+    this.setState({ selectedTraining: selectedTraining.target, skillList: skillDetails,tabValue: skillDetails[0].skillId,selectedRadio:null});
 
   }
 
   getTopicList = (training_id) => {
     const TempCurri =[];
-    const { trainingCurriculumlist } = this.state;
+    const { trainingCurriculumlist,selectedRadio } = this.state;
     const reqObj = { training_id };
     this.props.getTopicList(reqObj).then((response) => {
       if (response && response.errCode === 200) {
@@ -80,32 +97,49 @@ class Curriculum extends React.Component {
             TempCurri.push({...cadata, checked: true});
           });
         });
-        
-        this.setState({ curriculumList: response.arrRes, trainingCurriculumlist:TempCurri});
+        this.setState({ curriculumList: response.arrRes, trainingCurriculumlist:TempCurri,isMasterTable:response.isMaster});
+        if(training_id && selectedRadio && selectedRadio !== 'upload'){
+          console.log("----isMaster---",response.isMaster)
+          if(response.isMaster){
+            this.setState({isFormValid : true });
+            this.props.checkAllFieldsValidCF(true);
+          }
+          
+        }
       } else {
-        this.setState({ snackbaropen: true, snackmsg: 'Something went Wrong. Please try again later', snackvariant: "error" })
+        this.setState({ snackBarOpen: true, snackmsg: 'Something went Wrong. Please try again later', snackvariant: "error" })
       }
     }) 
   }
+
   handleChange = (event, newValue) => {
     this.setState({ tabValue: newValue });
   };
 
   handleClickOpen = () => { 
+   
     this.setState({ openDialog: true });
+    
   };
   
   handleClose = () => {
     this.setState({ openDialog: false });
   };
  
+
+  onCloseSnackBar = () =>{
+    this.setState({snackBarOpen:false});
+}
+
+
   handleSubmit = () => {
     const { trainingCurriculumlist,selectedTraining,skillList } = this.state;
+    
     const finalTopic = [];
     trainingCurriculumlist.filter(trueData => trueData.checked === true).map(filteredPerson => (
       finalTopic.push(filteredPerson)
     ))
-    const reqObj = {
+  const reqObj = {
       training_id: selectedTraining.value,
       curriculumData: finalTopic,
       created_by: 1,
@@ -122,9 +156,9 @@ class Curriculum extends React.Component {
     this.props.submitCurriculum(reqObj).then((response) => {
       if (response && response.errCode === 200) {
         console.log(response);
-        this.setState({ openDialog: false, trainingCurriculumlist:[], selectedTraining:null, skillList:[] });
+        this.setState({ openDialog: false, trainingCurriculumlist:[], selectedTraining:null, skillList:[], snackBarOpen: true, snackmsg: 'Curriculum has been incorprated successfully ', snackvariant: "success", isFormValid:false });
       } else {
-        this.setState({ snackbaropen: true, snackmsg: 'Something went Wrong. Please try again later', snackvariant: "error" })
+        this.setState({ snackBarOpen: true, snackmsg: 'Something went Wrong. Please try again later', snackvariant: "error" })
       }
     }) 
 
@@ -137,24 +171,90 @@ class Curriculum extends React.Component {
      this.setState({  trainingCurriculumlist });
   };
 
+  handleUpload = event => { 
+    
+    let uploadFlag = (event.target.value === 'upload') ? true : false ;
+    let disBtn = false;
+    if(this.state.selectedTraining && event.target.value && event.target.value !== 'upload'){
+        disBtn = (this.state.isMasterTable) ? true : false;
+    }else if(this.state.selectedTraining && event.target.value && event.target.value === 'upload'){
+        disBtn = false;
+    } 
+    this.setState({ selectedRadio: event.target.value, isUpload: uploadFlag, isFormValid: disBtn });
+    this.props.checkAllFieldsValidCF(disBtn);
+  }
 
+  showCurriculumUpload = () => {
+    this.setState({ showCurriculumUpload: true });
+  }
+ 
+  handleCurriculumUploadClose = () => {
+    this.setState({ showCurriculumUpload: false });
+  }
 
   render() {
     const { classes } = this.props;
-    const { tabValue, skillList, selectedTraining, trainingList, activeTab,trainingCurriculumlist } = this.state;
+    const { tabValue, skillList, selectedTraining, trainingList, activeTab,trainingCurriculumlist, snackBarOpen, snackmsg, snackvariant,isUpload,selectedRadio,showCurriculumUpload } = this.state;
+
     const skillFilter = trainingCurriculumlist.filter(curList => curList.skill_id === tabValue);
+    
+    const title = 'Curriculum Upload';
+    const curriculumUpload = true;
+
     return (
       <Paper className={classes.paperRoot} elevation={0}>
-        <SelectOne
-          fieldLabel="Training List"
-          id="training"
-          name="training"
-          placeholder="Training"
-          value={selectedTraining ? selectedTraining : null}
-          options={trainingList}
-          onChange={this.selectTrainingChange}
-        />
-        {skillList.length > 0 &&
+         <Grid container spacing={3} >
+          <Grid item md={4}>
+              <SelectOne
+                fieldLabel="Training List"
+                id="training"
+                name="training"
+                placeholder="Training"
+                value={selectedTraining ? selectedTraining : null}
+                options={trainingList}
+                onChange={this.selectTrainingChange}
+              />
+          </Grid>
+          <Grid item md={4}>
+            <RadioGroup
+                className = {classes.radioRoot}
+                aria-label="position"
+                name="position"
+                value={selectedRadio}
+                onChange={this.handleUpload}
+                row
+             >
+           <FormControlLabel
+              value="standard"
+              control={<Radio color="primary" />}
+              label="Standard"
+              labelPlacement="standard"
+           />
+            <FormControlLabel
+            value="upload"
+            control={<Radio color="primary" />}
+            label="Upload"
+            labelPlacement="upload"
+          />
+          </RadioGroup>
+          </Grid>
+          { isUpload && <Grid item md={4} xs={12} style={{ margin: 'auto' }}>
+            <div style={{ float: 'right' }}><Button variant="contained" onClick={this.showCurriculumUpload} color="primary">{title}</Button></div>
+ 
+            <Dialog fullScreen open={showCurriculumUpload} onClose={this.handleCurriculumUploadClose} TransitionComponent={Transition}>
+              <AppBar className={classes.appBar}>
+                <Toolbar>
+                  <IconButton edge="start" color="inherit" onClick={this.handleCurriculumUploadClose} aria-label="close">
+                    <CloseIcon />
+                  </IconButton>
+                  <Typography variant="h6" className={classes.title}>{title}</Typography>
+                </Toolbar>
+              </AppBar>
+              <HomeContainer curriculumUpload={curriculumUpload} />
+            </Dialog>
+          </Grid> }
+        </Grid>
+        { !isUpload && skillList.length > 0 && selectedRadio &&
           <Fragment>
             <AppBar position="static" elevation={1} color="transparent">
               <Tabs
@@ -173,7 +273,7 @@ class Curriculum extends React.Component {
             <Card square className={classes.root} variant="outlined">
               <CardContent>
                 <Typography className={classes.title} color="textSecondary" gutterBottom>
-                { skillFilter && skillFilter.length > 0  &&
+                { !isUpload && selectedRadio && skillFilter && skillFilter.length > 0  &&
                <List >
                     {skillFilter.map(value => { 
                       return ( 
@@ -206,16 +306,21 @@ class Curriculum extends React.Component {
                   </CardActions>
             </Card>
           </Fragment>}
+
+          {snackBarOpen && <SnackBar snackBarOpen={snackBarOpen} snackmsg={snackmsg} snackvariant={snackvariant} 
+                     onCloseSnackBar={this.onCloseSnackBar} />}
+
+          <div className={classes.dialogRoot} >
             <Dialog
+            maxWidth="sm"
+            fullWidth={true}
             open={this.state.openDialog}
             onClose={this.handleClose}
-            className={classes.dialogRoot}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
+            aria-labelledby="curriculum-creation"
             >
-            <DialogTitle id="alert-dialog-title">{"Please confirm choosen topics"}</DialogTitle>
+            <DialogTitle id="curriculum-creation">{"Please confirm choosen topics"}</DialogTitle>
             <DialogContent>
-              <DialogContentText id="alert-dialog-description">
+              <DialogContentText id="curriculum-creation-des">
                   <Fragment>
                   <AppBar position="static" elevation={1} color="transparent">
                     <Tabs
@@ -263,6 +368,7 @@ class Curriculum extends React.Component {
               </Button>
             </DialogActions>
           </Dialog>
+          </div>
       </Paper>
     )
   }

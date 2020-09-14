@@ -6,7 +6,7 @@ import moment from 'moment';
 import Buttons from '../../../components/UI_Component/Buttons/Buttons';
 import Textbox from '../../../components/UI_Component/Textbox/Textbox';
 import SelectOne from '../../../components/UI_Component/Select/SelectOne';
-import ToastBox from '../../../components/UI_Component/Toast/ToastBox';
+import SnackBar from '../../../components/UI_Component/SnackBar/SnackBar';
 import DateTimePicker from '../../../components/UI_Component/DateTimePicker/DateTimePicker';
 
 
@@ -88,6 +88,9 @@ class CandidateRegistration extends React.Component {
             selectedMonth: null,
             formIsValid: false,
             formDisable: false,
+            snackBarOpen: false,
+            snackmsg: '',
+            snackvariant:'',
         }
     }
 
@@ -109,9 +112,12 @@ class CandidateRegistration extends React.Component {
                         trainingType: list.training_type
                     }
                 });
-                this.setState({ trainingList });
+                this.setState({ trainingList,
+                    snackBarOpen: true,
+                    snackmsg: "Data loaded successfully",
+                    snackvariant:"success" });
             } else {
-                this.setState({ showToast: true, toastMsg: 'Something went Wrong. Please try again later.' })
+                this.setState({ snackBarOpen: true, snackmsg: 'Something went Wrong. Please try again later.', snackvariant:"error" })
             }
         })
     }
@@ -126,9 +132,12 @@ class CandidateRegistration extends React.Component {
                         label: list.account_name
                     }
                 });
-                this.setState({ accountList });
+                this.setState({ accountList,
+                    snackBarOpen: true,
+                    snackmsg: "Data loaded successfully",
+                    snackvariant:"success" });
             } else {
-                this.setState({ showToast: true, toastMsg: 'Something went Wrong. Please try again later.' })
+                this.setState({ snackBarOpen: true, snackmsg: 'Something went Wrong. Please try again later.', snackvariant:"error"})
             }
         })
     }
@@ -143,9 +152,12 @@ class CandidateRegistration extends React.Component {
                         label: list.location_name
                     }
                 });
-                this.setState({ locationList });
+                this.setState({ locationList,
+                    snackBarOpen: true,
+                    snackmsg: "Data loaded successfully",
+                    snackvariant:"success" });
             } else {
-                this.setState({ showToast: true, toastMsg: 'Something went Wrong. Please try again later.' })
+                this.setState({snackBarOpen: true, snackmsg: 'Something went Wrong. Please try again later.', snackvariant:"error"})
             }
         })
     }
@@ -159,9 +171,12 @@ class CandidateRegistration extends React.Component {
                         label: list.lob_name
                     }
                 });
-                this.setState({ lobList });
+                this.setState({ lobList,
+                    snackBarOpen: true,
+                    snackmsg: "Data loaded successfully",
+                    snackvariant:"success"  });
             } else {
-                this.setState({ showToast: true, toastMsg: 'Something went Wrong. Please try again later.' })
+                this.setState({ snackBarOpen: true, snackmsg: 'Something went Wrong. Please try again later.', snackvariant:"error" })
 
             }
         });
@@ -279,17 +294,22 @@ class CandidateRegistration extends React.Component {
             }
         }
         return this.props.insertCandidate(reqObj).then(response => {
-            let toastMsg = '';
+            let snackmsg = '';
+            let snackvariant = '';
           if (response && response.errCode === 200) {
-            toastMsg = 'Inserted Successfully.';
+            snackmsg = 'Inserted Successfully.';
+            snackvariant= 'success';
           } else if (response.errCode === 404 && response.status === 'Email Id already exists') {
-            toastMsg = 'Email Id already exists.';
+            snackmsg = 'Email Id already exists.';
+            snackvariant= 'error';
           } else {
-            toastMsg = 'Something went Wrong. Please try again later.';
+            snackmsg = 'Something went Wrong. Please try again later.';
+            snackvariant= 'error';
           }
           this.setState({
-            showToast: true,
-            toastMsg,
+            snackBarOpen: true,
+            snackmsg,
+            snackvariant,
             formValues: { ...candidateRegForm },
             selectedLocation: null,
             selectedLob: null,
@@ -301,10 +321,13 @@ class CandidateRegistration extends React.Component {
           return response.errCode;
         })
     }
+    onCloseSnackBar = () =>{
+        this.setState({snackBarOpen:false});
+    }
 
     render() {
         const { classes } = this.props
-        const { trainingList, selectedTraining, locationList, selectedLocation, selectedLob, lobList, selectedAccount, accountList, selectedMonth, showToast, toastMsg, formIsValid, formValues, formDisable } = this.state;
+        const { trainingList, selectedTraining, locationList, selectedLocation, selectedLob, lobList, selectedAccount, accountList, selectedMonth, showToast, toastMsg, formIsValid, formValues, formDisable, snackBarOpen, snackmsg, snackvariant } = this.state;
         return (
             <Grid container spacing={3} className={classes.gridRoot}>
                 <Grid item xs={12} sm={6}>
@@ -438,10 +461,7 @@ class CandidateRegistration extends React.Component {
                     </Fragment>}
 
                 </Grid>
-                {
-                    showToast &&
-                    <ToastBox showToast={showToast} toastMsg={toastMsg} />
-                }
+                {snackBarOpen && <SnackBar snackBarOpen={snackBarOpen} snackmsg={snackmsg} snackvariant={snackvariant} onCloseSnackBar={this.onCloseSnackBar} />}
                 {/* <Buttons
                     className="float-right"
                     value="Submit"

@@ -19,7 +19,8 @@ const mapDispatchToProps = (dispatch) => {
     getSmeList: TrainingCreationAction.getSmeList,
     getTopicList: TrainingCreationAction.getTopicList,
     submitCurriculum: TrainingCreationAction.submitCurriculum,
-    
+    getEditTrainingData: TrainingCreationAction.getEditTrainingData,
+    EditTrainingList: TrainingCreationAction.EditTrainingList,
   };
 };
 

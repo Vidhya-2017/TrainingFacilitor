@@ -1,4 +1,5 @@
 import React, { Fragment } from 'react';
+import queryString from 'query-string'
 import moment from 'moment';
 import {
   Paper, Stepper, Dialog, Slide, IconButton, Grid, Step, Button, Typography,
@@ -11,7 +12,7 @@ import Curriculum from './Curriculum';
 import BatchFormation from './BatchFormation';
 import Textbox from '../../../components/UI_Component/Textbox/Textbox';
 import SelectOne from '../../../components/UI_Component/Select/SelectOne';
-import ToastBox from '../../../components/UI_Component/Toast/ToastBox';
+import SnackBar from '../../../components/UI_Component/SnackBar/SnackBar';
 import DateTimePicker from '../../../components/UI_Component/DateTimePicker/DateTimePicker';
 import '../scss/TrainingCreation.scss'
 
@@ -91,12 +92,11 @@ const styles = (theme) => ({
 class TrainingCreation extends React.Component {
   constructor(props) {
     super(props)
+   
     this.state = {
       activeStep: 3,
       errors: {},
       formValues: { ...trainingRegForm },
-      showToast: false,
-      toastMsg: '',
       skillList: [],
       smesList: [],
       locationList: [],
@@ -118,21 +118,83 @@ class TrainingCreation extends React.Component {
       CRFormIsValid: false,
       batchSelected: null,
       smesListOption: [],
-    }
+      snackBarOpen: false,
+      snackmsg: '',
+      snackvariant:'',
+      editTrainingId: null,
+      editRegForm:{},
+      BFFormIsValid: false,
+      CFFormIsValid: false,
+     }
     this.candidateRegRef = React.createRef();
     this.batchFormationRef = React.createRef();
     this.curriculumRef = React.createRef();
   }
 
   componentDidMount() {
-    this.getSkillList();
-    this.getLocation();
-    this.getAccount();
-    this.getTrainingType();
-    this.getSmesList();
+    const queryStr = queryString.parse(this.props.location.search) 
+    if(queryStr.tId !== undefined){
+        this.setState({editTrainingId:queryStr.tId});
+     } 
+    Promise.all([
+      this.getAccount(),
+      this.getLocation(),
+      this.getTrainingType(),
+      this.getSkillList(),
+      this.getSmeList()
+  ]).then((result) => {
+      if(result[0].length > 0){
+        this.setState({ accountList:result[0] }); 
+      }
+      
+      if(result[1].length > 0){
+        this.setState({ locationList:result[1] }); 
+      }
+      
+      if(result[2].length > 0){
+        this.setState({ trainingTypeList:result[2] }); 
+      }
+      
+      if(result[3].length > 0){
+        this.setState({ skillList:result[3] }); 
+      }
+      
+      if(result[4].length > 0){
+        this.setState({ smesList:result[4]}); 
+      }
+      
+      if(result[0].length > 0 && result[1].length > 0 && result[2].length > 0 && result[3].length > 0 && result[4].length > 0){
+        if(queryStr.tId > 0){
+          this.getEditTrainingData(queryStr.tId);
+        }else{
+          this.setState({ snackBarOpen: true, snackmsg: "Data loaded successfully", snackvariant:"success" }); 
+        }
+        
+      }else{
+        this.setState({ snackBarOpen: true, snackmsg: 'Something went Wrong. Please try again later.', snackvariant:"error"})
+      }
+    })
+ 
   }
-  getAccount = () => {
-    this.props.getAccount().then(response => {
+ 
+  getAccount = async() => {
+   
+    const result = await this.props.getAccount();
+    //console.log(result);
+    if (result && result.errCode === 200) {
+    const accountList = result.arrRes.map(list => {
+    return {
+    value: list.id,
+    id: list.id,
+    label: list.account_name
+    }
+    });
+    return accountList;
+   }else{
+     const errorArr = [];
+    return errorArr;
+   }
+   /* return this.props.getAccount().then(response => {
       if (response && response.errCode === 200) {
         const accountList = response.arrRes.map(list => {
           return {
@@ -141,14 +203,34 @@ class TrainingCreation extends React.Component {
             label: list.account_name
           }
         });
-        this.setState({ accountList });
+        console.log("--accountList--",accountList)
+         this.setState({ accountList,snackBarOpen: true,
+          snackmsg: "Data loaded successfully",
+          snackvariant:"success" }); 
+         
       } else {
-        this.setState({ showToast: true, toastMsg: 'Something went Wrong. Please try again later.' })
+        //this.setState({ snackBarOpen: true, snackmsg: 'Something went Wrong. Please try again later.', snackvariant:"error"})
       }
-    })
+     
+    }) */
   }
-  getLocation = () => {
-    this.props.getLocation().then(response => {
+  getLocation = async() => {
+    const result = await this.props.getLocation();
+  //  console.log(result);
+    if (result && result.errCode === 200) {
+    const locationList = result.arrRes.map(list => {
+      return {
+        value: list.id,
+        id: list.id,
+        label: list.location_name
+      }
+    });
+    return locationList;
+   }else{
+     const errorArr = [];
+     return errorArr;
+   }
+   /*  this.props.getLocation().then(response => {
       if (response && response.errCode === 200) {
         const locationList = response.arrRes.map(list => {
           return {
@@ -157,13 +239,32 @@ class TrainingCreation extends React.Component {
             label: list.location_name
           }
         });
-        this.setState({ locationList });
+        this.setState({ locationList,
+          snackBarOpen: true,
+          snackmsg: "Data loaded successfully",
+          snackvariant:"success" });
       } else {
-        this.setState({ showToast: true, toastMsg: 'Something went Wrong. Please try again later.' })
+        this.setState({ snackBarOpen: true, snackmsg: 'Something went Wrong. Please try again later.', snackvariant:"error" })
       }
-    })
+    }) */
   }
-  getTrainingType = () => {
+  getTrainingType = async() => {
+    const result = await this.props.getTrainingType();
+  //  console.log(result);
+    if (result && result.errCode === 200) {
+    const trainingTypeList = result.arrRes.map(list => {
+      return {
+        value: list.id,
+        id: list.id,
+        label: list.type
+      }
+    });
+    return trainingTypeList;
+   }else{
+     const errorArr = [];
+     return errorArr;
+   }
+    /* 
     this.props.getTrainingType().then(response => {
       if (response && response.errCode === 200) {
         const trainingTypeList = response.arrRes.map(list => {
@@ -173,15 +274,33 @@ class TrainingCreation extends React.Component {
             label: list.type
           }
         });
-        this.setState({ trainingTypeList });
+        this.setState({ trainingTypeList,
+          snackBarOpen: true,
+          snackmsg: "Data loaded successfully",
+          snackvariant:"success" });
       } else {
-        this.setState({ showToast: true, toastMsg: 'Something went Wrong. Please try again later.' })
+        this.setState({ snackBarOpen: true, snackmsg: 'Something went Wrong. Please try again later.', snackvariant:"error" })
       }
-    })
+    }) */
   }
 
-  getSkillList = () => {
-    this.props.getSkillList().then(response => {
+  getSkillList = async() => {
+      const result = await this.props.getSkillList();
+      //console.log(result);
+      if (result && result.errCode === 200) {
+        const skillList = result.arrRes.map(list => {
+          return {
+            value: list.id,
+            id: list.id,
+            label: list.skill_name
+          }
+        });
+      return skillList;
+    }else{
+      const errorArr = [];
+      return errorArr;
+    }
+    /* this.props.getSkillList().then(response => {
       if (response && response.errCode === 200) {
         const skillList = response.arrRes.map(list => {
           return {
@@ -190,14 +309,34 @@ class TrainingCreation extends React.Component {
             label: list.skill_name
           }
         });
-        this.setState({ skillList });
+        this.setState({ skillList,
+          snackBarOpen: true,
+          snackmsg: "Data loaded successfully",
+          snackvariant:"success" });
       } else {
-        this.setState({ showToast: true, toastMsg: 'Something went Wrong. Please try again later.' })
+        this.setState({ snackBarOpen: true, snackmsg: 'Something went Wrong. Please try again later.',snackvariant:"error" })
       }
-    })
+    }) */
   }
-  getSmesList = () => {
-    this.props.getSmeList().then(response => {
+  getSmeList = async() => {
+    const result = await this.props.getSmeList();
+  //  console.log(result);
+    if (result && result.errCode === 200) {
+      const smesList = result.arrRes.map(list => {
+        return {
+          value: list.id,
+          id: list.id,
+          label: list.name,
+          skill: list.SkillName,
+          skillsId: list.skill_ids
+        }
+      });
+    return smesList;
+  }else{
+    const errorArr = [];
+    return errorArr;
+  }
+   /*  this.props.getSmeList().then(response => {
       if (response && response.errCode === 200) {
         const smesList = response.arrRes.map(list => {
           return {
@@ -209,11 +348,14 @@ class TrainingCreation extends React.Component {
           }
         });
         console.log(smesList);
-        this.setState({ smesList });
+        this.setState({ smesList,
+          snackBarOpen: true,
+          snackmsg: "Data loaded successfully",
+          snackvariant:"success" });
       } else {
-        this.setState({ showToast: true, toastMsg: 'Something went Wrong. Please try again later.' })
+        this.setState({ snackBarOpen: true, snackmsg: 'Something went Wrong. Please try again later.',  snackvariant:"error"})
       }
-    })
+    }) */
   }
 
   getTrainingList = () => {
@@ -226,12 +368,80 @@ class TrainingCreation extends React.Component {
 
           }
         });
-        this.setState({ EventDetailsList: eventList, loading: false });
+       // console.log("TrainingList");
+        this.setState({ EventDetailsList: eventList, loading: false, snackBarOpen: true, snackmsg: "Data loaded successfully", snackvariant:"success"  });
       } else {
-        this.setState({ showToast: true, toastMsg: 'Something went Wrong. Please try again later.' })
+        this.setState({ snackBarOpen: true, snackmsg: 'Something went Wrong. Please try again later.', snackvariant:"error" })
       }
     });
   }
+ getEditTrainingData = (editTrainingId) => {
+    let reqObj = {training_id:editTrainingId}
+    console.log(reqObj);
+    this.props.getEditTrainingData(reqObj).then((response) => {
+      if (response && response.errCode === 200) {
+            //console.log("----TrainingList---",response.arrRes);
+            const trainingData = response.arrRes[0];
+            const RegForm =  Object.assign({ ...trainingRegForm });
+            const selectttype = {value: trainingData.training_type, id: trainingData.training_type, label: trainingData.type, name: "trainingType"}
+            const selectAcc = {value: trainingData.account, id: trainingData.account, label: trainingData.account_name, name: "account"}
+            const selectLoc = {value: trainingData.location, id: trainingData.location, label: trainingData.location_name, name: "location"}
+        
+            RegForm.trainingName.value=trainingData.training_name;
+            RegForm.trainingName.valid=true;
+
+            RegForm.trainingType.value=trainingData.training_type;
+            RegForm.trainingType.valid=true;
+
+            RegForm.location.value=trainingData.location;
+            RegForm.location.valid=true;
+
+            RegForm.duration.value=trainingData.duration;
+            RegForm.duration.valid=true;
+
+            RegForm.account.value=trainingData.account;
+            RegForm.account.valid=true;
+
+            RegForm.count.value=trainingData.count;
+            RegForm.count.valid=true;
+
+            RegForm.requestBy.value=trainingData.request_by;
+            RegForm.requestBy.valid=true;
+
+            RegForm.requestBySapid.value=trainingData.requestedby_sapid;
+            RegForm.requestBySapid.valid=true;
+
+            RegForm.programManager.value=trainingData.program_manager;
+            RegForm.programManager.valid=true;
+
+            RegForm.programManagerSapid.value=trainingData.program_mngr_sapid;
+            RegForm.programManagerSapid.valid=true;
+
+            RegForm.skills.value=trainingData.skills;
+            RegForm.skills.valid=true;
+
+            RegForm.assignSME.value=trainingData.sme;
+            RegForm.assignSME.valid=true;
+
+            RegForm.plannedStDate.value=new Date(trainingData.planned_start_date);
+            RegForm.plannedStDate.valid=true;
+
+            RegForm.plannedEndDate.value=new Date(trainingData.planned_end_date);
+            RegForm.plannedEndDate.valid=true;
+
+            RegForm.actualStDate.value=new Date(trainingData.actual_start_date);
+            RegForm.actualStDate.valid=true;
+
+            RegForm.actualEndDate.value=new Date(trainingData.actual_end_date);
+            RegForm.actualEndDate.valid=true; 
+
+            this.setState({ formValues: RegForm, selectedTrainingType:selectttype, selectedLocation: selectLoc,  selectedAccount: selectAcc, smesListOption:trainingData.smes,snackBarOpen: true, snackmsg: "Data loaded successfully", snackvariant:"success" })
+      } else {
+        this.setState({ snackBarOpen: true, snackmsg: "Something went Wrong. Please try again later.", snackvariant:"error"})
+      }
+    });
+  }
+ 
 
   inputFieldChange = (e) => {
     const targetName = e.target.name;
@@ -249,6 +459,7 @@ class TrainingCreation extends React.Component {
     for (let inputIdentifier in updatedRegForm) {
       formIsValid = updatedRegForm[inputIdentifier].valid && formIsValid;
     }
+
     this.setState({ formValues: updatedRegForm, formIsValid });
   }
 
@@ -272,14 +483,14 @@ class TrainingCreation extends React.Component {
 
   submitForm = () => {
     const formData = {};
-    const { formValues } = this.state;
+    const { formValues,editTrainingId } = this.state;
     const resetRegisterEvent = {
       ...formValues
     };
     for (let inputIdentifier in resetRegisterEvent) {
       formData[inputIdentifier] = resetRegisterEvent[inputIdentifier].value;
     }
-    let reqObj = {
+    const reqObj = {
       account: formData.account,
       actualEndDate: moment(formData.actualEndDate).format("YYYY-MM-DD HH:mm:ss"),
       actualStDate: moment(formData.actualStDate).format("YYYY-MM-DD HH:mm:ss"),
@@ -297,14 +508,35 @@ class TrainingCreation extends React.Component {
       requestBy: formData.requestBy,
       requestBySapid: formData.requestBySapid,
       CreatedBy: 1,
-      UpdatedBy: 1
+      UpdatedBy: 1,
+      }
+   
+    if(!editTrainingId){
+      this.props.registerTraining(reqObj).then(result => {
+        if(result && result.errCode ===200){
+          this.setState({
+            formValues: { ...trainingRegForm }, selectedAccount: null, selectedTrainingType: null, selectedLocation: null, selectedSkill: null, selectedSME: null,snackBarOpen: true, snackmsg: "Data Inserted successfully", snackvariant:"success" });
+        }else{
+          this.setState({
+            formValues: { ...trainingRegForm }, selectedAccount: null, selectedTrainingType: null, selectedLocation: null, selectedSkill: null, selectedSME: null,snackBarOpen: true, snackmsg: "Error in insertion", snackvariant:"error" });
+        }
+       
+      })
+    }else{
+    
+      reqObj.id = editTrainingId;
+      reqObj.smes = reqObj.smeIds;
+
+       this.props.EditTrainingList(reqObj).then(result => {
+        if(result && result.errCode ===200){ 
+        this.setState({
+          snackBarOpen: true, snackmsg: "Data loaded successfully", snackvariant:"success" });
+        }else{
+          this.setState({
+            formValues: { ...trainingRegForm }, selectedAccount: null, selectedTrainingType: null, selectedLocation: null, selectedSkill: null, selectedSME: null,snackBarOpen: true, snackmsg: "Update Failure", snackvariant:"error" });
+        } 
+      })  
     }
-    this.props.registerTraining(reqObj).then(result => {
-      this.setState({
-        formValues: { ...trainingRegForm }, selectedAccount: null, selectedTrainingType: null, selectedLocation: null,
-        selectedSkill: null, selectedSME: null
-      });
-    })
   }
 
   selectFieldChange = (e) => {
@@ -335,6 +567,7 @@ class TrainingCreation extends React.Component {
             });
           }
         });
+       
         this.setState({ smesListOption: TemSme });
       });
     }
@@ -349,6 +582,7 @@ class TrainingCreation extends React.Component {
   }
 
   handleNext = async () => {
+   
     if (this.state.activeStep === 0) {
       this.submitForm();
     } else if (this.state.activeStep === 1) {
@@ -363,6 +597,14 @@ class TrainingCreation extends React.Component {
           this.setState(prev => ({ activeStep: prev.activeStep + 1, CRFormIsValid: false, batchDetailsList: [], eventSelected: null }));
         }
       });
+    } else if (this.state.activeStep === 3) {
+      console.log("STEP",this.state.activeStep)
+        this.curriculumRef.current.handleClickOpen();
+      /* await this.curriculumRef.current.handleClickOpen().then(res => {
+        if (res === 200) {
+          this.setState(prev => ({ openDialog: true }));
+        } 
+      });*/
     } else if (this.state.activeStep < 3) {
       console.log('-isFormSubmittedSuccess-again-');
       this.setState(prev => ({ activeStep: prev.activeStep + 1, CRFormIsValid: false, batchDetailsList: [], eventSelected: null }));
@@ -389,9 +631,9 @@ class TrainingCreation extends React.Component {
             trID: list.training_id
           }
         })
-        this.setState({ batchDetailsList });
+        this.setState({ batchDetailsList, snackBarOpen: true, snackmsg: "Data loaded successfully", snackvariant:"success"});
       } else {
-        this.setState({ showToast: true, toastMsg: 'Something went Wrong. Please try again later.' })
+        this.setState({ snackBarOpen: true, snackmsg: 'Something went Wrong. Please try again later.',snackvariant:"error" })
       }
     });
   }
@@ -411,17 +653,36 @@ class TrainingCreation extends React.Component {
   checkAllFieldsValid = (CRFormIsValid) => {
     this.setState({ CRFormIsValid })
   }
+  checkAllFieldsValidBF = (BFFormIsValid) => {
+    this.setState({ BFFormIsValid })
+  }
+  checkAllFieldsValidCF = (CFFormIsValid) => {
+    console.log("Creation",CFFormIsValid)
+    this.setState({ CFFormIsValid })
+  }
+  onCloseSnackBar = () =>{
+    this.setState({snackBarOpen:false});
+  }
 
   render() {
     const { classes } = this.props;
     const { skillList, showAddBatchModal, newBatchName, batchSelected, batchDetailsList, EventDetailsList,
-      eventSelected, activeStep, showCandidateUpload, CRFormIsValid, selectedProgramManager, newBatchCount, selectedTrainingType,
-      selectedAccount, selectedLocation, locationList, accountList, trainingTypeList, formValues, smesList, smesListOption } = this.state;
+      eventSelected, activeStep, showCandidateUpload, CRFormIsValid, selectedProgramManager, newBatchCount, selectedTrainingType, selectedAccount, selectedLocation, locationList, accountList, trainingTypeList, formValues, smesList, smesListOption, snackBarOpen, snackmsg, snackvariant, editTrainingId, formIsValid, BFFormIsValid, CFFormIsValid} = this.state;
     const steps = this.getSteps();
     let disableSubmitBtn = false;
+    if (activeStep === 0) {
+      disableSubmitBtn = !formIsValid;
+    }
     if (activeStep === 1) {
       disableSubmitBtn = !CRFormIsValid;
     }
+    if (activeStep === 2) {
+      disableSubmitBtn = !BFFormIsValid;
+    }
+    if (activeStep === 3) {
+      disableSubmitBtn = !CFFormIsValid;
+    }
+    
     return (
       <Paper className={classes.paperRoot} elevation={3}>
         <Typography variant="h4" className="text-center" gutterBottom>
@@ -627,6 +888,7 @@ class TrainingCreation extends React.Component {
             getCandidateMapList={this.props.getCandidateMapList}
             insertCandidateBatchMap={this.props.insertCandidateBatchMap}
             ref={this.batchFormationRef}
+            checkAllFieldsValidBF = {this.checkAllFieldsValidBF}
           />
         </Grid>}
 
@@ -638,6 +900,7 @@ class TrainingCreation extends React.Component {
             getTrainingList={this.props.getTrainingList}
             getTopicList ={this.props.getTopicList}
             submitCurriculum ={this.props.submitCurriculum}
+            checkAllFieldsValidCF = {this.checkAllFieldsValidCF}
           />
         </Grid>
         }
@@ -647,13 +910,21 @@ class TrainingCreation extends React.Component {
           onClick={this.handleBack}
           className={classes.backButton}
         >Back</Button>
-        <Button
+       {editTrainingId && editTrainingId > 0 && <Button
+          variant="contained"
+          color="primary"
+          onClick={this.handleNext}
+          disabled={disableSubmitBtn}>Update
+          </Button>}
+          {!editTrainingId && <Button
           variant="contained"
           color="primary"
           onClick={this.handleNext}
           disabled={disableSubmitBtn}>Submit
-          </Button>
+          </Button>}
         </div >
+        {snackBarOpen && <SnackBar snackBarOpen={snackBarOpen} snackmsg={snackmsg} snackvariant={snackvariant} 
+                     onCloseSnackBar={this.onCloseSnackBar} />}
       </Paper >
     )
   }

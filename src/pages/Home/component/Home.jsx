@@ -43,6 +43,11 @@ class Home extends Component {
       snackBarOpen: false,
       snackmsg: '',
       snackvariant: '',
+      curriculumUpload: null,
+      skillcurriculumUpload: null,
+      skillList: [],
+      trainingDetails: [],
+      selectedSkill: null
     }
     this.columnFields = [
 
@@ -51,18 +56,52 @@ class Home extends Component {
 
   componentDidMount() {
     this.getTrainingList();
+    this.getSkillList();
+
+  }
+
+  static getDerivedStateFromProps(props) {
+    if (props.curriculumUpload !== undefined) {
+      return {
+        curriculumUpload: props.curriculumUpload
+      }
+    }
+    if(props.skillcurriculumUpload !== undefined){
+      return {
+        skillcurriculumUpload: props.skillcurriculumUpload
+      }
+    }
+    
   }
 
   getTrainingList = () => {
     this.props.getTrainingList().then(response => {
       if (response && response.arrRes) {
+        const trainingDetails = response.arrRes;
         const trainingList = response.arrRes.map(list => {
           return {
             value: list.id,
             label: list.training_name
           }
         });
-        this.setState({ trainingList });
+        this.setState({ trainingList, trainingDetails });
+      } else {
+        this.setState({ snackBarOpen: true, snackmsg: 'Something went Wrong. Please try again later', snackvariant: "error" })
+      }
+    })
+  }
+
+  getSkillList = () => {
+    this.props.getSkillList().then(response => {
+      console.log(response);
+      if (response && response.arrRes) {
+        const skillList = response.arrRes.map(list => {
+          return {
+            value: list.id,
+            label: list.skill_name
+          }
+        });
+        this.setState({ skillList });
       } else {
         this.setState({ snackBarOpen: true, snackmsg: 'Something went Wrong. Please try again later', snackvariant: "error" })
       }
@@ -99,41 +138,100 @@ class Home extends Component {
   }
 
   submitSheet = () => {
-    this.setState({ snackBarOpen: false })
-    if (this.state.selectedTraining !== null) {
+    const { file, data, selectedTraining, selectedSkill } = this.state;
+    if(this.state.skillcurriculumUpload === true){
+      if (selectedSkill === null ) {
+        this.setState({ snackBarOpen: true, snackmsg: 'Please Select the Skill', snackvariant: "error" });
+      } else {
+      const reqObj = {
+        details: data,
+        created_by: 1,
+        updated_by: 1,
+        skill_id : selectedSkill.value,
+        skill_curriculum_upload : 1
+      }
+      console.log(reqObj);
+      this.props.insertCurriculum(reqObj).then((response) => {
+        console.log(response);
+        if (response && response.errCode === 200) {
 
-      const { file, data, selectedTraining } = this.state;
-      var reader = new FileReader();
-      reader.onload = (e) => {
-        var binaryData = e.target.result;
-        var base64String = window.btoa(binaryData);
-        const reqObj = {
-          // mime: file.type,
-          details: data,
-          created_by: 1,
-          training_id: selectedTraining.value,
-          // sheetname : this.state.selectedSheet.label,
-          updated_by: 1
+          this.setState({ sheetOptions: [], file: {}, data: [], selectedSkill: null, snackBarOpen: true, snackmsg: 'Curriculum Uploaded Successfully', snackvariant: "success" });
+        } else if (response.errCode === 404) {
 
-        }
+          const snackmsg = 'Error in Inserting Curriculum';
+          this.setState({ sheetOptions: [], file: {}, data: [], selectedSkill: null, snackBarOpen: true, snackmsg, snackvariant: "success" })
 
-        this.props.insertCandidates(reqObj).then((response) => {
+        } 
+      });
+    }
+    } 
 
+    if (this.state.curriculumUpload === true) {
+        if (selectedTraining === null || selectedSkill === null ) {
+          this.setState({ snackBarOpen: true, snackmsg: 'Please Select the Training and Skill', snackvariant: "error" });
+        } else {
+          const reqObj = {
+            details: data,
+            created_by: 1,
+            training_id: selectedTraining.value,
+            updated_by: 1,
+            skill_id : selectedSkill.value,
+            skill_curriculum_upload : 0
+          }  
+          console.log(reqObj);
+          this.props.insertCurriculum(reqObj).then((response) => {
+  
+            console.log(response);
           if (response && response.errCode === 200) {
 
-            this.setState({ sheetOptions: [], file: {}, data: [], selectedTraining: null, snackBarOpen: true, snackmsg: 'Candidates Uploaded Successfully', snackvariant: "success" });
+            this.setState({ sheetOptions: [], file: {}, data: [], selectedTraining: null, selectedSkill:null, snackBarOpen: true, snackmsg: 'Curriculum Uploaded Successfully', snackvariant: "success" });
           } else if (response.errCode === 404) {
 
-            const snackmsg = 'We have ' + `${response.Email_exist.length}` + ' Existing Data and ' + `${response.Format_error_list.length}` + ' Format Error Data and Remaining Data has been Uploaded Successfully';
-            this.setState({ sheetOptions: [], file: {}, data: [], selectedTraining: null, snackBarOpen: true, snackmsg, snackvariant: "success" })
+            const snackmsg = 'Error in Inserting Curriculum';
+            this.setState({ sheetOptions: [], file: {}, data: [], selectedTraining: null , selectedSkill:null, snackBarOpen: true, snackmsg, snackvariant: "success" })
 
           }
-        });
-      };
-      reader.readAsBinaryString(file);
-    } else {
-      this.setState({ snackBarOpen: true, snackmsg: 'Please Select a Training', snackvariant: "error" })
+          });
+        }
     }
+    
+    if(this.state.skillcurriculumUpload !== true && this.state.curriculumUpload !== true )
+    {
+
+      if (selectedTraining === null) {
+        this.setState({ snackBarOpen: true, snackmsg: 'Please Select the Training', snackvariant: "error" });
+      } else {
+        var reader = new FileReader();
+        reader.onload = (e) => {
+          var binaryData = e.target.result;
+          var base64String = window.btoa(binaryData);
+          const reqObj = {
+            // mime: file.type,
+            details: data,
+            created_by: 1,
+            training_id: selectedTraining.value,
+            // sheetname : this.state.selectedSheet.label,
+            updated_by: 1
+          }
+         
+          this.props.insertCandidates(reqObj).then((response) => {
+  
+            if (response && response.errCode === 200) {
+  
+              this.setState({ sheetOptions: [], file: {}, data: [], selectedTraining: null, snackBarOpen: true, snackmsg: 'Candidates Uploaded Successfully', snackvariant: "success" });
+            } else if (response.errCode === 404) {
+  
+              const snackmsg = 'We have ' + `${response.Email_exist.length}` + ' Existing Data and ' + `${response.Format_error_list.length}` + ' Format Error Data and Remaining Data has been Uploaded Successfully';
+              this.setState({ sheetOptions: [], file: {}, data: [], selectedTraining: null, snackBarOpen: true, snackmsg, snackvariant: "success" })
+  
+            }
+          });
+        
+        };
+        reader.readAsBinaryString(file);
+      } 
+    }
+
   }
 
   handleChange = selectedSheet => {
@@ -154,26 +252,30 @@ class Home extends Component {
         defval: '',
         blankrows: false
       });
+      console.log(sheetData);
       if (sheetData.length > 0) {
         columns = sheetData[0].map(col => {
-
+          
           return {
             dataField: col.toString().trim(),
             text: col,
             sort: true,
             filter: false,
             sortCaret: (order, column) => {
+              
               if (!order) return (<span><ArrowUp /><ArrowDown /></span>);
               else if (order === 'asc') return (<span><ArrowUp /></span>);
               else if (order === 'desc') return (<span><ArrowDown /></span>);
               return null;
             }
+            
           }
         });
       }
       const data = XLSX.utils.sheet_to_json(ws, { raw: false });
-
-      Object.keys(data[0]).forEach((key, index) => {
+      console.log(data);
+      /* Object.keys(data[0]).forEach((key, index) => { */
+        sheetData[0].forEach((key, index) => {
         if (key === 'Expected Joining Date') {
           this.columnFields.push(
             {
@@ -234,41 +336,46 @@ class Home extends Component {
     }
   };
 
-  showFilter = (e) => {
-    const { cols } = this.state;
 
-    let filterOptions = [...cols];
-    if (e.target.checked) {
-      filterOptions = filterOptions.map(item => {
-        item.filter = textFilter({
-          delay: 1000,
-          className: 'filterTextField',
-          placeholder: item.dataField,
-          onClick: e => console.log(e)
-        });
-        return item;
-      });
-    } else {
-      filterOptions = filterOptions.map(item => {
-        item.filter = '';
-        return item;
-      });
-    }
-    this.setState({ cols: filterOptions });
-  }
 
   editSubmit = (newData, oldData) => {
+    console.log(oldData);
     const data = [...this.state.data];
     data[data.indexOf(oldData)] = newData;
+    console.log(this.state.curriculumUpload);
+    if(this.state.curriculumUpload !== true && this.state.skillcurriculumUpload !== true) {
     this.setState(prevState => ({
       data: prevState.data.map(
-        el => el.Email === newData.Email ? {
+        (el, index) => index === oldData.tableData.id ? {
           ...el,
-          id: newData.id,
           "Joining Month": newData['Joining Month'].value ? newData['Joining Month'].value : newData['Joining Month'],
+          "SAP ID": newData["SAP ID"],
+          "First Name": newData["First Name"],
+          "Last Name": newData["Last Name"],
+          "Email": newData["Email"],
+          "Account": newData["Account"],
+          "Lob": newData["Lob"],
+          "Location": newData["Location"],
+          "Mode 1": newData["Mode 1"],
+          "Mode 2": newData["Mode 2"],
+          "SME": newData["SME"],
+          "Phone": newData["Phone"],
+          "Batch": newData["Batch"],
+          "Expected Joining Date": newData["Expected Joining Date"],
+
         } : el
       )
     }))
+  } else {
+    if (oldData) {
+      this.setState((prevState) => {
+        const data = [...prevState.data];
+        data[data.indexOf(oldData)] = newData;
+        return { ...prevState, data };
+      });
+    }
+  
+  }
   }
 
   handleDelete = (oldData) => {
@@ -280,9 +387,27 @@ class Home extends Component {
 
   }
 
-  selectChange = selectoption => {
-    this.setState({ selectedTraining: selectoption });
+  selectChange = (selectoption) => {
+    if (this.state.curriculumUpload === true) {
+      this.skillList = [];
+      this.state.trainingDetails.filter((val) => {
+        if (val.id === selectoption.value) {
+          this.skillList = val.skills_array.map((value) => {
+            const obj = {
+              value: value.id,
+              label: value.skill_name
+            }
+            return obj;
+          })
+        }
+      })
+    }
+    this.setState({ selectedTraining: selectoption, skillList: this.skillList, selectedSkill: null });
   };
+
+  handleSkillChange = (selectedOption) => {
+    this.setState({ selectedSkill: selectedOption });
+  }
 
   handleClick = () => {
     this.setState({ snackBarOpen: true });
@@ -296,9 +421,14 @@ class Home extends Component {
     this.setState({ snackBarOpen: false });
   };
 
-  render() {
-    const { file, data, cols, snackBarOpen, snackvariant, snackmsg, selectedTraining, trainingList, selectedSheet, sheetOptions } = this.state;
+  onCloseSnackBar = () =>{
+    this.setState({snackBarOpen:false});
+}
 
+  render() {
+    const { file, data, cols, snackBarOpen, snackvariant, snackmsg, selectedTraining,
+      trainingList, selectedSheet, sheetOptions, skillList, selectedSkill } = this.state;
+      
     const recordPerPageVal = Math.ceil(data.length / 10) * 10;
     const recordPerPageOptions = [
       { text: "10", page: 10 },
@@ -312,6 +442,7 @@ class Home extends Component {
         options.push(item);
       }
     });
+
     const sizePerPageRenderer = ({
       // options,
       currSizePerPage,
@@ -422,14 +553,21 @@ class Home extends Component {
               <span>Choose a file&hellip;</span>
               <input id="fileUpload" type="file" onChange={this.getFileDetails} />
             </label>
-            {file && file.name && <span className='fileName'>{file.name}</span>}
+            {file && file.name && <div className='fileName'>{file.name}</div>}
           </div>
-          {sheetOptions.length > 0 && <Select
+          {sheetOptions.length > 0 && this.state.skillcurriculumUpload === null && <Select
             value={selectedTraining}
             onChange={this.selectChange}
             options={trainingList}
             styles={selectStyles}
             placeholder='Select the Training'
+          />}
+          {sheetOptions.length > 0 && (this.props.curriculumUpload === true || this.state.skillcurriculumUpload === true) && <Select
+            value={selectedSkill}
+            onChange={this.handleSkillChange}
+            options={skillList}
+            styles={selectStyles}
+            placeholder='Select the Skill'
           />}
           {sheetOptions.length > 0 && <Select
             value={selectedSheet}
@@ -438,12 +576,7 @@ class Home extends Component {
             styles={selectStyles}
             placeholder='Select the Sheet'
           />}
-          {data.length > 0 &&
-            <div className="custom-control custom-switch filterSwitch">
-              <input type="checkbox" className="custom-control-input" onChange={this.showFilter} id="customSwitch1" />
-              <label className="custom-control-label" for="customSwitch1">Show Filter Options</label>
-            </div>
-          }
+          
           {sheetOptions.length > 0 && <div className='uploadBtn'>
             <Button disabled={data.length === 0} className='file-upload fileUploadBtn btn shadow' onClick={this.submitSheet}>Submit</Button>
           </div>
@@ -484,7 +617,7 @@ class Home extends Component {
           ** Please check the candidate data and then click <b>Submit</b> to save the excel sheet.
         </Alert>}
         {snackBarOpen &&
-                     <SnackBar snackBarOpen={snackBarOpen} snackmsg={snackmsg} snackvariant={snackvariant} />}
+            <SnackBar snackBarOpen={snackBarOpen} snackmsg={snackmsg} snackvariant={snackvariant} onCloseSnackBar={this.onCloseSnackBar} />}
       </div>
     );
   }

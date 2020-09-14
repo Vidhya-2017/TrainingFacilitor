@@ -154,4 +154,22 @@ export const TrainingCreationAction = {
             return (error.response);
         }
     },
+    getEditTrainingData: async (data) => {
+        try {
+            const response = await clients.axiosAPI.post('/TrainingDetails.php', data);
+            return (response.data);
+        }
+        catch (error) {
+            return (error.response);
+        }
+    },
+    EditTrainingList: async (data) => {
+        try {
+            const response = await clients.axiosAPI.post('/EditTrainingList.php', data);
+            return (response.data);
+        }
+        catch (error) {
+            return (error.response);
+        }
+      },
 }

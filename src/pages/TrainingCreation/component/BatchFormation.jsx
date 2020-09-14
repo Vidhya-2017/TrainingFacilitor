@@ -3,8 +3,6 @@ import {
   Paper, Typography, List, Grid, ListItem, InputBase, ListItemIcon, Checkbox,
   ListItemText, IconButton, withStyles, Dialog, DialogTitle, TextField, DialogActions, DialogContent
 } from '@material-ui/core';
-import Snackbar from '@material-ui/core/Snackbar';
-import CloseIcon from '@material-ui/icons/Close';
 import Button from '@material-ui/core/Button';
 import SelectOne from '../../../components/UI_Component/Select/SelectOne';
 // import '../scss/BatchFormation.scss'
@@ -13,10 +11,8 @@ import SearchIcon from '@material-ui/icons/Search';
 import green from '@material-ui/core/colors/green';
 import CheckCircleIcon from '@material-ui/icons/CheckCircle';
 import ErrorIcon from '@material-ui/icons/Error';
-import SnackbarContent from '@material-ui/core/SnackbarContent';
-import PropTypes from 'prop-types';
-import classNames from 'classnames';
 
+import SnackBar from '../../../components/UI_Component/SnackBar/SnackBar';
 
 import Divider from "@material-ui/core/Divider";
 import Card from "@material-ui/core/Card";
@@ -105,71 +101,6 @@ const styles = (theme) => ({
   }
 });
 
-
-const styles1 = theme => ({
-  success: {
-    backgroundColor: green[600],
-  },
-  error: {
-    backgroundColor: theme.palette.error.dark,
-  },
-  info: {
-    backgroundColor: theme.palette.primary.dark,
-  },
-  icon: {
-    fontSize: 20,
-  },
-  iconVariant: {
-    opacity: 0.9,
-    marginRight: theme.spacing(1),
-  },
-  message: {
-    display: 'flex',
-    alignItems: 'center',
-  },
-});
-
-function MySnackbarContent(props) {
-  const { classes, className, message, onClose, variant, ...other } = props;
-  const Icon = variantIcon[variant];
-
-  return (
-    <SnackbarContent
-      className={classNames(classes[variant], className)}
-      aria-describedby="client-snackbar"
-      message={
-        <span id="client-snackbar" className={classes.message}>
-          <Icon className={classNames(classes.icon, classes.iconVariant)} />
-          {message}
-        </span>
-      }
-      action={[
-        <IconButton
-          key="close"
-          aria-label="Close"
-          color="inherit"
-          className={classes.close}
-          onClick={onClose}
-        >
-          <CloseIcon className={classes.icon} />
-        </IconButton>,
-      ]}
-      {...other}
-    />
-  );
-}
-
-MySnackbarContent.propTypes = {
-  classes: PropTypes.object.isRequired,
-  className: PropTypes.string,
-  message: PropTypes.node,
-  onClose: PropTypes.func,
-  variant: PropTypes.oneOf(['success', 'warning', 'error', 'info']).isRequired,
-};
-
-const MySnackbarContentWrapper = withStyles(styles1)(MySnackbarContent);
-
-
 class BatchFormation extends Component {
 
   constructor(props) {
@@ -182,7 +113,7 @@ class BatchFormation extends Component {
       newChecked: [],
       candidatesList: [],
       batchDetailsList: [],
-      snackbaropen: false,
+      snackBarOpen: false,
       snackmsg: '',
       snackvariant: '',
       query: '',
@@ -192,7 +123,8 @@ class BatchFormation extends Component {
       batchSelected: null,
       showAddBatchModal: false,
       newBatchName: '',
-      newBatchCount: ''
+      newBatchCount: '',
+      formIsValid: false,
     }
     this.candidatesList = [];
     this.left = [];
@@ -215,16 +147,18 @@ class BatchFormation extends Component {
         });
         this.setState({ trainingList });
       } else {
-        this.setState({ snackbaropen: true, snackmsg: 'Something went Wrong. Please try again later', snackvariant: "error" })
+        this.setState({ snackBarOpen: true, snackmsg: 'Something went Wrong. Please try again later', snackvariant: "error" })
       }
     })
   }
 
   selectTrainingChange = (selectedTraining) => {
+  
     this.setState({ selectedTraining: selectedTraining.target, candidatesList: [], batchSelected: null });
     this.getBatchList(selectedTraining.target.value);
+    this.checkAllFieldsValidbatch();
   }
-
+  
   getBatchList = (training_id) => {
     const reqObj = { training_id };
     this.props.getBatchList(reqObj).then((response) => {
@@ -235,18 +169,20 @@ class BatchFormation extends Component {
             label: list.batch_name
           }
         });
-        this.setState({ batchDetailsList: batchList, candidatesList: this.candidatesList, selectall: false, left: [], right: [], query: '' });
+        this.setState({ batchDetailsList: batchList, candidatesList: this.candidatesList, selectall: false, left: [], right: [], query: '', formIsValid: true });
       } else {
-        this.setState({ snackbaropen: true, snackmsg: 'Something went Wrong. Please try again later', snackvariant: "error" })
+        this.setState({ snackBarOpen: true, snackmsg: 'Something went Wrong. Please try again later', snackvariant: "error" })
       }
     })
   }
   onChangeBatch = (batchSelected) => {
+    
     this.setState({ batchSelected: batchSelected.target });
     const reqObj = {
       training_id: this.state.selectedTraining.value,
       batch_id: batchSelected.target.value
     }
+   
     this.props.getCandidateMapList(reqObj).then((response) => {
       if (response && response.errCode === 200) {
         this.candidatesList = [...response.batchCandidate, ...response.nonBatchCnadidate];
@@ -255,12 +191,22 @@ class BatchFormation extends Component {
         this.setState({
           candidatesList: this.candidatesList, selectall: false, left: response.nonBatchCnadidate, right: response.batchCandidate
         });
+        this.checkAllFieldsValidbatch();
       } else {
-        this.setState({ snackbaropen: true, snackmsg: 'Something went Wrong. Please try again later', snackvariant: "error" })
+        this.setState({ snackBarOpen: true, snackmsg: 'Something went Wrong. Please try again later', snackvariant: "error" })
       }
     });
   }
+  checkAllFieldsValidbatch = () => {
+    const{selectedTraining , batchSelected,formIsValid } = this.state;
+    console.log("--Console1--",selectedTraining);
+    console.log("--Console2--",batchSelected);
 
+    if(selectedTraining && batchSelected){
+      this.setState({formIsValid : true });
+    }
+    this.props.checkAllFieldsValidBF(formIsValid);
+  }
   handleCandidateSelection = (e, list) => {
     const { candidatesList, selectedTraining } = this.state;
     const candidateIndex = candidatesList && candidatesList.findIndex((lst) => list.id === lst.id);
@@ -288,14 +234,14 @@ class BatchFormation extends Component {
       }
       return this.props.insertCandidateBatchMap(reqObj).then((response) => {
         if (response && response.errCode === 200) {
-          this.setState({ candidatesList: [], selectall: false, batchSelected: null, selectedTraining: null, left: [], right: [], snackbaropen: true, snackmsg: "Candidates Assigned Successfully", snackvariant: "success" });
+          this.setState({ candidatesList: [], selectall: false, batchSelected: null, selectedTraining: null, left: [], right: [], snackBarOpen: true, snackmsg: "Candidates Assigned Successfully", snackvariant: "success" });
         } else {
           this.setState({ candidatesList: [], selectall: false, batchSelected: null, selectedTraining: null, left: [], right: [], snackbaropen: true, snackmsg: 'Something went Wrong. Please try again later.', snackvariant: "error" })
         }
         return response.errCode;
       })
     } else {
-      this.setState({ snackbaropen: true, snackmsg: 'Please Select Atleast One Candidate.', snackvariant: "error" })
+      this.setState({ snackBarOpen: true, snackmsg: 'Please Select Atleast One Candidate.', snackvariant: "error" })
     }
   }
 
@@ -321,7 +267,7 @@ class BatchFormation extends Component {
 
 
   handleClick = () => {
-    this.setState({ snackbaropen: true });
+    this.setState({ snackBarOpen: true });
   };
 
   handleClose = (event, reason) => {
@@ -329,7 +275,7 @@ class BatchFormation extends Component {
       return;
     }
 
-    this.setState({ snackbaropen: false });
+    this.setState({ snackBarOpen: false });
   };
 
 
@@ -480,9 +426,13 @@ class BatchFormation extends Component {
     this.setState({ showAddBatchModal: false, newBatchName: '', newBatchCount: '' })
   }
 
+  onCloseSnackBar = () =>{
+    this.setState({snackBarOpen:false});
+}
+
   render() {
     const { classes } = this.props;
-    const { trainingList, selectedTraining, candidatesList, snackbaropen, snackmsg,
+    const { trainingList, selectedTraining, candidatesList, snackBarOpen, snackmsg,
       snackvariant, query, checked, left, right, batchSelected,
       batchDetailsList, showAddBatchModal, newBatchName, newBatchCount } = this.state;
     this.leftChecked = this.intersection(checked, left);
@@ -519,6 +469,7 @@ class BatchFormation extends Component {
               aria-label="batch"
               aria-describedby="batch"
               id="batch"
+              name="batch"
             />
           </Grid>}
           <Grid item md className={classes.searchAddGrid}>
@@ -572,21 +523,9 @@ class BatchFormation extends Component {
             <Grid item xs={12} sm={5}>{this.customList("Registered", right)}</Grid>
           </Grid>
         }
-        <Snackbar
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'left',
-          }}
-          open={snackbaropen}
-          autoHideDuration={3000}
-          onClose={this.handleClose}
-        >
-          <MySnackbarContentWrapper
-            onClose={this.handleClose}
-            variant={snackvariant}
-            message={snackmsg}
-          />
-        </Snackbar>
+        
+        {snackBarOpen && <SnackBar snackBarOpen={snackBarOpen} snackmsg={snackmsg} snackvariant={snackvariant} 
+                     onCloseSnackBar={this.onCloseSnackBar} />}
         <Dialog
           disableBackdropClick
           maxWidth="xs"
