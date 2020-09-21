@@ -4,6 +4,7 @@ import TrainingCreation from '../component/TrainingCreation';
 
 const mapDispatchToProps = (dispatch) => {
   return {
+	getProgramManager: TrainingCreationAction.getProgramManager,
     getSkillList: TrainingCreationAction.getSkillList,
     getLocation: TrainingCreationAction.getLocation,
     getAccount: TrainingCreationAction.getAccount,

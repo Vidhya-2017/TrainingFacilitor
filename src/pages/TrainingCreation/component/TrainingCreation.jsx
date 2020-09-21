@@ -38,7 +38,7 @@ const trainingRegForm = {
   skills: { ...inputField },
   assignSME: { ...inputField },
   programManager: { ...inputField },
-  programManagerSapid: { ...inputField },
+  //programManagerSapid: { ...inputField },
   requestBy: { ...inputField },
   requestBySapid: { ...inputField },
   plannedEndDate: { ...inputField },
@@ -97,6 +97,7 @@ class TrainingCreation extends React.Component {
       activeStep: 3,
       errors: {},
       formValues: { ...trainingRegForm },
+	  programManagerList: [],
       skillList: [],
       smesList: [],
       locationList: [],
@@ -137,11 +138,12 @@ class TrainingCreation extends React.Component {
         this.setState({editTrainingId:queryStr.tId});
      } 
     Promise.all([
-      this.getAccount(),
+	  this.getAccount(),
       this.getLocation(),
       this.getTrainingType(),
       this.getSkillList(),
-      this.getSmeList()
+      this.getSmeList(),
+	  this.getProgramManager()
   ]).then((result) => {
       if(result[0].length > 0){
         this.setState({ accountList:result[0] }); 
@@ -163,7 +165,11 @@ class TrainingCreation extends React.Component {
         this.setState({ smesList:result[4]}); 
       }
       
-      if(result[0].length > 0 && result[1].length > 0 && result[2].length > 0 && result[3].length > 0 && result[4].length > 0){
+	  if(result[5].length > 0){
+        this.setState({ programManagerList:result[5] }); 
+      }
+	  
+      if(result[0].length > 0 && result[1].length > 0 && result[2].length > 0 && result[3].length > 0 && result[4].length > 0 && result[5].length > 0){
         if(queryStr.tId > 0){
           this.getEditTrainingData(queryStr.tId);
         }else{
@@ -247,6 +253,23 @@ class TrainingCreation extends React.Component {
         this.setState({ snackBarOpen: true, snackmsg: 'Something went Wrong. Please try again later.', snackvariant:"error" })
       }
     }) */
+  }
+  getProgramManager = async() => {
+    const result = await this.props.getProgramManager();
+  //  console.log(result);
+    if (result && result.errCode === 200) {
+    const programManagerList = result.arrRes.map(list => {
+      return {
+        value: list.id,
+        id: list.id,        
+		label: list.name.concat(" - ").concat(list.sap_id)
+      }
+    });
+    return programManagerList;
+   }else{
+     const errorArr = [];
+     return errorArr;
+   }
   }
   getTrainingType = async() => {
     const result = await this.props.getTrainingType();
@@ -380,12 +403,14 @@ class TrainingCreation extends React.Component {
     console.log(reqObj);
     this.props.getEditTrainingData(reqObj).then((response) => {
       if (response && response.errCode === 200) {
-            //console.log("----TrainingList---",response.arrRes);
+            
             const trainingData = response.arrRes[0];
+			//console.log("----TrainingList---",trainingData);
             const RegForm =  Object.assign({ ...trainingRegForm });
             const selectttype = {value: trainingData.training_type, id: trainingData.training_type, label: trainingData.type, name: "trainingType"}
             const selectAcc = {value: trainingData.account, id: trainingData.account, label: trainingData.account_name, name: "account"}
             const selectLoc = {value: trainingData.location, id: trainingData.location, label: trainingData.location_name, name: "location"}
+			const selectProgramManager = {value: trainingData.program_manager_id, id: trainingData.program_manager_id, label: trainingData.program_manager.concat(" - ").concat(trainingData.program_manager_sapid), name: "programManager"}			
         
             RegForm.trainingName.value=trainingData.training_name;
             RegForm.trainingName.valid=true;
@@ -411,11 +436,11 @@ class TrainingCreation extends React.Component {
             RegForm.requestBySapid.value=trainingData.requestedby_sapid;
             RegForm.requestBySapid.valid=true;
 
-            RegForm.programManager.value=trainingData.program_manager;
+            RegForm.programManager.value=trainingData.program_manager_id;
             RegForm.programManager.valid=true;
 
-            RegForm.programManagerSapid.value=trainingData.program_mngr_sapid;
-            RegForm.programManagerSapid.valid=true;
+            // RegForm.programManagerSapid.value=trainingData.program_mngr_sapid;
+            // RegForm.programManagerSapid.valid=true;
 
             RegForm.skills.value=trainingData.skills;
             RegForm.skills.valid=true;
@@ -434,8 +459,9 @@ class TrainingCreation extends React.Component {
 
             RegForm.actualEndDate.value=new Date(trainingData.actual_end_date);
             RegForm.actualEndDate.valid=true; 
-
-            this.setState({ formValues: RegForm, selectedTrainingType:selectttype, selectedLocation: selectLoc,  selectedAccount: selectAcc, smesListOption:trainingData.smes,snackBarOpen: true, snackmsg: "Data loaded successfully", snackvariant:"success" })
+			
+			console.log(RegForm);
+            this.setState({ formValues: RegForm, selectedTrainingType:selectttype, selectedLocation: selectLoc,selectedProgramManager:selectProgramManager, selectedAccount: selectAcc, smesListOption:trainingData.smes,snackBarOpen: true, snackmsg: "Data loaded successfully", snackvariant:"success" })
       } else {
         this.setState({ snackBarOpen: true, snackmsg: "Something went Wrong. Please try again later.", snackvariant:"error"})
       }
@@ -503,22 +529,22 @@ class TrainingCreation extends React.Component {
       plannedStDate: moment(formData.plannedStDate).format("YYYY-MM-DD HH:mm:ss"),
       skills: formData.skills,
       smeIds: formData.assignSME,
-      programManager: formData.programManager,
-      programManagerSapid: formData.programManagerSapid,
+      programManagerId: formData.programManager,
+    //  programManagerSapid: formData.programManagerSapid,
       requestBy: formData.requestBy,
       requestBySapid: formData.requestBySapid,
       CreatedBy: 1,
       UpdatedBy: 1,
       }
-   
+   //console.log(reqObj);
     if(!editTrainingId){
       this.props.registerTraining(reqObj).then(result => {
         if(result && result.errCode ===200){
           this.setState({
-            formValues: { ...trainingRegForm }, selectedAccount: null, selectedTrainingType: null, selectedLocation: null, selectedSkill: null, selectedSME: null,snackBarOpen: true, snackmsg: "Data Inserted successfully", snackvariant:"success" });
+            formValues: { ...trainingRegForm }, selectedAccount: null, selectedTrainingType: null, selectedProgramManager:null, selectedLocation: null, selectedSkill: null, selectedSME: null,snackBarOpen: true, snackmsg: "Data Inserted successfully", snackvariant:"success" });
         }else{
           this.setState({
-            formValues: { ...trainingRegForm }, selectedAccount: null, selectedTrainingType: null, selectedLocation: null, selectedSkill: null, selectedSME: null,snackBarOpen: true, snackmsg: "Error in insertion", snackvariant:"error" });
+            formValues: { ...trainingRegForm }, selectedAccount: null, selectedTrainingType: null, selectedProgramManager: null, selectedLocation: null, selectedSkill: null, selectedSME: null,snackBarOpen: true, snackmsg: "Error in insertion", snackvariant:"error" });
         }
        
       })
@@ -533,7 +559,7 @@ class TrainingCreation extends React.Component {
           snackBarOpen: true, snackmsg: "Data loaded successfully", snackvariant:"success" });
         }else{
           this.setState({
-            formValues: { ...trainingRegForm }, selectedAccount: null, selectedTrainingType: null, selectedLocation: null, selectedSkill: null, selectedSME: null,snackBarOpen: true, snackmsg: "Update Failure", snackvariant:"error" });
+            formValues: { ...trainingRegForm }, selectedAccount: null, selectedTrainingType: null, selectedProgramManager: null, selectedLocation: null, selectedSkill: null, selectedSME: null,snackBarOpen: true, snackmsg: "Update Failure", snackvariant:"error" });
         } 
       })  
     }
@@ -667,7 +693,7 @@ class TrainingCreation extends React.Component {
   render() {
     const { classes } = this.props;
     const { skillList, showAddBatchModal, newBatchName, batchSelected, batchDetailsList, EventDetailsList,
-      eventSelected, activeStep, showCandidateUpload, CRFormIsValid, selectedProgramManager, newBatchCount, selectedTrainingType, selectedAccount, selectedLocation, locationList, accountList, trainingTypeList, formValues, smesList, smesListOption, snackBarOpen, snackmsg, snackvariant, editTrainingId, formIsValid, BFFormIsValid, CFFormIsValid} = this.state;
+      eventSelected, activeStep, showCandidateUpload, CRFormIsValid, selectedProgramManager, newBatchCount, selectedTrainingType, selectedAccount, selectedLocation, locationList,programManagerList, accountList, trainingTypeList, formValues, smesList, smesListOption, snackBarOpen, snackmsg, snackvariant, editTrainingId, formIsValid, BFFormIsValid, CFFormIsValid} = this.state;
     const steps = this.getSteps();
     let disableSubmitBtn = false;
     if (activeStep === 0) {
@@ -781,26 +807,17 @@ class TrainingCreation extends React.Component {
             </div>
           </Grid>
           <Grid item xs={12} sm={6}>
-            <Textbox
-              fieldLabel="Program Manager"
-              id="programManager"
-              name="programManager"
-              type="text"
-              placeholder="Program Manager"
-              value={formValues.programManager.value}
-              onChange={this.inputFieldChange}
-              errorMessage={this.state.errors.programManager === "" ? null : this.state.errors.programManager}
+			<SelectOne
+                fieldLabel="Program Manager"
+                id="programManager"
+                name="programManager"
+                placeholder="Program Manager"
+                value={selectedProgramManager}
+                options={programManagerList}
+                onChange={this.selectFieldChange}
+                errorMessage={this.state.errors.programManager === "" ? null : this.state.errors.programManager}
             />
-            <Textbox
-              fieldLabel="program Manager Sapid"
-              value={formValues.programManagerSapid.value}
-              id="programManagerSapid"
-              type="text"
-              placeholder="program Manager Sapid"
-              errorMessage={this.state.errors.programManagerSapid === "" ? null : this.state.errors.programManagerSapid}
-              name="programManagerSapid"
-              onChange={this.inputFieldChange}
-            />
+            
             <SelectOne
               fieldLabel="Skills"
               id="skills"
@@ -875,6 +892,7 @@ class TrainingCreation extends React.Component {
               getAccount={this.props.getAccount}
               getLobList={this.props.getLobList}
               getLocation={this.props.getLocation}
+			  getProgramManager={this.props.getProgramManager}
               insertCandidate={this.props.insertCandidate}
               checkAllFieldsValid={this.checkAllFieldsValid}
             />

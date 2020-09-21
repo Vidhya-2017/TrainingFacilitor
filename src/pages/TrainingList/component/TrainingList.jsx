@@ -5,6 +5,7 @@ import Select from 'react-select';
 import DateTimePicker from '../../../components/UI_Component/DateTimePicker/DateTimePicker';
 import SelectOne from '../../../components/UI_Component/Select/SelectOne';
 import SelectStyles from '../../../components/UI_Component/Select/SelectStyles';
+import SnackBar from '../../../components/UI_Component/SnackBar/SnackBar';
 import '../scss/TrainingList.scss';
 import moment from 'moment';
 
@@ -36,8 +37,9 @@ class TrainingList extends React.Component {
       accountList: [],
       trainingTypeList: [],
       smeList: [],
-      showToast: false,
-      toastMessage: ''
+      snackBarOpen: false,
+      snackmsg: '',
+      snackvariant: '',
     }
     this.columnFields = [
       {
@@ -277,7 +279,6 @@ class TrainingList extends React.Component {
       {
         title: "Program Manager Sapid",
         field: "program_mngr_sapid",
-        validate: rowData => rowData.request_by !== '',
       },
     ]
   }
@@ -296,14 +297,16 @@ class TrainingList extends React.Component {
       if (response && response.errCode === 200) {
         this.setState({
           trainingListVal: response.arrRes,
-          showToast: true,
-          toastMessage: "Data loaded successfully"
+          snackBarOpen: true,
+          snackmsg: "Data loaded successfully",
+          snackvariant: "success"
         })
       } else {
         this.setState({
           trainingListVal: [],
-          showToast: true,
-          toastMessage: "Error in loading Data"
+          snackBarOpen: true,
+          snackmsg: "Error in loading Data",
+          snackvariant: "error"
         })
       }
     });
@@ -320,7 +323,7 @@ class TrainingList extends React.Component {
         });
         this.setState({ accountList });
       } else {
-        this.setState({ showToast: true, toastMsg: 'Something went Wrong. Please try again later.' })
+        this.setState({ snackBarOpen: true, snackmsg: 'Something went Wrong. Please try again later.',snackvariant: "error" })
       }
     })
   }
@@ -336,7 +339,7 @@ class TrainingList extends React.Component {
         });
         this.setState({ locationList });
       } else {
-        this.setState({ showToast: true, toastMsg: 'Something went Wrong. Please try again later.' })
+        this.setState({  snackBarOpen: true, snackmsg: 'Something went Wrong. Please try again later.',snackvariant: "error" })
       }
     })
   }
@@ -352,7 +355,7 @@ class TrainingList extends React.Component {
         });
         this.setState({ skillList });
       } else {
-        this.setState({ showToast: true, toastMsg: 'Something went Wrong. Please try again later.' })
+        this.setState({  snackBarOpen: true, snackmsg: 'Something went Wrong. Please try again later.',snackvariant: "error" })
       }
     })
   }
@@ -368,7 +371,7 @@ class TrainingList extends React.Component {
         });
         this.setState({ trainingTypeList });
       } else {
-        this.setState({ showToast: true, toastMsg: 'Something went Wrong. Please try again later.' })
+        this.setState({  snackBarOpen: true, snackmsg: 'Something went Wrong. Please try again later.',snackvariant: "error" })
       }
     })
   }
@@ -387,7 +390,7 @@ class TrainingList extends React.Component {
         });
         this.setState({ smeList });
       } else {
-        this.setState({ showToast: true, toastMsg: 'Something went Wrong. Please try again later.' })
+        this.setState({ snackBarOpen: true, snackmsg: 'Something went Wrong. Please try again later.',snackvariant: "error" })
       }
     })
   }
@@ -402,14 +405,14 @@ class TrainingList extends React.Component {
         data.splice(data.indexOf(oldData), 1);
         this.setState({
           trainingListVal: data,
-          showToast: true,
-          toastMessage: "Deleted successfully",
+          snackBarOpen: true,
+          snackmsg: "Deleted successfully",
+          snackvariant: "success"
         });
       }
       else {
         this.setState({
-          showToast: true,
-          toastMessage: "Error in deletion"
+          snackBarOpen: true, snackmsg: 'Something went Wrong. Please try again later.',snackvariant: "error" 
         });
       }
     });
@@ -472,9 +475,19 @@ class TrainingList extends React.Component {
     this.props.history.push('/trainingCreation')
   }
 
+  onCloseSnackBar = () =>{
+    this.setState({snackBarOpen:false});
+  }
+
+  editRowRedirect = (updatedRow) => {
+    console.log(updatedRow.id);   
+    this.props.history.push(`/trainingCreation?tId=${updatedRow.id}`)
+  }
+ 
+
   render() {
-    const { trainingListVal } = this.state;
-    const { classes } = this.props;
+    const { trainingListVal, snackmsg, snackvariant, snackBarOpen } = this.state;
+    const { classes} = this.props;
     return (
       <div className="TrainingList_container">
         <Paper className={classes.paperRoot} elevation={3}>
@@ -487,7 +500,7 @@ class TrainingList extends React.Component {
             data={trainingListVal}
             style={{ boxShadow: 'none', border: 'solid 1px #ccc' }}
             options={{
-              actionsColumnIndex: -1,
+              actionsColumnIndex: 0,
               pageSizeOptions: []
             }}
             actions={[
@@ -497,8 +510,26 @@ class TrainingList extends React.Component {
                 isFreeAction: true,
                 onClick: (event) => this.deleteRow()
               },
+              {
+                icon: 'edit',
+                tooltip: 'Edit Training',
+                onClick: (event, rowData) => this.editRowRedirect(rowData)
+              },
+              rowData => ({
+                icon: 'delete',
+                tooltip: 'Delete User',
+                onClick: (event, rowData) => this.handleDelete(rowData),
+              })
+              ]}
+           /* actions={[
+              {
+                icon: 'add',
+                tooltip: 'Add Training',
+                isFreeAction: true,
+                onClick: (event) => this.deleteRow()
+              },
             ]}
-            editable={{
+             editable={{
               onRowUpdate: (newData, oldData) =>
                 new Promise((resolve) => {
                   resolve();
@@ -511,8 +542,11 @@ class TrainingList extends React.Component {
                   resolve();
                   this.handleDelete(oldData);
                 })
-            }}
+            }} */
           />
+
+{snackBarOpen && <SnackBar snackBarOpen={snackBarOpen} snackmsg={snackmsg} snackvariant={snackvariant} 
+                     onCloseSnackBar={this.onCloseSnackBar} />}
         </Paper>
       </div>
     )

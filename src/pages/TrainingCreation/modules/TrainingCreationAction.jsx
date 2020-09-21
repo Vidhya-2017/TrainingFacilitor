@@ -35,6 +35,15 @@ export const TrainingCreationAction = {
             return (error.response);
         }
     },
+	getProgramManager: async (data) => {
+        try {
+            const response = await clients.axiosAPI.post('/programManagerList.php', data);
+            return (response.data);
+        }
+        catch (error) {
+            return (error.response);
+        }
+    },
 
     getAccount: async (data) => {
         try {
