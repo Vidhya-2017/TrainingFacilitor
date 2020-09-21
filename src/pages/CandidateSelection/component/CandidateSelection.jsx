@@ -431,6 +431,7 @@ class CandidateSelection extends Component {
           <div className={classes.selectOne}>
             {/* <Typography variant="body1" className={classes.trainingTitle}>Training List </Typography > */}
             <Grid item xs={12} sm={4} md={4} style={{ 'display': 'inline-block' }}>
+            <label>Training List</label>
               <SelectOne
                 className="inline"
                 fieldLabel=""

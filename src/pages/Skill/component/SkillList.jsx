@@ -537,7 +537,7 @@ class SkillList extends React.Component {
               disabled={selectedSkillVal === '' || selectedSkillVal === undefined}> <DeleteIcon fontSize="small" /></Button>
          
           </ButtonGroup>
-          <FormControl variant="outlined" className={classes.formControl}>
+          <FormControl variant="outlined" className={classes.formControl}  className="pull-right">
           <Grid item md={6} xs={12} style={{ margin: 'auto' }}>
             <div style={{ float: 'right' }}><Button variant="contained" onClick={this.showCurriculumUpload} color="primary">{uploadtitle}</Button></div>
 
