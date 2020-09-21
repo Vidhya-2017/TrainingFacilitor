@@ -3,7 +3,7 @@ import clients from '../../../common/clients';
 export const SMEAction = {
   getSMEList: async () => {
     try {
-      const response = await clients.axiosAPI.post('/ListSmelist.php');
+      const response = await clients.axiosAPI.post('/UserList.php');
       return (response.data);
     }
     catch (error) {
@@ -17,10 +17,18 @@ export const SMEAction = {
     catch (error) {
         return (error.response);
     }
+}, getRoleList: async (data) =>{
+   try {
+      const response = await clients.axiosAPI.post('roleList.php', data);
+      return (response.data); 
+   }
+   catch (error) {
+      return (error.response);
+   }
 },
   deleteSMEList: async (data) => {
     try {
-      const response = await clients.axiosAPI.post('/DeleteSmeList.php', data);
+      const response = await clients.axiosAPI.post('/deleteUser.php', data);
       return (response.data);
     }
     catch (error) {
@@ -29,7 +37,7 @@ export const SMEAction = {
   },
   editSMEList: async (data) => {
     try {
-      const response = await clients.axiosAPI.post('/EditSmeList.php', data);
+      const response = await clients.axiosAPI.post('/editUser.php', data);
       return (response.data);
     }
     catch (error) {
@@ -38,7 +46,7 @@ export const SMEAction = {
   },
 addSMEList: async (data) => {
     try {
-      const response = await clients.axiosAPI.post('/AddSmeList.php', data);
+      const response = await clients.axiosAPI.post('/insertUser.php ', data);
       return (response.data);
     }
     catch (error) {

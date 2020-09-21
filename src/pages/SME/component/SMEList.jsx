@@ -34,7 +34,8 @@ const smeRegForm = {
     emailId: { ...inputField },
     skills: { ...inputField },
     contactNumber: { ...inputField },
-    sapId: { ...inputField }
+    sapId: { ...inputField },
+    role: { ...inputField}
 }
 
 class SMEList extends React.Component {
@@ -47,21 +48,22 @@ class SMEList extends React.Component {
             defaultValue: [],
             snackmsg: '',
             skillList: [],
+            role: [],
             snackvariant: '',
             showAddSMEModal: false,
-            formIsValid: false
+            formIsValid: false,
+            showSMEList: false,
+            selectedRole: '',
+            password: '',
+            c_password: '',
+            password_msg: null,
+            ispassword_disable:true,
         }
         this.columnFields = [
             {
-                title: "SME Name",
+                title: "Name",
                 field: "name",
                 validate: rowData => rowData.name !== ''
-            },
-            {
-                title: "Contact Number",
-                field: "phone_number",
-                type: "numeric",
-                validate: rowData => this.editValidate(rowData, "phone")
             },
             {
                 title: "Sap Id",
@@ -69,6 +71,13 @@ class SMEList extends React.Component {
                 type: "numeric",
                 validate: rowData => this.editValidate(rowData, "sap_id")
             },
+            {
+                title: "Contact Number",
+                field: "phone_number",
+                type: "numeric",
+                validate: rowData => this.editValidate(rowData, "phone")
+            },
+          
             {
                 title: "Email id",
                 field: "email",
@@ -78,29 +87,76 @@ class SMEList extends React.Component {
             {
                 title: "Skills",
                 field: "SkillName",
-                editComponent: props => {
-
-                    const defaultValue = this.state.skillList.filter(skill => props.rowData.skill_ids.includes(skill.id))
-
+                editComponent: props => {                  
+                    let defaultValue = this.state.skillList.filter(skill => props.rowData.skill_ids.includes(skill.id))
+                     let rolevalue;
+                     let skillvalue;
+                    const skill_ids = props.rowData.skill_ids;
+                    if(typeof props.rowData.role_name == 'string'){
+                         rolevalue = props.rowData.role_name;
+                    }else if(typeof props.rowData.role_name == 'object'){
+                         rolevalue = props.rowData.role_name.label;
+                    }else{
+                          rolevalue = props.rowData.role_name;
+                    }
+                    let isdiable = false;
+                    if(rolevalue === 'SME'){
+                       isdiable = false;
+                    }else{
+                        isdiable = true;
+                        skillvalue = '';
+                        defaultValue = '';
+                    }
+                
                     return (
                         <Select
                             placeholder="Skills"
                             onChange={e => props.onChange(e)}
+                            id="skills"
+                            name="skills"
                             options={this.state.skillList}
                             styles={SelectStyles()}
-                            isMulti
+                            labelId="demo-simple-select-disabled-label"
+                            isDisabled={isdiable}
+                            isMulti={true}
                             defaultValue={defaultValue}
+                            value={skillvalue}
                         />
                     )
                 },
                 validate: rowData => this.editValidate(rowData, "skill")
-            }
+            },            
+            {
+                title: "Role",
+                field: "role_name",
+                editComponent : props => {
+                 const roledefaultvalue = this.state.role.filter(rl => props.rowData.role.includes(rl.id));
+                 return <Select
+                            placeholder="Role"
+                            onChange={e => props.onChange(e)}
+                            options={this.state.role}
+                            styles={SelectStyles()}
+                            defaultValue= {roledefaultvalue}
+                    />
+                },
+
+                validate: rowData => this.editValidate(rowData, "role")
+            },
         ]
     }
 
 
 
     editValidate(data, action) {
+        let rolename;
+        if(typeof data.role_name == 'string'){
+            rolename = data.role_name;
+        }else if(typeof data.role_name == 'object'){
+              rolename = data.role_name.label;
+        }else {
+            rolename = data.role_name;
+        }
+
         switch (action) {
             case "phone":
                 const phonePattern = RegExp(/^([+]\d{2})?\d{10}$/);
@@ -119,11 +175,22 @@ class SMEList extends React.Component {
                     return false;
                 break;
             case "skill":
-                if (data.SkillName !== null)
-                    return true;
-                else
+
+                if (rolename === 'SME' && data.SkillName === null)
                     return false;
+                else
+                    return true;
                 break;
+            case "role":
+                    if (data.role_name !== null)
+                        if (rolename === 'SME' && (data.SkillName === null || data.SkillName === '')){
+                            return false;
+                        }else{
+                         return true;
+                        }
+                    else
+                        return false;
+                    break;    
             case "email":
                 const emailPattern = RegExp(/^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i);
                 if (emailPattern.test(data.email)) {
@@ -152,7 +219,7 @@ class SMEList extends React.Component {
                     smeListVal: response.arrRes,
                     snackBarOpen: true,
                     snackvariant: 'success',
-                    snackmsg: "SME Data loaded successfully"
+                    snackmsg: "User Data loaded successfully"
                 })
 
             } else {
@@ -160,11 +227,37 @@ class SMEList extends React.Component {
                     smeListVal: [],
                     snackBarOpen: true,
                     snackvariant: 'error',
-                    snackmsg: "Error in loading SME Data"
+                    snackmsg: "Error in loading User Data"
                 })
             }
         });
         this.getSkillList();
+        this.getRoleList();
+    }
+
+    getRoleList = () => {
+        this.props.getRoleList().then(response => {
+              if(response == undefined) {
+                  this.setState({
+                      snackBarOpen: true,
+                      snackvariant: 'error',
+                      snakemsg: " Server is disconnected"
+                  })
+              }else if (response && response.errCode === 200){
+                  const role = response.arrRes.map(rl =>{
+                      return {
+                          id: rl.id,
+                          value: rl.id,
+                          label: rl.role_name
+                      }
+                  });
+                  this.setState({role});
+                  this.setState({roles:role});
+              }else{
+                this.setState({ snackBarOpen: true, snackvariant: 'error', snackmsg: 'Something went Wrong. Please try again later.' })
+              }
+        })
+
     }
 
     getSkillList = () => {
@@ -211,7 +304,7 @@ class SMEList extends React.Component {
 
                     smeListVal: filteredItems,
                     snackBarOpen: true,
-                    snackmsg: "SME deleted successfully",
+                    snackmsg: "User deleted successfully",
                     snackvariant: 'success'
                 });
             }
@@ -219,26 +312,30 @@ class SMEList extends React.Component {
                 this.setState({
                     snackBarOpen: true,
                     snackvariant: 'error',
-                    snackmsg: "Error in SME deletion"
+                    snackmsg: "Error in User deletion"
                 });
             }
 
         });
     }
 
+
     editSubmit = (newData, oldData) => {
         var skillIds = (newData.SkillName === oldData.SkillName) ? newData.skill_ids : newData.SkillName.map(skill => skill.id)
+
         const reqObj = {
-            id: newData.id,
+            userid: newData.id,
             name: newData.name,
             email: newData.email,
             sapid: newData.sap_id,
             skills: skillIds,
             phone_number: newData.phone_number,
+            role: newData.role_name.id ? newData.role_name.id : newData.role,
             updated_by: "1"
         }
         const filteredItems = this.state.skillList.filter(skill => reqObj.skills.includes(skill.id))
-        const skillNames = filteredItems.map(item => item.label);
+        const skillNames  = filteredItems.map(item => item.label);
+
         this.props.editSMEList(reqObj).then(response => {
             if (response === undefined) {
                 this.setState({
@@ -248,6 +345,37 @@ class SMEList extends React.Component {
                 })
             }
             else if (response && response.errCode === 200) {
+                let skills;
+                let rlvalue ;
+                 let rlnamevalue;
+
+                 if(newData.role_name.label === 'SME' || newData.role_name === 'SME'){
+                    skills = skillNames.toString()
+                 }else{
+                    skills = '';
+                 }
+
+                if(typeof newData.role_name == 'string'){
+                    rlnamevalue = newData.role_name;
+               }else if(typeof newData.role_name == 'object'){
+                   rlnamevalue = newData.role_name.label;
+               }else{
+                     rlnamevalue = newData.role_name;
+               }
+
+
+                if(newData.role){
+                    rlvalue = newData.role;
+                if(typeof newData.role_name == 'object'){
+                    rlvalue = newData.role_name.id;
+                }
+                }else if(!newData.role && newData.role_name.id){
+                    rlvalue = newData.role_name.id;
+                }else{
+                    rlvalue = '';
+                }
+                 
+
                 this.setState(prevState => ({
                     smeListVal: prevState.smeListVal.map(
                         el => el.id === newData.id ? {
@@ -256,14 +384,17 @@ class SMEList extends React.Component {
                             email: newData.email,
                             sap_id: newData.sap_id,
                             skill_ids: reqObj.skills,
-                            SkillName: skillNames.toString(),
+                            SkillName: skills,
+                            role_name:rlnamevalue,
+                            role:rlvalue,
                             phone_number: newData.phone_number
                         } : el
                     )
                 }))
+    
                 this.setState({
                     snackBarOpen: true,
-                    snackmsg: "SME Details updated successfully",
+                    snackmsg: "User Details updated successfully",
                     snackvariant: 'success'
                 });
             }
@@ -271,30 +402,34 @@ class SMEList extends React.Component {
                 this.setState({
                     snackBarOpen: true,
                     snackvariant: 'error',
-                    snackmsg: " Failed in updating SME Details "
+                    snackmsg: " Failed in updating User Details "
                 });
             }
             else {
                 this.setState({
                     snackBarOpen: true,
                     snackvariant: 'error',
-                    snackmsg: "Error in updating the SME Details"
+                    snackmsg: "Error in updating the User Details"
                 });
             }
         });
     }
 
     handleModalSubmit = () => {
-        const { formValues } = this.state;
+        const { formValues,role,roles } = this.state;
+
         const reqObj = {
             name: formValues.smeName.value,
             sapid: formValues.sapId.value,
             phone_number: formValues.contactNumber.value,
+            role: formValues.role.value,
             skills: formValues.skills.value,
             email: formValues.emailId.value,
+            password: formValues.password.value,
             created_by: 1,
             updated_by: 1
         }
+
         const filteredItems = this.state.skillList.filter(skill => reqObj.skills.includes(skill.id))
         const skillNames = filteredItems.map(item => item.label);
         this.props.addSMEList(reqObj).then(response => {
@@ -306,6 +441,9 @@ class SMEList extends React.Component {
                 })
             }
             else if (response && response.errCode === 200) {
+
+                const rolevalue = response.role_details;
+            
                 const myObj = {
                     id: response.arrRes,
                     name: formValues.smeName.value,
@@ -313,25 +451,29 @@ class SMEList extends React.Component {
                     phone_number: formValues.contactNumber.value,
                     email: formValues.emailId.value,
                     skill_ids: reqObj.skills,
-                    SkillName: skillNames.toString()
+                    SkillName: skillNames.toString(),
+                    role_name:rolevalue['role_name'],
+                     role:reqObj.role
                 }
+
                 const updatedItems = [...this.state.smeListVal, myObj];
+
                 this.setState({
                     formValues: { ...smeRegForm },
                     showAddSMEModal: false,
                     smeListVal: updatedItems,
                     snackBarOpen: true,
                     snackvariant: 'success',
-                    snackmsg: "SME added successfully!"
+                    snackmsg: "User added successfully!"
                 })
             }
-            else if (response && response.errCode === 404) {
+            else if (response && response.errCode === 404 && response.status === 'Email ID Already Exist')  {
                 this.setState({
                     formValues: { ...smeRegForm },
                     showAddSMEModal: false,
                     snackBarOpen: true,
                     snackvariant: 'error',
-                    snackmsg: " SME Already exists!"
+                    snackmsg: "User Email Already exists!"
                 })
             }
             else {
@@ -339,7 +481,7 @@ class SMEList extends React.Component {
                     showAddSMEModal: false,
                     snackBarOpen: true,
                     snackvariant: 'error',
-                    snackmsg: "Error in adding SME!"
+                    snackmsg: "Error in adding User!"
                 })
             }
         });
@@ -358,6 +500,7 @@ class SMEList extends React.Component {
         const targetName = e.target.name;
         const targetValue = e.target.value;
         const targetType = e.target.type ? e.target.type : '';
+
         const updatedRegForm = {
             ...this.state.formValues
         };
@@ -371,7 +514,32 @@ class SMEList extends React.Component {
         for (let inputIdentifier in updatedRegForm) {
             formIsValid = updatedRegForm[inputIdentifier].valid && formIsValid;
         }
+
+        if(targetName === 'role'){
+            if(e.target.label === 'SME'){
+                this.setState({showSMEList: true});
+            }else{
+                this.setState({showSMEList: false});
+            }
+            this.setState({selectedRole: e.target});
+        }
+
+        if(targetName === 'password'){
+                this.setState({'password' : targetValue});
+                this.setState({'formValues.c_password': ''});  
+        }
+       
+        if(targetName === 'c_password'){
+            this.setState({'c_password' : targetValue});
+            if(this.state.password === targetValue){
+                this.setState({password_msg: null,ispassword_disable : false});
+                
+            }else{
+                this.setState({password_msg: 'Password does not match please enter the correct password',ispassword_disable : true });
+            }
+        }
         this.setState({ formValues: updatedRegForm, formIsValid });
+
     }
 
 
@@ -408,7 +576,8 @@ class SMEList extends React.Component {
 
     render() {
         const { classes } = this.props;
-        const { formIsValid, snackvariant, snackBarOpen, snackmsg, skillList, formValues } = this.state;
+        const { formIsValid, snackvariant, snackBarOpen, snackmsg, skillList, formValues,role,showSMEList,selectedRole,password_msg,ispassword_disable } = this.state;
+
         return (
             <div className="SMEList_container">
                 <Dialog
@@ -419,15 +588,15 @@ class SMEList extends React.Component {
                     onClose={this.handleModalClose}
                     aria-labelledby="SME-Name"
                 >
-                    <DialogTitle id="SME-Name">Add SME Details</DialogTitle>
+                    <DialogTitle id="SME-Name">Add User Details</DialogTitle>
                     <DialogContent >
                         <div style={{ display: 'flex', flexDirection: "column" }}>
-                            <Typography style={{ padding: '15px 15px 10px 0' }}>SME Name:</Typography>
+                            <Typography style={{ padding: '15px 15px 10px 0' }}>Name:</Typography>
                             <TextField
                                 autoFocus
                                 variant="outlined"
                                 margin="dense"
-                                placeholder="SME Name"
+                                placeholder="Name"
                                 type="text"
                                 name="smeName"
                                 value={formValues.smeName.value}
@@ -463,31 +632,70 @@ class SMEList extends React.Component {
                                 value={formValues.contactNumber.value}
                                 onChange={this.inputFieldChange}
                             />
-                            <Typography style={{ padding: '15px 15px 10px 0' }}>Select Skills:</Typography>
-                            <SelectOne
-                                fieldLabel="Skills"
-                                id="skills"
-                                name="skills"
-                                placeholder="Skills"
-                                value={formValues.skills && formValues.skills.value}
-                                isMulti={true}
-                                options={skillList}
-                                onChange={this.inputFieldChange}
-                            />
-                        </div>
+                            <Typography style={{ padding: '15px 15px 10px 0' }} >Select Role:</Typography>
+                             <SelectOne
+                                id="role"
+                                name="role"
+                                placeholder="Role"
+                                options={role}
+                                onChange={this.inputFieldChange}                                
+                                value={selectedRole ? selectedRole : null}
+                              />  
+                              { showSMEList &&
+                                <div>
+                                 <Typography style={{ padding: '15px 15px 10px 0' }}>Select Skills:</Typography>
+                                 <SelectOne
+                                     id="skills"
+                                     name="skills"
+                                     placeholder="Skills"
+                                     value={formValues.skills && formValues.skills.value}
+                                     isMulti={true}
+                                     options={skillList}
+                                     onChange={this.inputFieldChange}
+                                 />
+                                </div> 
+                                 }
+                     <Typography style={{ padding: '15px 15px 10px 0' }}>Password:</Typography>
+                        <TextField
+                            variant="outlined"
+                            margin="dense"
+                            placeholder="Password"
+                            name="password"
+                            id="outlined-error-helper-text"
+                            type="password"
+                            value={formValues.password && formValues.password.value}
+                            onChange={this.inputFieldChange}
+                        />
+
+                       <Typography style={{ padding: '15px 15px 10px 0' }}>Confirm Password:</Typography>
+                        <TextField
+                            variant="outlined"
+                            margin="dense"
+                            placeholder="Confirm Password"
+                            type="password"
+                            name="c_password"
+                            id="outlined-error-helper-text"
+                            //helperText = {password_msg === "" ? null : password_msg }
+                            value={formValues.c_password && formValues.c_password.value}
+                            onChange={this.inputFieldChange}
+                        />  
+                        <span style={{color: 'red'}}>{password_msg === "" ? null : password_msg }</span>
+     
+                     </div>
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={this.handleModalClose} variant="contained" color="primary">
                             Cancel
                 </Button>
-                        <Button onClick={this.handleModalSubmit} disabled={!formIsValid} variant="contained" color="primary">
+                        
+                        <Button onClick={this.handleModalSubmit} disabled={!formIsValid && ispassword_disable} variant="contained" color="primary">
                             Submit
                 </Button>
                     </DialogActions>
                 </Dialog>
                 <Paper className={classes.paperRoot} elevation={3}>
                     <Typography variant="h4" className="text-center" gutterBottom>
-                        SME List
+                        User List
             </Typography>
                     <MaterialTable
                         title=""
@@ -501,7 +709,7 @@ class SMEList extends React.Component {
                         actions={[
                             {
                                 icon: 'add',
-                                tooltip: 'Add SME Data',
+                                tooltip: 'Add User Data',
                                 isFreeAction: true,
                                 onClick: (event) => this.setState({ showAddSMEModal: true })
                             },

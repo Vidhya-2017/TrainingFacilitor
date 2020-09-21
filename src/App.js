@@ -81,7 +81,7 @@ class App extends React.Component {
                   <Route path="/login" component={LoginContainer} />
                   <Route path="/trainingCreation" component={TrainingCreationContainer} />
                   <Route path="/forgetPassword" component={ForgetPasswordContainer} />
-                  <Route path="/sme" component={SMEListContainer} />
+                  <Route path="/user" component={SMEListContainer} />
                   <Route path="/skill" component={SkillListContainer} />
                   <Route path="/externalTraining" component={ExternalTrainingContainer} />
                   <Route path="/trainingType" component={TrainingTypeContainer} />

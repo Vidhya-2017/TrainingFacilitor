@@ -9,7 +9,8 @@ const mapDispatchToProps = (dispatch) => {
     getSMEList:SMEAction.getSMEList,
     deleteSMEList:SMEAction.deleteSMEList,
     editSMEList:SMEAction.editSMEList,
-    addSMEList:SMEAction.addSMEList
+    addSMEList:SMEAction.addSMEList,
+    getRoleList: SMEAction.getRoleList,
   };
 };
 
