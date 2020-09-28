@@ -90,8 +90,9 @@ class EnhancedTableHead extends React.Component {
           <TableCell padding="checkbox" className={classes.stickyColumnHeader}>
             <Checkbox
               indeterminate={numSelected > 0 && numSelected < rowCount}
-              checked={numSelected === rowCount}
+              checked={numSelected > 0 && numSelected === rowCount}
               onChange={onSelectAllClick}
+              color="primary"
             />
           </TableCell>
           {rows.map(
@@ -244,8 +245,8 @@ const styles = theme => ({
   },
   stickyColumnHeader: { position: 'sticky', left: 0, zIndex: 1, background: '#9de6e6' },
   stickyColumnHeaderName: { position: 'sticky', left: 46, zIndex: 1, background: '#9de6e6' },
-  stickyColumnCell: { position: 'sticky', left: 0, zIndex: 1, background: '#9de6e6' },
-  stickyColumnCellName: { position: 'sticky', left: 0, zIndex: 1, background: '#fff' }
+  stickyColumnCell: { position: 'sticky', left: 0, zIndex: 1, background: '#fff' },
+  stickyColumnCellName: { position: 'sticky', left: 46, zIndex: 1, background: '#fff' }
 });
 
 class TrainingFeedback extends React.Component {
@@ -435,8 +436,8 @@ class TrainingFeedback extends React.Component {
                       key={n.id}
                       selected={isSelected}
                     >
-                      <TableCell padding="checkbox" className={classes.stickyColumnCellName}>
-                        <Checkbox checked={isSelected} />
+                      <TableCell padding="checkbox" className={classes.stickyColumnCell}>
+                        <Checkbox color="primary" checked={isSelected} />
                       </TableCell>
                       <TableCell component="th" scope="row" padding="none" className={classes.stickyColumnCellName}>
                         {n.first_name}

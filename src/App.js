@@ -31,6 +31,8 @@ import TrainingListContainer from './pages/TrainingList/container/TrainingListCo
 import SMECompletedTopicsContainer from './pages/SMECompletedTopics/container/SMECompletedTopics';
 import LOBListContainer from './pages/LOB/container/LOBListContainer';
 import AccountMasterContainer from './pages/AccountMaster/container/AccountMasterContainer';
+import TrainingFeedbackContainer from './pages/TrainingFeedback/container/TrainingFeedbackContainer';
+import TRCandidateFeedbackContainer from './pages/TRCandidateFeedback/container/TRCandidateFeedbackContainer';
 import Home from './pages/Home/container/HomeContainer';
 import Header from './components/Header/Header';
 import Footer from './components/Footer/Footer';
@@ -98,6 +100,8 @@ class App extends React.Component {
                   <Route path="/trainingList" component={TrainingListContainer} />
                   <Route path="/account" component={AccountMasterContainer} />
                   <Route path="/smeTopicsCovered" component={SMECompletedTopicsContainer} />
+                  <Route path="/candidateFeedbackList" component={TrainingFeedbackContainer} />
+                  <Route path="/trainingcandidateFeedback" component={TRCandidateFeedbackContainer} />
                 </Switch>
               </div>
               <Footer />
