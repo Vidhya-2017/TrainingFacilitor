@@ -188,6 +188,8 @@ class CandidateRegistration extends React.Component {
         const targetName = e.target.name;
         const targetValue = e.target.value;
 
+        console.log(targetValue);
+
         if (targetName === 'trainingid' && targetValue != '') {
             this.setState({ formDisable: true });
         }
@@ -208,6 +210,7 @@ class CandidateRegistration extends React.Component {
         }
         this.props.checkAllFieldsValid(formIsValid);
         this.setState({ formValues: updatedRegForm, formIsValid });
+        
     }
 
     checkValidity(inputValue, rules) {
@@ -328,6 +331,7 @@ class CandidateRegistration extends React.Component {
     render() {
         const { classes } = this.props
         const { trainingList, selectedTraining, locationList, selectedLocation, selectedLob, lobList, selectedAccount, accountList, selectedMonth, showToast, toastMsg, formIsValid, formValues, formDisable, snackBarOpen, snackmsg, snackvariant } = this.state;
+        console.log(formValues);
         return (
             <Grid container spacing={3} className={classes.gridRoot}>
                 <Grid item xs={12} sm={6}>
