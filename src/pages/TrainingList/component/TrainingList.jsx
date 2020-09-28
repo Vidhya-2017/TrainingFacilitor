@@ -501,7 +501,10 @@ class TrainingList extends React.Component {
             style={{ boxShadow: 'none', border: 'solid 1px #ccc' }}
             options={{
               actionsColumnIndex: 0,
-              pageSizeOptions: []
+              pageSizeOptions: [],
+              headerStyle: {
+                zIndex: 0
+              }
             }}
             actions={[
               {
