@@ -188,16 +188,10 @@ let userdata = userData.filter(user => selectedData.includes(user.id))
       </div>
       <div className={classes.spacer} />
       <div className={classes.actions}>
-        {numSelected > 0 ? (
+        {numSelected > 0 && (
           <Tooltip title="Edit">
             <IconButton aria-label="Edit" onClick={bulkEdit}>
               <EditIcon />
-            </IconButton>
-          </Tooltip>
-        ) : (
-          <Tooltip title="Filter list">
-            <IconButton aria-label="Filter list">
-              <FilterListIcon />
             </IconButton>
           </Tooltip>
         )}
@@ -235,10 +229,10 @@ const styles = theme => ({
     minWidth: 200,
   },
   tableheader:{
-    backgroundColor: '#9de6e6'
+    backgroundColor: '#E0E0E0'
   },
-  stickyColumnHeader: { position: 'sticky', left: 0, zIndex: 1, background: '#9de6e6' },
-  stickyColumnHeaderName: { position: 'sticky', left: 46, zIndex: 1, background: '#9de6e6' },
+  stickyColumnHeader: { position: 'sticky', left: 0, zIndex: 1, background: '#E0E0E0' },
+  stickyColumnHeaderName: { position: 'sticky', left: 46, zIndex: 1, background: '#E0E0E0' },
   stickyColumnCell: { position: 'sticky', left: 0, zIndex: 1, background: '#fff' },
   stickyColumnCellName: { position: 'sticky', left: 46, zIndex: 1, background: '#fff' }
 });
@@ -246,11 +240,11 @@ const styles = theme => ({
 class TrainingFeedback extends React.Component {
   state = {
     order: 'asc',
-    orderBy: 'first_name',
+    orderBy: '',
     selected: [],
     data: [],
     page: 0,
-    rowsPerPage: 5,
+    rowsPerPage: 10,
     trainingListVal:[],
     filteredFeedback:[],
     training_id:'',
@@ -264,17 +258,11 @@ class TrainingFeedback extends React.Component {
     this.props.getTrainingList().then((response) => {
       if (response && response.errCode === 200) {
         this.setState({
-          trainingListVal: response.arrRes,
-          snackvariant: 'success',
-          snackBarOpen: true,
-          snackmsg: "Training List loaded successfully"
+          trainingListVal: response.arrRes
         })
       } else {
         this.setState({
-          trainingListVal: [],
-          snackvariant: 'error',
-          snackBarOpen: true,
-          snackmsg: "Error in loading Data"
+          trainingListVal: []
         })
       }
     });
@@ -451,15 +439,15 @@ class TrainingFeedback extends React.Component {
                   );
                 })}
               {emptyRows > 0 && (
-                <TableRow style={{ height: 49 * emptyRows }}>
-                  <TableCell colSpan={6} />
+                <TableRow style={{ height: 100 }}>
+                  <TableCell colSpan={19} />
                 </TableRow>
               )}
             </TableBody>
           </Table>
         </div>
         <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
+          rowsPerPageOptions={[10, 25]}
           component="div"
           count={data.length}
           rowsPerPage={rowsPerPage}

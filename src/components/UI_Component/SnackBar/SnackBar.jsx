@@ -81,8 +81,8 @@ const variantIcon = {
 const SnackBar = (props) => {
     const [snackBarOpen, setShowSnackBar]= useState(props.snackBarOpen);
     const onCloseSnackBar = () => {
-      props.onCloseSnackBar();
       setShowSnackBar(false);
+      props.onCloseSnackBar();
     }
     return(
         <Snackbar

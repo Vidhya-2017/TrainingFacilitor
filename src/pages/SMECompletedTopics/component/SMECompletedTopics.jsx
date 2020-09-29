@@ -99,13 +99,14 @@ const styles = (theme) => ({
     color: '#6b6b6b'
   },
   paperRoot: {
-    width: '50%',
+    width: '80%',
     margin: '20px auto',
     padding: '10px 20px'
   },
   input: {
     marginLeft: 8,
     flex: 1,
+    border: 'solid 1px lightgrey'
   },
   cardHeader: {
     padding: theme.spacing(1, 2)
@@ -481,7 +482,6 @@ class SMECompletedTopics extends React.Component {
                   <InputBase className={classes.input} placeholder="Search Curriculum" 
                         value={query}
                         onChange={this.searchCurriculum} />
-                
                   <IconButton className={classes.iconButton} aria-label="Search">
                     <SearchIcon />
                   </IconButton>
