@@ -239,10 +239,10 @@ const styles = theme => ({
     minWidth: 200,
   },
   tableheader:{
-    backgroundColor: '#9de6e6'
+    backgroundColor: '#E0E0E0'
   },
-  stickyColumnHeader: { position: 'sticky', left: 0, zIndex: 1, background: '#9de6e6' },
-  stickyColumnHeaderName: { position: 'sticky', left: 46, zIndex: 1, background: '#9de6e6' },
+  stickyColumnHeader: { position: 'sticky', left: 0, zIndex: 1, background: '#E0E0E0' },
+  stickyColumnHeaderName: { position: 'sticky', left: 46, zIndex: 1, background: '#E0E0E0' },
   stickyColumnCell: { position: 'sticky', left: 0, zIndex: 1, background: '#fff' },
   stickyColumnCellName: { position: 'sticky', left: 46, zIndex: 1, background: '#fff' }
 });
@@ -250,20 +250,20 @@ const styles = theme => ({
 class TrainingFeedback extends React.Component {
   state = {
     order: 'asc',
-    orderBy: 'first_name',
+    orderBy: '',
     selected: [],
     data: [],
     excelData: [],
     page: 0,
-    rowsPerPage: 5,
+    rowsPerPage: 10,
     trainingListVal:[],
     selectedTraining:null,
     filteredFeedback:[],
     training_id:'',
     pushData:[],
-    snackvariant: '',
+    snackVariant: '',
     updated_by: '',
-    snackmsg: '',
+    snackMsg: '',
   };
 
   componentDidMount() {
@@ -278,16 +278,10 @@ class TrainingFeedback extends React.Component {
         });
         this.setState({
           trainingListVal,
-          snackvariant: 'success',
-          snackBarOpen: true,
-          snackmsg: "Training List loaded successfully"
         })
       } else {
         this.setState({
           trainingListVal: [],
-          snackvariant: 'error',
-          snackBarOpen: true,
-          snackmsg: "Error in loading Data"
         })
       }
     });
@@ -384,9 +378,9 @@ class TrainingFeedback extends React.Component {
           selected: [],
           training_id:e.target.value, 
           selectedTraining: e.target,
-          snackvariant: 'success',
+          snackVariant: 'success',
           snackBarOpen: true,
-          snackmsg: "Candidates Loaded Successfully"
+          snackMsg: "Candidates Loaded Successfully"
         })
       } else {
         this.setState({
@@ -394,9 +388,9 @@ class TrainingFeedback extends React.Component {
           selected: [],
           training_id:'',
           selectedTraining: null,
-          snackvariant: 'error',
+          snackVariant: 'error',
           snackBarOpen: true,
-          snackmsg: "No Candidates Found"
+          snackMsg: "No Candidates Found"
         })
       }
     });
@@ -405,7 +399,7 @@ class TrainingFeedback extends React.Component {
 
   render() {
     const { classes } = this.props;
-    const { data, excelData, order, orderBy, selected, rowsPerPage, page, trainingListVal, selectedTraining, snackvariant, snackBarOpen, snackmsg } = this.state;
+    const { data, excelData, order, orderBy, selected, rowsPerPage, page, trainingListVal, selectedTraining, snackVariant, snackBarOpen, snackMsg } = this.state;
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
 
     return (
@@ -498,7 +492,7 @@ class TrainingFeedback extends React.Component {
                   );
                 })}
               {emptyRows > 0 && (
-                <TableRow style={{ height: 49 * emptyRows }}>
+                <TableRow style={{ height: 100 }}>
                   <TableCell colSpan={6} />
                 </TableRow>
               )}
@@ -506,7 +500,7 @@ class TrainingFeedback extends React.Component {
           </Table>
         </div>
         <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
+          rowsPerPageOptions={[10, 25]}
           component="div"
           count={data.length}
           rowsPerPage={rowsPerPage}
@@ -522,7 +516,7 @@ class TrainingFeedback extends React.Component {
         />
         </TableContainer>
         {snackBarOpen &&
-            <SnackBar onCloseSnackBar={this.onCloseSnackBar} snackBarOpen={snackBarOpen} snackmsg={snackmsg} snackvariant={snackvariant} />}
+            <SnackBar onCloseSnackBar={this.onCloseSnackBar} snackBarOpen={snackBarOpen} snackMsg={snackMsg} snackVariant={snackVariant} />}
       </Paper>
       </div>
     );
