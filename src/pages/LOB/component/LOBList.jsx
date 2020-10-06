@@ -177,7 +177,7 @@ class LOBList extends React.Component {
     }
 
     render() {
-        const { LOBListVal, showAddLOBModal, showToast, toastMessage, snackBarOpen, snackmsg, snackvariant, newLOBName } = this.state;
+        const { LOBListVal, showAddLOBModal, snackBarOpen, snackmsg, snackvariant, newLOBName } = this.state;
         const { classes } = this.props;
         return (
             <div className="lob_container">

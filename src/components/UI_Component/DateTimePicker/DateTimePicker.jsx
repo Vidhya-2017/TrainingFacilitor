@@ -1,12 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import DatePicker from 'react-date-picker';
-import { TextField, withStyles, Typography } from '@material-ui/core';
-import moment from 'moment';
-// import DatePicker from "react-datepicker"; //for more https://reactdatepicker.com/
-// import addDays from 'date-fns/addDays';
-// import subDays from 'date-fns/subDays';
-// import "react-datepicker/dist/react-datepicker.css";
+import { Typography } from '@material-ui/core';
 import './DateTimePicker.scss'
 
 class DateTimePicker extends React.Component {

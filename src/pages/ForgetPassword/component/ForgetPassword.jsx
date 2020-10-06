@@ -111,8 +111,7 @@ class ForgetPassword extends React.Component{
                
              </Col>            
             </form>
-
-            <Col className="copy-text">Not Registerd ? <Link to="/register" href="javascript:void(0)">Click Here</Link></Col>
+            <Col className="copy-text">Not Registered ? <Link to="/register" >Click Here</Link></Col>
             </Col>
 
             <Col xs ={12} md = {6} lg="8" className=" banner-sec">

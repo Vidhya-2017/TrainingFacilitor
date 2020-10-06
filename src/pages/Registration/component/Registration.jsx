@@ -206,7 +206,7 @@ class Registration extends React.Component{
                
              </Col>            
             </form>
-            <Col className="copy-text">Already Registerd ? <Link to="/login" href="javascript:void(0)">Click Here</Link></Col>
+            <Col className="copy-text">Already Registered ? <Link to="/login">Click Here</Link></Col>
             </Col>
 
            

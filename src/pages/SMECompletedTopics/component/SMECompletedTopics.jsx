@@ -1,9 +1,8 @@
 import React from 'react';
 import {
-  Paper, withStyles, Typography,IconButton, ListItem, Grid, List, Checkbox, ListItemIcon, ListItemText
+  Paper, withStyles, Typography, IconButton, ListItem, Grid, List, Checkbox, ListItemIcon, ListItemText
 } from '@material-ui/core';
 import '../scss/SMECompletedTopics.scss';
-import moment from 'moment';
 import Button from '@material-ui/core/Button';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -139,12 +138,12 @@ class SMECompletedTopics extends React.Component {
       checked: [],
       left: [],
       right: [],
-      query:''
-     
+      query: ''
+
     }
     this.left = [];
     this.right = [];
-    
+
   }
 
   componentDidMount() {
@@ -160,15 +159,16 @@ class SMECompletedTopics extends React.Component {
         });
         this.setState({ trainingList: eventList, loading: false });
       } else {
-        this.setState({  
+        this.setState({
           trainingList: [],
-          snackbaropen: true , 
-          snackmsg:"Error in Loading Training Types",
-          snackvariant:"error" })
+          snackbaropen: true,
+          snackmsg: "Error in Loading Training Types",
+          snackvariant: "error"
+        })
       }
     });
 
-    
+
   }
 
   handleChange = event => {
@@ -188,10 +188,10 @@ class SMECompletedTopics extends React.Component {
   };
 
   onChangeTraining = (selectedTraining) => {
-    this.setState({ selectedTraining: selectedTraining.target,selectedSkill:null });
+    this.setState({ selectedTraining: selectedTraining.target, selectedSkill: null });
 
-  const reqObj = { training_id: selectedTraining.target.value };
-  this.props.trainingListDetails(reqObj).then((response) => {
+    const reqObj = { training_id: selectedTraining.target.value };
+    this.props.trainingListDetails(reqObj).then((response) => {
 
       if (response.errCode === 200) {
         const skillLists = response.skills.map(list => {
@@ -200,66 +200,66 @@ class SMECompletedTopics extends React.Component {
             label: list.skill_name,
           }
         });
-   
+
         this.setState({
-          skillList:skillLists
+          skillList: skillLists
         });
       }
-    
-  })
+
+    })
   }
 
   onChangeSkill = (selectedSkill) => {
     const { selectedTraining } = this.state;
-    this.setState({ selectedSkill: selectedSkill.target,left:[],right: []  });
+    this.setState({ selectedSkill: selectedSkill.target, left: [], right: [] });
 
-  const reqObj = { training_id:selectedTraining.value,skill_id: selectedSkill.target.value };
-  this.props.getCurriculumBySkill(reqObj).then((response) => {
+    const reqObj = { training_id: selectedTraining.value, skill_id: selectedSkill.target.value };
+    this.props.getCurriculumBySkill(reqObj).then((response) => {
 
       if (response.errCode === 200) {
         this.left = response.pendingTopic;
         this.right = [];
         this.setState({
-          left:response.pendingTopic,right:[]
+          left: response.pendingTopic, right: []
         });
       }
-    
-  })
+
+    })
   }
 
   submitForm = (e) => {
-    
-        const { right, selectedTraining,selectedSkill, newDay } = this.state;
 
-      const curriculumIDs = [];
-      right.forEach((curriculum) => {
-        if (curriculum.training_id !== '' && curriculum.training_id !== null) {
-          curriculumIDs.push(curriculum.id)
-        }
-      });
-      
-      const user_id = 1;
+    const { right, selectedTraining, selectedSkill, newDay } = this.state;
 
-      if(curriculumIDs.length!=0){
-
-        const reqObj = {
-          trainingId: selectedTraining.value,
-          skillId: selectedSkill.value,
-          createdby: user_id,
-          date:newDay,
-          curriculumIDs
-        }
-       
-        this.props.insertCurriculamData(reqObj).then((response) => {
-          if (response && response.errCode === 200) {
-            this.setState({ left: [],selectedSkill:null, newDay:'',selectedTraining: null, snackbaropen: true , snackmsg:"Topics Inseted Successfully",snackvariant:"success"});
-          } else {
-            this.setState({ left: [],selectedSkill:null,newDay:'', selectedTraining: null, snackbaropen: true , snackmsg: 'Something went Wrong. Please try again later.',snackvariant:"error" })
-          }
-        })
-      } else {
-        this.setState({ snackbaropen: true , snackmsg: 'Please Select Atleast One Curriculum.',snackvariant:"error"})
+    const curriculumIDs = [];
+    right.forEach((curriculum) => {
+      if (curriculum.training_id !== '' && curriculum.training_id !== null) {
+        curriculumIDs.push(curriculum.id)
       }
+    });
+
+    const user_id = 1;
+
+    if (curriculumIDs.length !== 0) {
+
+      const reqObj = {
+        trainingId: selectedTraining.value,
+        skillId: selectedSkill.value,
+        createdby: user_id,
+        date: newDay,
+        curriculumIDs
+      }
+
+      this.props.insertCurriculamData(reqObj).then((response) => {
+        if (response && response.errCode === 200) {
+          this.setState({ left: [], selectedSkill: null, newDay: '', selectedTraining: null, snackbaropen: true, snackmsg: "Topics Inseted Successfully", snackvariant: "success" });
+        } else {
+          this.setState({ left: [], selectedSkill: null, newDay: '', selectedTraining: null, snackbaropen: true, snackmsg: 'Something went Wrong. Please try again later.', snackvariant: "error" })
+        }
+      })
+    } else {
+      this.setState({ snackbaropen: true, snackmsg: 'Please Select Atleast One Curriculum.', snackvariant: "error" })
+    }
   }
 
   not = (a, b) => {
@@ -305,7 +305,7 @@ class SMECompletedTopics extends React.Component {
   };
 
   handleCheckedRight = () => {
-  
+
     this.setState({
       right: this.state.right.concat(this.leftChecked),
       left: this.not(this.state.left, this.leftChecked),
@@ -324,14 +324,14 @@ class SMECompletedTopics extends React.Component {
       checked: this.not(this.state.checked, this.rightChecked)
     });
 
-    this.right = this.not(this.right, this.leftChecked); 
+    this.right = this.not(this.right, this.leftChecked);
     this.left = this.left.concat(this.leftChecked);
   };
 
   customList = (title, items) => {
     const { classes } = this.props;
     const { checked } = this.state;
-   
+
     return (
       <Card>
         <CardHeader
@@ -398,48 +398,48 @@ class SMECompletedTopics extends React.Component {
       )
       : this.left);
 
-      const searchedRightData = (query
-        ? this.right.filter((list) =>
-          list['name']
-            .toLowerCase()
-            .includes(lowerCaseQuery)
-        )
-        : this.right);
+    const searchedRightData = (query
+      ? this.right.filter((list) =>
+        list['name']
+          .toLowerCase()
+          .includes(lowerCaseQuery)
+      )
+      : this.right);
 
-    this.setState({ left: searchedData,right:searchedRightData, query });
+    this.setState({ left: searchedData, right: searchedRightData, query });
   }
 
   render() {
-    const {  trainingList, selectedTraining, query, newDay, selectedSkill, skillList, snackbaropen, snackmsg, snackvariant,checked, left, right } = this.state;
+    const { trainingList, selectedTraining, query, newDay, selectedSkill, skillList, snackbaropen, snackmsg, snackvariant, checked, left, right } = this.state;
 
     this.leftChecked = this.intersection(checked, left);
     this.rightChecked = this.intersection(checked, right);
-    
+
 
     const { classes } = this.props;
     return (
       <div className="TrainingType_container">
-        
+
         <Paper className={classes.paperRoot} elevation={3}>
           <Typography variant="h4" className="text-center" gutterBottom>
             SME Covered Topics
         </Typography>
-         
-            <Row>
-              <Col > Training list   </Col>
-              <Col  >
-                <SelectOne
-                  value={selectedTraining}
-                  onChange={this.onChangeTraining}
-                  options={trainingList}
-                  placeholder="Select Training"
-                  aria-label="training"
-                  aria-describedby="training"
-                  id="training"
-                />
-              </Col>
-            </Row>
-            {selectedTraining &&
+
+          <Row>
+            <Col > Training list   </Col>
+            <Col  >
+              <SelectOne
+                value={selectedTraining}
+                onChange={this.onChangeTraining}
+                options={trainingList}
+                placeholder="Select Training"
+                aria-label="training"
+                aria-describedby="training"
+                id="training"
+              />
+            </Col>
+          </Row>
+          {selectedTraining &&
             <Row>
               <Col > Skill list   </Col>
               <Col  >
@@ -454,85 +454,85 @@ class SMECompletedTopics extends React.Component {
                 />
               </Col>
             </Row>
-            }
+          }
 
-            { left.length === 0 && selectedTraining && selectedSkill  &&
-                   <Typography color='error'> No Curriculum Found </Typography> }
+          {left.length === 0 && selectedTraining && selectedSkill &&
+            <Typography color='error'> No Curriculum Found </Typography>}
 
-            { left.length > 0 && selectedTraining && selectedSkill &&
+          {left.length > 0 && selectedTraining && selectedSkill &&
             <Row>
-            <Col > Day </Col>
-            <Col>
-             <Textbox
-               value={newDay}
-              id="day"
-              type="text"
-              placeholder="Day"
-              name="day"
-              onChange={this.dayOnChange}
-            />
-            </Col>
-         
-            </Row>
-            }
-            
-              { left.length > 0 && selectedTraining && selectedSkill &&
-                <Row>
-                <Col>
-                  <InputBase className={classes.input} placeholder="Search Curriculum" 
-                        value={query}
-                        onChange={this.searchCurriculum} />
-                  <IconButton className={classes.iconButton} aria-label="Search">
-                    <SearchIcon />
-                  </IconButton>
-                </Col>
-                </Row>
-              }
+              <Col > Day </Col>
+              <Col>
+                <Textbox
+                  value={newDay}
+                  id="day"
+                  type="text"
+                  placeholder="Day"
+                  name="day"
+                  onChange={this.dayOnChange}
+                />
+              </Col>
 
-            { left.length > 0 && selectedTraining && selectedSkill && 
-          <Row>
-          <Col>
-            <Grid
-                   container
-                   spacing={2}
-                   justify="center"
-                   alignItems="center"
-                   className={classes.root}
-                 >
-                   <Grid item xs={5} sm={5}>{this.customList("Not Covered", left)}</Grid>
-                   <Grid item>
-                     <Grid container direction="column" alignItems="center">
-                       <Button
-                         variant="outlined"
-                         size="small"
-                         className={classes.button}
-                         onClick={this.handleCheckedRight}
-                         disabled={this.leftChecked.length === 0}
-                         aria-label="move selected right"
-                       >
-                         &gt;
-                       </Button>
-                       <Button
-                         variant="outlined"
-                         size="small"
-                         className={classes.button}
-                         onClick={this.handleCheckedLeft}
-                         disabled={this.rightChecked.length === 0}
-                         aria-label="move selected left"
-                       >
-                         &lt;
-                       </Button>
-                     </Grid>
-                   </Grid>
-                   <Grid item xs={5} sm={5}>{this.customList("Coverd", right)}</Grid>
-                 </Grid>
-                 
-               
-
-            </Col>
             </Row>
           }
-            <div className={classes.bottomBtn}>
+
+          {left.length > 0 && selectedTraining && selectedSkill &&
+            <Row>
+              <Col>
+                <InputBase className={classes.input} placeholder="Search Curriculum"
+                  value={query}
+                  onChange={this.searchCurriculum} />
+                <IconButton className={classes.iconButton} aria-label="Search">
+                  <SearchIcon />
+                </IconButton>
+              </Col>
+            </Row>
+          }
+
+          {left.length > 0 && selectedTraining && selectedSkill &&
+            <Row>
+              <Col>
+                <Grid
+                  container
+                  spacing={2}
+                  justify="center"
+                  alignItems="center"
+                  className={classes.root}
+                >
+                  <Grid item xs={5} sm={5}>{this.customList("Not Covered", left)}</Grid>
+                  <Grid item>
+                    <Grid container direction="column" alignItems="center">
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        className={classes.button}
+                        onClick={this.handleCheckedRight}
+                        disabled={this.leftChecked.length === 0}
+                        aria-label="move selected right"
+                      >
+                        &gt;
+                       </Button>
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        className={classes.button}
+                        onClick={this.handleCheckedLeft}
+                        disabled={this.rightChecked.length === 0}
+                        aria-label="move selected left"
+                      >
+                        &lt;
+                       </Button>
+                    </Grid>
+                  </Grid>
+                  <Grid item xs={5} sm={5}>{this.customList("Coverd", right)}</Grid>
+                </Grid>
+
+
+
+              </Col>
+            </Row>
+          }
+          <div className={classes.bottomBtn}>
             <Row>
               <Col>
                 <Buttons
@@ -542,23 +542,23 @@ class SMECompletedTopics extends React.Component {
                   onClick={this.submitForm} />
               </Col>
             </Row>
-            </div>
+          </div>
 
           <Snackbar
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'left',
-          }}
-          open={snackbaropen}
-          autoHideDuration={3000}
-          onClose={this.handleClose}
-        >
-          <MySnackbarContentWrapper
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'left',
+            }}
+            open={snackbaropen}
+            autoHideDuration={3000}
             onClose={this.handleClose}
-            variant={snackvariant}
-            message={snackmsg}
-          />
-        </Snackbar>
+          >
+            <MySnackbarContentWrapper
+              onClose={this.handleClose}
+              variant={snackvariant}
+              message={snackmsg}
+            />
+          </Snackbar>
         </Paper>
       </div>
     )

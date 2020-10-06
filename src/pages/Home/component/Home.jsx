@@ -1,28 +1,13 @@
 import React, { Component } from 'react';
-import { Container, Button, Alert } from 'react-bootstrap';
+import { Button, Alert } from 'react-bootstrap';
 import XLSX from 'xlsx';
-import BootstrapTable from 'react-bootstrap-table-next';
-import paginationFactory from 'react-bootstrap-table2-paginator';
-import filterFactory, { textFilter } from 'react-bootstrap-table2-filter';
 import Select from 'react-select';
-import { MakeColumns } from '../MakeColumns';
 import ArrowDown from '../../../common/icons/ArrowDown';
 import ArrowUp from '../../../common/icons/ArrowUp';
 import '../scss/Home.scss';
 import SelectStyles from '../../../components/UI_Component/Select/SelectStyles';
-
-import { Paper, Typography, List, Grid, ListItem, ListItemIcon, Checkbox, TextField, ListItemText, IconButton, withStyles } from '@material-ui/core';
-import green from '@material-ui/core/colors/green';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import ErrorIcon from '@material-ui/icons/Error';
-import SnackbarContent from '@material-ui/core/SnackbarContent';
-import PropTypes from 'prop-types';
-import classNames from 'classnames';
-import Snackbar from '@material-ui/core/Snackbar';
-import CloseIcon from '@material-ui/icons/Close';
-
+import { TextField } from '@material-ui/core';
 import MaterialTable from "material-table";
-
 import SnackBar from "../../../components/UI_Component/SnackBar/SnackBar";
 
 const months = [{ value: 'January', label: 'January' }, { value: 'February', label: 'February' }, { value: 'March', label: 'March' }, { value: 'April', label: 'April' }, { value: 'May', label: 'May' }, { value: 'June', label: 'June' }, { value: 'July', label: 'July' }, { value: 'August', label: 'August' }, { value: 'September', label: 'September' }, { value: 'October', label: 'October' }, { value: 'November', label: 'November' }, { value: 'December', label: 'December' }]
@@ -66,12 +51,12 @@ class Home extends Component {
         curriculumUpload: props.curriculumUpload
       }
     }
-    if(props.skillcurriculumUpload !== undefined){
+    if (props.skillcurriculumUpload !== undefined) {
       return {
         skillcurriculumUpload: props.skillcurriculumUpload
       }
     }
-    
+
   }
 
   getTrainingList = () => {
@@ -139,72 +124,69 @@ class Home extends Component {
 
   submitSheet = () => {
     const { file, data, selectedTraining, selectedSkill } = this.state;
-    if(this.state.skillcurriculumUpload === true){
-      if (selectedSkill === null ) {
+    if (this.state.skillcurriculumUpload === true) {
+      if (selectedSkill === null) {
         this.setState({ snackBarOpen: true, snackmsg: 'Please Select the Skill', snackvariant: "error" });
       } else {
-      const reqObj = {
-        details: data,
-        created_by: 1,
-        updated_by: 1,
-        skill_id : selectedSkill.value,
-        skill_curriculum_upload : 1
-      }
-      console.log(reqObj);
-      this.props.insertCurriculum(reqObj).then((response) => {
-        console.log(response);
-        if (response && response.errCode === 200) {
-
-          this.setState({ sheetOptions: [], file: {}, data: [], selectedSkill: null, snackBarOpen: true, snackmsg: 'Curriculum Uploaded Successfully', snackvariant: "success" });
-        } else if (response.errCode === 404) {
-
-          const snackmsg = 'Error in Inserting Curriculum';
-          this.setState({ sheetOptions: [], file: {}, data: [], selectedSkill: null, snackBarOpen: true, snackmsg, snackvariant: "success" })
-
-        } 
-      });
-    }
-    } 
-
-    if (this.state.curriculumUpload === true) {
-        if (selectedTraining === null || selectedSkill === null ) {
-          this.setState({ snackBarOpen: true, snackmsg: 'Please Select the Training and Skill', snackvariant: "error" });
-        } else {
-          const reqObj = {
-            details: data,
-            created_by: 1,
-            training_id: selectedTraining.value,
-            updated_by: 1,
-            skill_id : selectedSkill.value,
-            skill_curriculum_upload : 0
-          }  
-          console.log(reqObj);
-          this.props.insertCurriculum(reqObj).then((response) => {
-  
-            console.log(response);
+        const reqObj = {
+          details: data,
+          created_by: 1,
+          updated_by: 1,
+          skill_id: selectedSkill.value,
+          skill_curriculum_upload: 1
+        }
+        console.log(reqObj);
+        this.props.insertCurriculum(reqObj).then((response) => {
+          console.log(response);
           if (response && response.errCode === 200) {
 
-            this.setState({ sheetOptions: [], file: {}, data: [], selectedTraining: null, selectedSkill:null, snackBarOpen: true, snackmsg: 'Curriculum Uploaded Successfully', snackvariant: "success" });
+            this.setState({ sheetOptions: [], file: {}, data: [], selectedSkill: null, snackBarOpen: true, snackmsg: 'Curriculum Uploaded Successfully', snackvariant: "success" });
           } else if (response.errCode === 404) {
 
             const snackmsg = 'Error in Inserting Curriculum';
-            this.setState({ sheetOptions: [], file: {}, data: [], selectedTraining: null , selectedSkill:null, snackBarOpen: true, snackmsg, snackvariant: "success" })
+            this.setState({ sheetOptions: [], file: {}, data: [], selectedSkill: null, snackBarOpen: true, snackmsg, snackvariant: "success" })
 
           }
-          });
-        }
+        });
+      }
     }
-    
-    if(this.state.skillcurriculumUpload !== true && this.state.curriculumUpload !== true )
-    {
+
+    if (this.state.curriculumUpload === true) {
+      if (selectedTraining === null || selectedSkill === null) {
+        this.setState({ snackBarOpen: true, snackmsg: 'Please Select the Training and Skill', snackvariant: "error" });
+      } else {
+        const reqObj = {
+          details: data,
+          created_by: 1,
+          training_id: selectedTraining.value,
+          updated_by: 1,
+          skill_id: selectedSkill.value,
+          skill_curriculum_upload: 0
+        }
+        console.log(reqObj);
+        this.props.insertCurriculum(reqObj).then((response) => {
+
+          console.log(response);
+          if (response && response.errCode === 200) {
+
+            this.setState({ sheetOptions: [], file: {}, data: [], selectedTraining: null, selectedSkill: null, snackBarOpen: true, snackmsg: 'Curriculum Uploaded Successfully', snackvariant: "success" });
+          } else if (response.errCode === 404) {
+
+            const snackmsg = 'Error in Inserting Curriculum';
+            this.setState({ sheetOptions: [], file: {}, data: [], selectedTraining: null, selectedSkill: null, snackBarOpen: true, snackmsg, snackvariant: "success" })
+
+          }
+        });
+      }
+    }
+
+    if (this.state.skillcurriculumUpload !== true && this.state.curriculumUpload !== true) {
 
       if (selectedTraining === null) {
         this.setState({ snackBarOpen: true, snackmsg: 'Please Select the Training', snackvariant: "error" });
       } else {
         var reader = new FileReader();
         reader.onload = (e) => {
-          var binaryData = e.target.result;
-          var base64String = window.btoa(binaryData);
           const reqObj = {
             // mime: file.type,
             details: data,
@@ -213,23 +195,18 @@ class Home extends Component {
             // sheetname : this.state.selectedSheet.label,
             updated_by: 1
           }
-         
+
           this.props.insertCandidates(reqObj).then((response) => {
-  
             if (response && response.errCode === 200) {
-  
               this.setState({ sheetOptions: [], file: {}, data: [], selectedTraining: null, snackBarOpen: true, snackmsg: 'Candidates Uploaded Successfully', snackvariant: "success" });
             } else if (response.errCode === 404) {
-  
-              const snackmsg = 'We have ' + `${response.Email_exist.length}` + ' Existing Data and ' + `${response.Format_error_list.length}` + ' Format Error Data and Remaining Data has been Uploaded Successfully';
+              const snackmsg = `We have ${response.Email_exist.length} Existing Data and ${response.Format_error_list.length} Format Error Data and Remaining Data has been Uploaded Successfully`;
               this.setState({ sheetOptions: [], file: {}, data: [], selectedTraining: null, snackBarOpen: true, snackmsg, snackvariant: "success" })
-  
             }
           });
-        
         };
         reader.readAsBinaryString(file);
-      } 
+      }
     }
 
   }
@@ -255,27 +232,27 @@ class Home extends Component {
       console.log(sheetData);
       if (sheetData.length > 0) {
         columns = sheetData[0].map(col => {
-          
+
           return {
             dataField: col.toString().trim(),
             text: col,
             sort: true,
             filter: false,
             sortCaret: (order, column) => {
-              
+
               if (!order) return (<span><ArrowUp /><ArrowDown /></span>);
               else if (order === 'asc') return (<span><ArrowUp /></span>);
               else if (order === 'desc') return (<span><ArrowDown /></span>);
               return null;
             }
-            
+
           }
         });
       }
       const data = XLSX.utils.sheet_to_json(ws, { raw: false });
       console.log(data);
       /* Object.keys(data[0]).forEach((key, index) => { */
-        sheetData[0].forEach((key, index) => {
+      sheetData[0].forEach((key, index) => {
         if (key === 'Expected Joining Date') {
           this.columnFields.push(
             {
@@ -343,39 +320,39 @@ class Home extends Component {
     const data = [...this.state.data];
     data[data.indexOf(oldData)] = newData;
     console.log(this.state.curriculumUpload);
-    if(this.state.curriculumUpload !== true && this.state.skillcurriculumUpload !== true) {
-    this.setState(prevState => ({
-      data: prevState.data.map(
-        (el, index) => index === oldData.tableData.id ? {
-          ...el,
-          "Joining Month": newData['Joining Month'].value ? newData['Joining Month'].value : newData['Joining Month'],
-          "SAP ID": newData["SAP ID"],
-          "First Name": newData["First Name"],
-          "Last Name": newData["Last Name"],
-          "Email": newData["Email"],
-          "Account": newData["Account"],
-          "Lob": newData["Lob"],
-          "Location": newData["Location"],
-          "Mode 1": newData["Mode 1"],
-          "Mode 2": newData["Mode 2"],
-          "SME": newData["SME"],
-          "Phone": newData["Phone"],
-          "Batch": newData["Batch"],
-          "Expected Joining Date": newData["Expected Joining Date"],
+    if (this.state.curriculumUpload !== true && this.state.skillcurriculumUpload !== true) {
+      this.setState(prevState => ({
+        data: prevState.data.map(
+          (el, index) => index === oldData.tableData.id ? {
+            ...el,
+            "Joining Month": newData['Joining Month'].value ? newData['Joining Month'].value : newData['Joining Month'],
+            "SAP ID": newData["SAP ID"],
+            "First Name": newData["First Name"],
+            "Last Name": newData["Last Name"],
+            "Email": newData["Email"],
+            "Account": newData["Account"],
+            "Lob": newData["Lob"],
+            "Location": newData["Location"],
+            "Mode 1": newData["Mode 1"],
+            "Mode 2": newData["Mode 2"],
+            "SME": newData["SME"],
+            "Phone": newData["Phone"],
+            "Batch": newData["Batch"],
+            "Expected Joining Date": newData["Expected Joining Date"],
 
-        } : el
-      )
-    }))
-  } else {
-    if (oldData) {
-      this.setState((prevState) => {
-        const data = [...prevState.data];
-        data[data.indexOf(oldData)] = newData;
-        return { ...prevState, data };
-      });
+          } : el
+        )
+      }))
+    } else {
+      if (oldData) {
+        this.setState((prevState) => {
+          const data = [...prevState.data];
+          data[data.indexOf(oldData)] = newData;
+          return { ...prevState, data };
+        });
+      }
+
     }
-  
-  }
   }
 
   handleDelete = (oldData) => {
@@ -421,14 +398,14 @@ class Home extends Component {
     this.setState({ snackBarOpen: false });
   };
 
-  onCloseSnackBar = () =>{
-    this.setState({snackBarOpen:false});
-}
+  onCloseSnackBar = () => {
+    this.setState({ snackBarOpen: false });
+  }
 
   render() {
-    const { file, data, cols, snackBarOpen, snackvariant, snackmsg, selectedTraining,
+    const { file, data, snackBarOpen, snackvariant, snackmsg, selectedTraining,
       trainingList, selectedSheet, sheetOptions, skillList, selectedSkill } = this.state;
-      
+
     const recordPerPageVal = Math.ceil(data.length / 10) * 10;
     const recordPerPageOptions = [
       { text: "10", page: 10 },
@@ -442,64 +419,6 @@ class Home extends Component {
         options.push(item);
       }
     });
-
-    const sizePerPageRenderer = ({
-      // options,
-      currSizePerPage,
-      onSizePerPageChange
-    }) => (
-        <div className="btn-group recordPerPage" role="group">
-          {
-            options.map((option) => {
-              const isSelect = currSizePerPage === `${option.page}`;
-              return (
-                <button
-                  key={option.text}
-                  type="button"
-                  onClick={() => onSizePerPageChange(option.page)}
-                  className={`btn ${isSelect ? 'pageSelectedBtn' : 'pageBtn'}`}
-                >
-                  {option.text}
-                </button>
-              );
-            })
-          }
-        </div>
-      );
-    const pageButtonRenderer = ({
-      page,
-      active,
-      disable,
-      title,
-      onPageChange
-    }) => {
-      const handleClick = (e) => {
-        e.preventDefault();
-        onPageChange(page);
-      };
-      const activeStyle = {
-        border: 'none',
-        padding: '6px 12px',
-        color: 'white'
-      };
-      if (active) {
-        activeStyle.backgroundColor = '#1b91e5a8';
-      } else {
-        activeStyle.backgroundColor = '#1b91e5';
-      }
-      if (typeof page === 'string') {
-        activeStyle.backgroundColor = '#1b91e5';
-      }
-      return (
-        <li key={page} className="page-item">
-          <button key={page} onClick={handleClick} style={activeStyle}>{page}</button>
-        </li>
-      );
-    };
-    const paginationOptions = {
-      sizePerPageRenderer,
-      pageButtonRenderer
-    };
 
     const selectStyles = {
       control: styles => ({
@@ -576,7 +495,7 @@ class Home extends Component {
             styles={selectStyles}
             placeholder='Select the Sheet'
           />}
-          
+
           {sheetOptions.length > 0 && <div className='uploadBtn'>
             <Button disabled={data.length === 0} className='file-upload fileUploadBtn btn shadow' onClick={this.submitSheet}>Submit</Button>
           </div>
@@ -617,7 +536,7 @@ class Home extends Component {
           ** Please check the candidate data and then click <b>Submit</b> to save the excel sheet.
         </Alert>}
         {snackBarOpen &&
-            <SnackBar snackBarOpen={snackBarOpen} snackmsg={snackmsg} snackvariant={snackvariant} onCloseSnackBar={this.onCloseSnackBar} />}
+          <SnackBar snackBarOpen={snackBarOpen} snackmsg={snackmsg} snackvariant={snackvariant} onCloseSnackBar={this.onCloseSnackBar} />}
       </div>
     );
   }

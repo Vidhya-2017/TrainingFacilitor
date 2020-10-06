@@ -18,16 +18,6 @@ const styles = (theme) => ({
     },
 });
 
-const inputField = {
-    value: '',
-    validation: {
-        required: true
-    },
-    valid: false
-};
-
-
-
 class AccountMaster extends React.Component {
     constructor(props) {
         super(props)

@@ -244,22 +244,19 @@ class BatchFormation extends Component {
 
 
   insertCandidates = () => {
-    const { candidatesList, right, batchSelected } = this.state;
+    const { right, batchSelected } = this.state;
     const candidateIDs = [];
     right.forEach((candidate) => {
       if (candidate.id !== '' && candidate.id !== null) {
         candidateIDs.push(candidate.id)
       }
     });
-    const user_id = 1;
     if (candidateIDs.length !== 0) {
-
       const reqObj = {
         batch_id: batchSelected.value,
         candidate_ids: candidateIDs,
         created_by: 1,
       }
-
       this.props.insertCandidateBatchMap(reqObj).then((response) => {
         if (response && response.errCode === 200) {
           this.setState({ candidatesList: [], selectall: false, batchSelected: null, selectedTraining: null, left: [], right: [], snackbaropen: true, snackmsg: "Candidates Assigned Successfully", snackvariant: "success" });
@@ -437,8 +434,8 @@ class BatchFormation extends Component {
   };
 
   render() {
-    const { classes, variant } = this.props;
-    const { trainingList, selectedTraining, candidatesList, snackbaropen, snackmsg, snackvariant, query, selectall, checked, left, right, batchSelected, batchDetailsList } = this.state;
+    const { classes } = this.props;
+    const { trainingList, selectedTraining, candidatesList, snackbaropen, snackmsg, snackvariant, query,  checked, left, right, batchSelected, batchDetailsList } = this.state;
 
     this.leftChecked = this.intersection(checked, left);
     this.rightChecked = this.intersection(checked, right);

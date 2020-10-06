@@ -138,7 +138,7 @@ class CandidateRegistration extends React.Component {
     const targetName = e.target.name;
     const targetValue = e.target.value;
 
-    if (targetName === 'trainingid' && targetValue != '') {
+    if (targetName === 'trainingid' && targetValue !== '') {
       this.setState({ formDisable: true });
     }
 

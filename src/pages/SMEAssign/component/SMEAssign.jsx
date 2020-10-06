@@ -69,16 +69,13 @@ class SMEAssign extends React.Component {
   }
 
   handleUserCheckClick = (e, list) => {
+    const { userList } = this.state;
     if (e.target.checked) {
       const userData = list;
-
-      const { userList } = this.state;
-      const updatedUserList = [...userList];
-
-      this.updatedUserList = [...this.state.userList, userData];
+      this.updatedUserList = [...userList, userData];
     }
     else {
-      this.updatedUserList = this.state.userList.filter((val) => { return val.ID !== e.target.value.ID })
+      this.updatedUserList = userList.filter((val) => { return val.ID !== e.target.value.ID })
     }
   }
 

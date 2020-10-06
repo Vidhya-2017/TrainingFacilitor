@@ -1,13 +1,10 @@
 import React from 'react';
-import MaterialTable, { MTableEditField } from "material-table";
-import { Paper, withStyles, Typography, TextField, Button } from '@material-ui/core';
+import MaterialTable from "material-table";
+import { Paper, withStyles, Typography, TextField } from '@material-ui/core';
 import Select from 'react-select';
-import DateTimePicker from '../../../components/UI_Component/DateTimePicker/DateTimePicker';
-import SelectOne from '../../../components/UI_Component/Select/SelectOne';
 import SelectStyles from '../../../components/UI_Component/Select/SelectStyles';
 import SnackBar from '../../../components/UI_Component/SnackBar/SnackBar';
 import '../scss/TrainingList.scss';
-import moment from 'moment';
 
 const styles = (theme) => ({
   iconRoot: {

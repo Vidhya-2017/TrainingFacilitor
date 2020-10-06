@@ -1,27 +1,12 @@
 import React, { Component } from 'react'
 import {
-  Paper, Typography, List, Grid, ListItem, InputBase, ListItemIcon, Checkbox,
+  Paper, Typography, List, Button, Grid, ListItem, InputBase, ListItemIcon, Checkbox, Divider, Card, CardHeader, 
   ListItemText, IconButton, withStyles, Dialog, DialogTitle, TextField, DialogActions, DialogContent
 } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import SelectOne from '../../../components/UI_Component/Select/SelectOne';
-// import '../scss/BatchFormation.scss'
 import SearchIcon from '@material-ui/icons/Search';
-
-import green from '@material-ui/core/colors/green';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import ErrorIcon from '@material-ui/icons/Error';
-
 import SnackBar from '../../../components/UI_Component/SnackBar/SnackBar';
+import SelectOne from '../../../components/UI_Component/Select/SelectOne';
 
-import Divider from "@material-ui/core/Divider";
-import Card from "@material-ui/core/Card";
-import CardHeader from "@material-ui/core/CardHeader";
-
-const variantIcon = {
-  success: CheckCircleIcon,
-  error: ErrorIcon,
-};
 
 const styles = (theme) => ({
   paperRoot: {

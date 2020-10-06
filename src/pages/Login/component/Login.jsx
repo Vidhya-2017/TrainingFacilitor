@@ -95,19 +95,17 @@ class Login extends React.Component{
              </Col>            
             </form>
 
-            <Col className="copy-text">Not Registerd ? <Link to="/register" href="javascript:void(0)">Click Here</Link></Col>
+            <Col className="copy-text">Not Registered ? <Link to="/register">Click Here</Link></Col>
             </Col>
 
             <Col xs ={12} md = {6} lg="8" className=" banner-sec">
                <Row>
-               
                 <img className="" src="https://static.pexels.com/photos/33972/pexels-photo.jpg" alt="" />
                 <Col className="d-md-block">
                     <Col className="banner-text">
                         <h3>Welcome</h3>
                         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation</p>
                     </Col>	
-               
                 </Col>              
                 </Row>
             </Col>

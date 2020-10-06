@@ -17,13 +17,8 @@ import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import EditIcon from '@material-ui/icons/Edit';
-import FilterListIcon from '@material-ui/icons/FilterList';
 import { lighten } from '@material-ui/core/styles/colorManipulator';
 import { withRouter } from 'react-router';
-
-
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import SelectOne from '../../../components/UI_Component/Select/SelectOne';
 import TableContainer from "@material-ui/core/TableContainer";
@@ -416,7 +411,7 @@ class TrainingFeedback extends React.Component {
 
           </FormControl>
           </Grid>
-          { excelData != '' && 
+          { excelData !== '' && 
           <Grid item md={8}>
             <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '10px 0'}}>
             <ExportCSV csvData={excelData} fileName={"Candiate Feedback List"} />

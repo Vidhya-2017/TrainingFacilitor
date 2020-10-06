@@ -91,7 +91,6 @@ class SMEList extends React.Component {
                     let defaultValue = this.state.skillList.filter(skill => props.rowData.skill_ids.includes(skill.id))
                      let rolevalue;
                      let skillvalue;
-                    const skill_ids = props.rowData.skill_ids;
                     if(typeof props.rowData.role_name == 'string'){
                          rolevalue = props.rowData.role_name;
                     }else if(typeof props.rowData.role_name == 'object'){
@@ -165,7 +164,6 @@ class SMEList extends React.Component {
                 }
                 else
                     return false;
-                break;
             case "sap_id":
                 const sapidPattern = RegExp(/^\d{7}|\d{8}$/);
                 if (sapidPattern.test(data.sap_id)) {
@@ -173,14 +171,12 @@ class SMEList extends React.Component {
                 }
                 else
                     return false;
-                break;
             case "skill":
 
                 if (rolename === 'SME' && data.SkillName === null)
                     return false;
                 else
                     return true;
-                break;
             case "role":
                     if (data.role_name !== null)
                         if (rolename === 'SME' && (data.SkillName === null || data.SkillName === '')){
@@ -190,7 +186,6 @@ class SMEList extends React.Component {
                         }
                     else
                         return false;
-                    break;    
             case "email":
                 const emailPattern = RegExp(/^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i);
                 if (emailPattern.test(data.email)) {
@@ -198,7 +193,6 @@ class SMEList extends React.Component {
                 }
                 else
                     return false;
-                break;
             default:
                 return false;
         }
@@ -237,7 +231,7 @@ class SMEList extends React.Component {
 
     getRoleList = () => {
         this.props.getRoleList().then(response => {
-              if(response == undefined) {
+              if(response === undefined) {
                   this.setState({
                       snackBarOpen: true,
                       snackvariant: 'error',
@@ -416,7 +410,7 @@ class SMEList extends React.Component {
     }
 
     handleModalSubmit = () => {
-        const { formValues,role,roles } = this.state;
+        const { formValues } = this.state;
 
         const reqObj = {
             name: formValues.smeName.value,
