@@ -105,7 +105,8 @@ class EnhancedTableHead extends React.Component {
               className={row.id === 'first_name' ? classes.stickyColumnHeaderName : ''}
                 key={row.id}
                 align={'left'}
-                padding={row.disablePadding ? 'none' : 'default'}
+                style={{padding: 8}}
+                // padding={row.disablePadding ? 'none' : 'default'}
                 sortDirection={orderBy === row.id ? order : false}
               >
                 <Tooltip
@@ -142,7 +143,7 @@ EnhancedTableHead.propTypes = {
 
 const toolbarStyles = theme => ({
   root: {
-    paddingRight: theme.spacing.unit,
+    paddingRight: theme.spacing(1),
   },
   highlight:
     theme.palette.type === 'light'
@@ -220,7 +221,7 @@ EnhancedTableToolbar = withStyles(toolbarStyles)(EnhancedTableToolbar);
 const styles = theme => ({
   root: {
     width: '100%',
-    marginTop: theme.spacing.unit * 3,
+    marginTop: theme.spacing(3)
   },
   table: {
     minWidth: 1020,
@@ -230,7 +231,7 @@ const styles = theme => ({
   },
   paperRoot: {
 
-    width: '70%',
+    width: '90%',
     margin: '20px auto',
     padding: '10px 20px'
   },
@@ -358,20 +359,14 @@ class TrainingFeedback extends React.Component {
       
       if (response && response.errCode === 200) {
         const levels = {"training_id":e.target.value,"attendance":0,"sme_session_interaction":0,"theory":0,"hands_on":0,"hands_on_performance":0,"assessment":'0',"assessment_schedule_compliance":0,"overall":0,"sme_interaction":0,"sme_name":response.sme.sme_name,"remarks":'',"training_completed":'Yes',"training_completed_date":'',"certification":'Foundation',"final_assessment_score":0,"percentage_complete":'0',"spoc":response.programManager.program_manager_name,"default_end_date":false,"actual_training_completed_date":response.sme.enddate,"feedback_given":false} 
-
         const feedback_given_list =  response.feedback_given_list;
-       
         const feedback_notgiven_list =  response.no_feedback_given_list.map(list => {
           return { ...list, ...levels } 
         })
-        
-
         const newdata = [...feedback_notgiven_list, ...feedback_given_list]
-        console.log(newdata);
         const excelDataArray =  newdata.map(list => {
           return {"Training Name":e.target.label,"First Name":list.first_name,"Last Name":list.last_name,"SAP ID":list.sap_id,"Contact No":list.phone_number,"Email Id":list.email,"SME Name":list.sme_name,"SPOC":list.spoc,"Training Completed Date":list.training_completed_date,"Training Completed":list.training_completed,"Remarks":list.remarks,"SME Interaction":list.sme_interaction,"SME Session Interaction":list.sme_session_interaction,"Theory":list.theory,"Hands On":list.hands_on,"Hands On Performance":list.hands_on_performance,"Certification":list.certification,"Attendance":list.attendance,"Assessment %":list.assessment,"Assessment Schedule Compliance":list.assessment_schedule_compliance,"OverAll %":list.overall,"% Completed":list.percentage_complete}
         })
-       
         this.setState({
           data: newdata,
           excelData:excelDataArray,
@@ -467,26 +462,26 @@ class TrainingFeedback extends React.Component {
                       <Checkbox disabled inputProps={{ 'aria-label': 'disabled checkbox' }} />
                       </TableCell>
                     )}
-                      <TableCell component="th" scope="row" padding="none" className={classes.stickyColumnCellName}>
-                        {n.first_name}
+                    <TableCell style={{padding: 8}} component="th" scope="row" padding="none" className={classes.stickyColumnCellName}>
+                    {n.first_name}
                       </TableCell>
-                      <TableCell >{n.attendance}</TableCell>
-                      <TableCell >{n.sme_session_interaction}</TableCell>
-                      <TableCell >{n.theory}</TableCell>
-                      <TableCell >{n.hands_on}</TableCell>
-                      <TableCell >{n.hands_on_performance}</TableCell>
-                      <TableCell >{n.assessment}</TableCell>
-                      <TableCell >{n.assessment_schedule_compliance}</TableCell>
-                      <TableCell >{n.overall}</TableCell>
-                      <TableCell >{n.sme_interaction}</TableCell>
-                      <TableCell >{n.sme_name}</TableCell>
-                      <TableCell >{n.remarks}</TableCell>
-                      <TableCell >{n.training_completed}</TableCell>
-                      <TableCell >{n.training_completed_date}</TableCell>
-                      <TableCell >{n.certification}</TableCell>
-                      <TableCell >{n.final_assessment_score}</TableCell>
-                      <TableCell >{n.percentage_complete}</TableCell>
-                      <TableCell >{n.spoc}</TableCell>
+                      <TableCell style={{padding: 8}}>{n.attendance}</TableCell>
+                      <TableCell style={{padding: 8}}>{n.sme_session_interaction}</TableCell>
+                      <TableCell style={{padding: 8}}>{n.theory}</TableCell>
+                      <TableCell style={{padding: 8}}>{n.hands_on}</TableCell>
+                      <TableCell style={{padding: 8}}>{n.hands_on_performance}</TableCell>
+                      <TableCell style={{padding: 8}}>{n.assessment}</TableCell>
+                      <TableCell style={{padding: 8}}>{n.assessment_schedule_compliance}</TableCell>
+                      <TableCell style={{padding: 8}}>{n.overall}</TableCell>
+                      <TableCell style={{padding: 8}}>{n.sme_interaction}</TableCell>
+                      <TableCell style={{padding: 8}}>{n.sme_name}</TableCell>
+                      <TableCell style={{padding: 8}}>{n.remarks}</TableCell>
+                      <TableCell style={{padding: 8}}>{n.training_completed}</TableCell>
+                      <TableCell style={{padding: 8}}>{n.training_completed_date}</TableCell>
+                      <TableCell style={{padding: 8}}>{n.certification}</TableCell>
+                      <TableCell style={{padding: 8}}>{n.final_assessment_score}</TableCell>
+                      <TableCell style={{padding: 8}}>{n.percentage_complete}</TableCell>
+                      <TableCell style={{padding: 8}}>{n.spoc}</TableCell>
 
                     </TableRow>
                   );
@@ -516,7 +511,7 @@ class TrainingFeedback extends React.Component {
         />
         </TableContainer>
         {snackBarOpen &&
-            <SnackBar onCloseSnackBar={this.onCloseSnackBar} snackBarOpen={snackBarOpen} snackMsg={snackMsg} snackVariant={snackVariant} />}
+            <SnackBar onCloseSnackBar={this.onCloseSnackBar} snackBarOpen={snackBarOpen} snackmsg={snackMsg} snackvariant={snackVariant} />}
       </Paper>
       </div>
     );
