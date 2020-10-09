@@ -66,6 +66,9 @@ const styles = (theme) => ({
   },
   selectRoot: {
     width: 60
+  },
+  fontsize: {
+    fontSize: 13
   }
 });
 
@@ -209,7 +212,7 @@ class TrainingFeedback extends React.Component {
                     <TableCell style={{ padding: 8, fontSize:"13px" }} component="th" scope="row" className={classes.stickyColumnCellName}>
                       {row.first_name}
                     </TableCell>
-                    <TableCell style={{ padding: 8 }} >
+                    <TableCell style={{ padding: 8 }} className={classes.fontsize}>
                       <Select
                         name="attendance"
                         id="attendance"

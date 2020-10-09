@@ -1,9 +1,12 @@
 import React, { Fragment } from 'react';
-import { AppBar, Tabs, Tab, Paper, withStyles, Typography, Card, CardContent, CardActions, Button, List, ListItem, ListItemText, Checkbox, Dialog, DialogActions, DialogContent, DialogContentText, Grid, DialogTitle, Radio, RadioGroup, FormControlLabel, IconButton, Toolbar, Slide } from '@material-ui/core';
+import { AppBar, Tabs, Tab, Paper, withStyles, Typography, Card, CardContent, CardActions, Button, List, ListItem, ListItemText, Checkbox, Dialog, DialogActions, DialogContent, DialogContentText, Grid, DialogTitle, Radio, RadioGroup, FormControlLabel, IconButton, Toolbar, Slide, InputBase, Divider, Box} from '@material-ui/core';
 import SelectOne from '../../../components/UI_Component/Select/SelectOne';
 import SnackBar from '../../../components/UI_Component/SnackBar/SnackBar';
 import HomeContainer from '../../Home/container/HomeContainer';
 import CloseIcon from '@material-ui/icons/Close';
+import SearchIcon from '@material-ui/icons/Search';
+import Pagination from "@material-ui/lab/Pagination";
+
 
 const styles = theme => ({
   paperRoot: {
@@ -18,6 +21,18 @@ const styles = theme => ({
   },
   appBar: {
     position: 'relative',
+  },
+  searchRoot: {
+    padding: '4px',
+    display: 'flex',
+    alignItems: 'center',
+    border: 'solid 1px lightgrey',
+    height: 40,
+    width: '250px'
+  },
+  paginator: {
+    justifyContent: "center",
+    padding: "10px"
   },
 
 })
@@ -44,8 +59,11 @@ class Curriculum extends React.Component {
       curriculumUpload: false,
       isFormValid: false,
       isMasterTable: false,
-    }
-    // this.trainingCurriculumlist = [];
+      query: '',
+      itemsPerPage:7,
+      page: 1,
+      }
+    this.trainingCurriculumlist = [];
   }
 
   componentDidMount() {
@@ -99,6 +117,7 @@ class Curriculum extends React.Component {
             TempCurri.push({ ...cadata, checked: true });
           });
         });
+        this.trainingCurriculumlist = TempCurri;
         this.setState({ curriculumList: response.arrRes, trainingCurriculumlist: TempCurri, isMasterTable: response.isMaster });
         if (training_id && selectedRadio && selectedRadio !== 'upload') {
           console.log("----isMaster---", response.isMaster)
@@ -115,7 +134,8 @@ class Curriculum extends React.Component {
   }
 
   handleChange = (event, newValue) => {
-    this.setState({ tabValue: newValue });
+    const actuallist = this.trainingCurriculumlist;
+    this.setState({ tabValue: newValue, query: '', trainingCurriculumlist: actuallist, page: 1});
   };
 
   handleClickOpen = () => {
@@ -193,10 +213,29 @@ class Curriculum extends React.Component {
     this.setState({ showCurriculumUpload: false });
   }
 
+
+  searchCurriculum = (e) => {
+    const query = e.target.value;
+    const lowerCaseQuery = query.toLowerCase();
+    const searchedCurriculumList = (query
+      ?  this.trainingCurriculumlist.filter((list) =>
+        list['name']
+          .toLowerCase()
+          .includes(lowerCaseQuery)
+      )
+      : this.trainingCurriculumlist);
+   
+    this.setState({ trainingCurriculumlist: searchedCurriculumList, query });
+  }
+  handlePageChange = (event, value) => {
+    this.setState({ page: value});
+  };
+
   render() {
     const { classes } = this.props;
-    const { tabValue, skillList, selectedTraining, trainingList, trainingCurriculumlist, snackBarOpen, snackmsg, snackvariant, isUpload, selectedRadio, showCurriculumUpload } = this.state;
+    const { tabValue, skillList, selectedTraining, trainingList, trainingCurriculumlist, snackBarOpen, snackmsg, snackvariant, isUpload, selectedRadio, showCurriculumUpload, query,itemsPerPage, page } = this.state;
     const skillFilter = trainingCurriculumlist.filter(curList => curList.skill_id === tabValue);
+    const noOfPages = (skillFilter.length > 0 ) ? Math.ceil(skillFilter.length / itemsPerPage) : 0;
     const title = 'Curriculum Upload';
     const curriculumUpload = true;
     return (
@@ -231,7 +270,7 @@ class Curriculum extends React.Component {
               <FormControlLabel
                 value="upload"
                 control={<Radio color="primary" />}
-                label="Upload"
+                label="Customized"
                 labelPlacement="upload"
               />
             </RadioGroup>
@@ -271,9 +310,20 @@ class Curriculum extends React.Component {
             <Card square className={classes.root} variant="outlined">
               <CardContent>
                 <Typography className={classes.title} color="textSecondary" gutterBottom>
+                    <Paper component="form" className={classes.searchRoot}>
+                      <InputBase
+                        className={classes.input}
+                        placeholder="Search "
+                        onChange={this.searchCurriculum}
+                        value={query}
+                      />
+                      <IconButton disabled className={classes.iconButton} aria-label="search">
+                        <SearchIcon />
+                      </IconButton>
+                  </Paper>
                   {!isUpload && selectedRadio && skillFilter && skillFilter.length > 0 &&
                     <List >
-                      {skillFilter.map(value => {
+                      {skillFilter.slice((page - 1) * itemsPerPage, page * itemsPerPage).map(value => {
                         return (
                           <ListItem key={value.id} role={undefined} dense button onClick={this.handleToggle(value.id)}>
                             <Checkbox
@@ -289,8 +339,24 @@ class Curriculum extends React.Component {
                     </List>}
 
                   {skillFilter.length === 0 &&
-                    <Typography color='error'> No Data Found </Typography>}
+                    <Typography color='error'> No Data Found </Typography>
+                  }
 
+                  <Divider />
+
+                  <Box component="span">
+                  <Pagination
+                    count={noOfPages}
+                    page={page}
+                    onChange={this.handlePageChange}
+                    defaultPage={1}
+                    color="primary"
+                    size="large"
+                    showFirstButton
+                    showLastButton
+                    classes={{ ul: classes.paginator }}
+                  />
+                </Box>
                 </Typography>
               </CardContent>
               <CardActions>
