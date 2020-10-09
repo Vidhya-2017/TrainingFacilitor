@@ -353,9 +353,9 @@ class TrainingFeedback extends React.Component {
     this.props.getCandidateList(reqObj).then((response) => {
       
       if (response && response.errCode === 200) {
-        const nonfeedback_levels = {"training_id":e.target.value,"attendance":0,"sme_session_interaction":0,"theory":0,"hands_on":0,"hands_on_performance":0,"assessment":'0',"assessment_schedule_compliance":0,"overall":0,"sme_interaction":0,"sme_name":response.sme.sme_name,"remarks":'',"training_completed":'Yes',"training_completed_date":'',"certification":'Foundation',"final_assessment_score":0,"percentage_complete":'0',"spoc":response.programManager.program_manager_name,"default_end_date":true,"actual_training_completed_date":response.sme.enddate,"feedback_given":false} 
+        const nonfeedback_levels = {"training_id":e.target.value,"attendance":0,"sme_session_interaction":0,"theory":0,"hands_on":0,"hands_on_performance":0,"assessment":'0',"assessment_schedule_compliance":0,"overall":0,"sme_interaction":0,"sme_name":response.sme.sme_name,"remarks":'',"training_completed":'Yes',"training_completed_date":'',"certification":'Foundation',"final_assessment_score":0,"percentage_complete":'0',"spoc":response.programManager.program_manager_name,"default_end_date":true,"actual_training_completed_date":response.sme.enddate,"feedback_given":false,"rowclicked":false} 
           
-        const feedback_levels = {"default_end_date":false,"actual_training_completed_date":response.sme.enddate,"feedback_given":true} 
+        const feedback_levels = {"default_end_date":false,"actual_training_completed_date":response.sme.enddate,"feedback_given":true,"rowclicked":false} 
 
         const feedback_given_list =  response.feedback_given_list.map(list1 => {
           return { ...list1, ...feedback_levels } 

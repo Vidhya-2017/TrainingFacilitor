@@ -102,14 +102,13 @@ class TrainingFeedback extends React.Component {
     list.value = e.target.value;
     const findIndex = data.findIndex(user =>
       list.id === user.id);
-    console.log(findIndex);
     const updatedUserData = [...data];
     updatedUserData[findIndex][e.target.name] = e.target.value;
+    updatedUserData[findIndex]['rowclicked'] = true;
     this.setState({ data: updatedUserData });
   }
 
   inputFieldChange = (e, list) => {
-    console.log(list);
     const { data } = this.state;
     list.value = e.target.value;
     if (e.target.name === 'assessment' || e.target.name === 'percentage_complete' || e.target.name === 'final_assessment_score') {
@@ -120,14 +119,18 @@ class TrainingFeedback extends React.Component {
     const findIndex = data.findIndex(user => list.id === user.id);
     const updatedUserData = [...data];
     updatedUserData[findIndex][e.target.name] = e.target.value;
+    updatedUserData[findIndex]['rowclicked'] = true;
     this.setState({ data: updatedUserData });
   }
 
   submitForm = (e) => {
-      let reqObj = {
-        data: this.state.data,
-        created_by: 1,
-      }
+    const { data } = this.state;
+    const realdata = data.filter(item => item.rowclicked === true);
+    
+    let reqObj = {
+      data: realdata,
+      created_by: 1,
+    }
       this.props.insertCandidateFeedback(reqObj).then((response) => {
         if (response && response.errCode === 200) {
           this.setState({
@@ -155,7 +158,7 @@ class TrainingFeedback extends React.Component {
     const { data } = this.state;
     const findIndex = data.findIndex(user => list.id === user.id);
     const updatedUserData = [...data];
-    updatedUserData[findIndex]['default_end_date'] = !updatedUserData[findIndex]['default_end_date'];
+    updatedUserData[findIndex]['default_end_date'] = !updatedUserData[findIndex]['default_end_date'];updatedUserData[findIndex]['rowclicked'] = !updatedUserData[findIndex]['rowclicked'];
     this.setState({ data: updatedUserData });
   };
 
