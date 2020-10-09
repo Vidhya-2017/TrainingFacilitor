@@ -78,9 +78,9 @@ class SkillList extends React.Component {
       if (response && response.errCode === 200) {
         this.setState({
           skillListVal: response.arrRes,
-          snackvariant: 'success',
+         /*  snackvariant: 'success',
           snackBarOpen: true,
-          snackmsg: "Skill Data loaded successfully"
+          snackmsg: "Skill Data loaded successfully" */
         })
       } else {
         this.setState({
@@ -102,12 +102,12 @@ class SkillList extends React.Component {
     this.props.getCurriculumList().then((response) => {
       if (response && response.errCode === 200) {
         this.curriculumListVal = response.arrRes;
-        this.setState({
+        /* this.setState({
           // curriculumListVal: response.arrRes,
           snackvariant: 'success',
           snackBarOpen: true,
-          snackmsg: "Skill Data loaded successfully"
-        })
+          snackmsg: "Curriculum Data loaded successfully"
+        }) */
       } else {
         this.setState({
           // curriculumListVal: [],
@@ -530,10 +530,10 @@ class SkillList extends React.Component {
               'padding': '15px 0px 26px 5px',
               'verticalAlign': 'bottom'
             }} >
-            <Button onClick={(event) => this.setState({ showAddSkillModal: true, skillEdit: false, delSkill: false, newSkillName: '' })}><AddIcon fontSize="small" /></Button>
-            <Button onClick={(event) => this.setState({ showAddSkillModal: true, skillEdit: true, delSkill: false, newSkillName: selectedSkillVal })}
+            <Button title="Add" onClick={(event) => this.setState({ showAddSkillModal: true, skillEdit: false, delSkill: false, newSkillName: '' })}><AddIcon fontSize="small" /></Button>
+            <Button title="Edit" onClick={(event) => this.setState({ showAddSkillModal: true, skillEdit: true, delSkill: false, newSkillName: selectedSkillVal })}
               disabled={selectedSkillVal === '' || selectedSkillVal === undefined}><CreateIcon fontSize="small" /></Button>
-            <Button onClick={(event) => this.setState({ showAddSkillModal: true, skillEdit: false, delSkill: true })}
+            <Button  title="Delete" onClick={(event) => this.setState({ showAddSkillModal: true, skillEdit: false, delSkill: true })}
               disabled={selectedSkillVal === '' || selectedSkillVal === undefined}> <DeleteIcon fontSize="small" /></Button>
          
           </ButtonGroup>

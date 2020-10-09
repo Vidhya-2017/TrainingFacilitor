@@ -239,16 +239,16 @@ class TrainingType extends React.Component {
               actionsColumnIndex: -1,
               pageSizeOptions: []
             }}
-          /* actions={[
+          actions={[
             {
               icon: 'add',
               tooltip: 'Add Training Type',
               isFreeAction: true,
-              disabled : true,
+              disabled : false,
               onClick: (event) => this.setState({ showTrainingModal: true })
             },
-          ]} */
-          /* editable={{
+          ]}
+           editable={{
             onRowUpdate: (newData, oldData) =>
               new Promise((resolve) => {
                 resolve();
@@ -261,7 +261,7 @@ class TrainingType extends React.Component {
                 resolve();
                 this.handleDelete(oldData);
               })
-          }} */
+          }} 
           />
           {snackBarOpen &&
             <SnackBar onCloseSnackBar={this.onCloseSnackBar} snackBarOpen={snackBarOpen} snackmsg={snackmsg} snackvariant={snackvariant} />}
