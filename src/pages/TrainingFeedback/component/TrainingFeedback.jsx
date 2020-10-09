@@ -17,18 +17,11 @@ import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import EditIcon from '@material-ui/icons/Edit';
-import FilterListIcon from '@material-ui/icons/FilterList';
 import { lighten } from '@material-ui/core/styles/colorManipulator';
 import { withRouter } from 'react-router';
-
-
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import SelectOne from '../../../components/UI_Component/Select/SelectOne';
 import TableContainer from "@material-ui/core/TableContainer";
-
-
 import SnackBar from '../../../components/UI_Component/SnackBar/SnackBar';
 import ExportCSV from './ExportCSV';
  
@@ -103,10 +96,10 @@ class EnhancedTableHead extends React.Component {
             row => (
               <TableCell
               className={row.id === 'first_name' ? classes.stickyColumnHeaderName : ''}
-              style={{ fontSize:"15px" }}
+              style={{ fontSize:"15px", padding: 8 }}
                 key={row.id}
                 align={'left'}
-                padding={row.disablePadding ? 'none' : 'default'}
+                // padding={row.disablePadding ? 'none' : 'default'}
                 sortDirection={orderBy === row.id ? order : false}
               >
                 <Tooltip
@@ -143,7 +136,7 @@ EnhancedTableHead.propTypes = {
 
 const toolbarStyles = theme => ({
   root: {
-    paddingRight: theme.spacing.unit,
+    paddingRight: theme.spacing(1)
   },
   highlight:
     theme.palette.type === 'light'
@@ -221,7 +214,7 @@ EnhancedTableToolbar = withStyles(toolbarStyles)(EnhancedTableToolbar);
 const styles = theme => ({
   root: {
     width: '100%',
-    marginTop: theme.spacing.unit * 3,
+    marginTop: theme.spacing(3)
   },
   table: {
     minWidth: 1020,
@@ -230,8 +223,7 @@ const styles = theme => ({
     overflowX: 'auto',
   },
   paperRoot: {
-
-    width: '70%',
+    width: '90%',
     margin: '20px auto',
     padding: '10px 20px'
   },
@@ -251,12 +243,12 @@ const styles = theme => ({
 class TrainingFeedback extends React.Component {
   state = {
     order: 'asc',
-    orderBy: 'first_name',
+    orderBy: '',
     selected: [],
     data: [],
     excelData: [],
     page: 0,
-    rowsPerPage: 5,
+    rowsPerPage: 10,
     trainingListVal:[],
     selectedTraining:null,
     filteredFeedback:[],
@@ -279,9 +271,6 @@ class TrainingFeedback extends React.Component {
         });
         this.setState({
           trainingListVal,
-          snackvariant: 'success',
-          snackBarOpen: true,
-          snackmsg: "Training List loaded successfully"
         })
       } else {
         this.setState({
@@ -432,7 +421,7 @@ class TrainingFeedback extends React.Component {
 
           </FormControl>
           </Grid>
-          { excelData != '' && 
+          { excelData !== '' && 
           <Grid item md={8}>
             <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '10px 0'}}>
             <ExportCSV csvData={excelData} fileName={"Candiate Feedback List"} />
@@ -473,26 +462,26 @@ class TrainingFeedback extends React.Component {
                         <Checkbox color="primary" checked={isSelected} onClick={event => this.handleClick(event, n.id, n.first_name)} />
                       </TableCell>
                     
-                      <TableCell component="th" scope="row" padding="none" className={classes.stickyColumnCellName}>
+                      <TableCell style={{padding: 8}} component="th" scope="row" padding="none" className={classes.stickyColumnCellName}>
                         {n.first_name}
                       </TableCell>
-                      <TableCell >{n.attendance}</TableCell>
-                      <TableCell >{n.sme_session_interaction}</TableCell>
-                      <TableCell >{n.theory}</TableCell>
-                      <TableCell >{n.hands_on}</TableCell>
-                      <TableCell >{n.hands_on_performance}</TableCell>
-                      <TableCell >{n.assessment}</TableCell>
-                      <TableCell >{n.assessment_schedule_compliance}</TableCell>
-                      <TableCell >{n.overall}</TableCell>
-                      <TableCell >{n.sme_interaction}</TableCell>
-                      <TableCell >{n.sme_name}</TableCell>
-                      <TableCell >{n.remarks}</TableCell>
-                      <TableCell >{n.training_completed}</TableCell>
-                      <TableCell >{n.training_completed_date}</TableCell>
-                      <TableCell >{n.certification}</TableCell>
-                      <TableCell >{n.final_assessment_score}</TableCell>
-                      <TableCell >{n.percentage_complete}</TableCell>
-                      <TableCell >{n.spoc}</TableCell>
+                      <TableCell style={{padding: 8}}>{n.attendance}</TableCell>
+                      <TableCell style={{padding: 8}}>{n.sme_session_interaction}</TableCell>
+                      <TableCell style={{padding: 8}}>{n.theory}</TableCell>
+                      <TableCell style={{padding: 8}}>{n.hands_on}</TableCell>
+                      <TableCell style={{padding: 8}}>{n.hands_on_performance}</TableCell>
+                      <TableCell style={{padding: 8}}>{n.assessment}</TableCell>
+                      <TableCell style={{padding: 8}}>{n.assessment_schedule_compliance}</TableCell>
+                      <TableCell style={{padding: 8}}>{n.overall}</TableCell>
+                      <TableCell style={{padding: 8}}>{n.sme_interaction}</TableCell>
+                      <TableCell style={{padding: 8}}>{n.sme_name}</TableCell>
+                      <TableCell style={{padding: 8}}>{n.remarks}</TableCell>
+                      <TableCell style={{padding: 8}}>{n.training_completed}</TableCell>
+                      <TableCell style={{padding: 8}}>{n.training_completed_date}</TableCell>
+                      <TableCell style={{padding: 8}}>{n.certification}</TableCell>
+                      <TableCell style={{padding: 8}}>{n.final_assessment_score}</TableCell>
+                      <TableCell style={{padding: 8}}>{n.percentage_complete}</TableCell>
+                      <TableCell style={{padding: 8}}>{n.spoc}</TableCell>
 
                     </TableRow>
                   );

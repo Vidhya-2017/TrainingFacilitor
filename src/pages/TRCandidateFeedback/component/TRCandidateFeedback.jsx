@@ -2,7 +2,6 @@ import React from 'react';
 import {
   Paper, withStyles, Typography, Button, MenuItem, FormControl, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Checkbox, InputBase
 } from '@material-ui/core';
-import moment from 'moment';
 import Textbox from '../../../components/UI_Component/Textbox/Textbox';
 import DateTimePicker from '../../../components/UI_Component/DateTimePicker/DateTimePicker';
 import SnackBar from '../../../components/UI_Component/SnackBar/SnackBar';
@@ -125,23 +124,6 @@ class TrainingFeedback extends React.Component {
   }
 
   submitForm = (e) => {
-    const { data } = this.state;
-    // let error = 0;
-    /* data.forEach(element => {
-      console.log(element);
-      if (element.attendance === 0 || element.sme_session_interaction === 0 || element.theory === 0 || element.hands_on === 0 || element.hands_on_performance === 0 || element.assessment_schedule_compliance === 0 || element.overall === 0 || element.sme_interaction === 0 || element.assessment === 0 || element.percentage_complete === 0 || element.sme_name === '' || element.remarks === '' || element.final_assessment_score === '' || element.spoc === '') {
-        error = error + 1;
-      }
-      if (element.default_end_date === false) {
-        if (element.training_completed_date === '') {
-          error = error + 1;
-        }
-      }
-      if (element.training_completed_date !== '') {
-        element.training_completed_date = moment(element.training_completed_date).format("YYYY-MM-DD");
-      }
-    });
-    if (error === 0) { */
       let reqObj = {
         data: this.state.data,
         created_by: 1,
@@ -163,13 +145,6 @@ class TrainingFeedback extends React.Component {
           this.props.history.push('/candidateFeedbackList');
         }
       })
-    /* } else {
-      this.setState({
-        snackvariant: 'error',
-        snackBarOpen: true,
-        snackmsg: "Plaese fill all values"
-      })
-    } */
   }
 
   CancelAction = () => {

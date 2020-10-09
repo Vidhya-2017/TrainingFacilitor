@@ -225,7 +225,7 @@ class CandidateSelection extends Component {
 
   insertCandidates = () => {
 
-    const { candidatesList, right, selectedTraining } = this.state;
+    const { right, selectedTraining } = this.state;
 
     const candidateIDs = [];
     right.forEach((candidate) => {
@@ -236,7 +236,7 @@ class CandidateSelection extends Component {
 
     const user_id = 1;
 
-    if (candidateIDs.length != 0) {
+    if (candidateIDs.length !== 0) {
 
       const reqObj = {
         trainingId: selectedTraining.value,
@@ -410,8 +410,8 @@ class CandidateSelection extends Component {
   };
 
   render() {
-    const { classes, variant } = this.props;
-    const { trainingList, selectedTraining, candidatesList, snackbaropen, snackmsg, snackvariant, query, selectall, checked, left, right } = this.state;
+    const { classes } = this.props;
+    const { trainingList, selectedTraining, candidatesList, snackbaropen, snackmsg, snackvariant, query, checked, left, right } = this.state;
     this.leftChecked = this.intersection(checked, left);
     this.rightChecked = this.intersection(checked, right);
     this.CandidateIDs = [];
