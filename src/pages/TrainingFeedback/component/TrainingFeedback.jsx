@@ -17,8 +17,13 @@ import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import EditIcon from '@material-ui/icons/Edit';
+import FilterListIcon from '@material-ui/icons/FilterList';
 import { lighten } from '@material-ui/core/styles/colorManipulator';
 import { withRouter } from 'react-router';
+
+
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import SelectOne from '../../../components/UI_Component/Select/SelectOne';
 import TableContainer from "@material-ui/core/TableContainer";
@@ -98,10 +103,10 @@ class EnhancedTableHead extends React.Component {
             row => (
               <TableCell
               className={row.id === 'first_name' ? classes.stickyColumnHeaderName : ''}
+              style={{ fontSize:"15px" }}
                 key={row.id}
                 align={'left'}
-                style={{padding: 8}}
-                // padding={row.disablePadding ? 'none' : 'default'}
+                padding={row.disablePadding ? 'none' : 'default'}
                 sortDirection={orderBy === row.id ? order : false}
               >
                 <Tooltip
@@ -138,7 +143,7 @@ EnhancedTableHead.propTypes = {
 
 const toolbarStyles = theme => ({
   root: {
-    paddingRight: theme.spacing(1),
+    paddingRight: theme.spacing.unit,
   },
   highlight:
     theme.palette.type === 'light'
@@ -216,7 +221,7 @@ EnhancedTableToolbar = withStyles(toolbarStyles)(EnhancedTableToolbar);
 const styles = theme => ({
   root: {
     width: '100%',
-    marginTop: theme.spacing(3)
+    marginTop: theme.spacing.unit * 3,
   },
   table: {
     minWidth: 1020,
@@ -226,7 +231,7 @@ const styles = theme => ({
   },
   paperRoot: {
 
-    width: '90%',
+    width: '70%',
     margin: '20px auto',
     padding: '10px 20px'
   },
@@ -246,20 +251,20 @@ const styles = theme => ({
 class TrainingFeedback extends React.Component {
   state = {
     order: 'asc',
-    orderBy: '',
+    orderBy: 'first_name',
     selected: [],
     data: [],
     excelData: [],
     page: 0,
-    rowsPerPage: 10,
+    rowsPerPage: 5,
     trainingListVal:[],
     selectedTraining:null,
     filteredFeedback:[],
     training_id:'',
     pushData:[],
-    snackVariant: '',
+    snackvariant: '',
     updated_by: '',
-    snackMsg: '',
+    snackmsg: '',
   };
 
   componentDidMount() {
@@ -274,10 +279,16 @@ class TrainingFeedback extends React.Component {
         });
         this.setState({
           trainingListVal,
+          snackvariant: 'success',
+          snackBarOpen: true,
+          snackmsg: "Training List loaded successfully"
         })
       } else {
         this.setState({
           trainingListVal: [],
+          snackvariant: 'error',
+          snackBarOpen: true,
+          snackmsg: "Error in loading Data"
         })
       }
     });
@@ -303,8 +314,8 @@ class TrainingFeedback extends React.Component {
     console.log(event.target.checked);
     if (event.target.checked) {
       const {data} = this.state;
-      const feedbackFalse = data.filter(item=> item.feedback_given === false);
-           this.setState(state => ({ selected: feedbackFalse.map(n =>  n.id ) }));
+      // const feedbackFalse = data.filter(item=> item.feedback_given === false);
+           this.setState(state => ({ selected: data.map(n =>  n.id ) }));
       // return;
       
     } else {
@@ -353,24 +364,34 @@ class TrainingFeedback extends React.Component {
     this.props.getCandidateList(reqObj).then((response) => {
       
       if (response && response.errCode === 200) {
-        const levels = {"training_id":e.target.value,"attendance":0,"sme_session_interaction":0,"theory":0,"hands_on":0,"hands_on_performance":0,"assessment":'0',"assessment_schedule_compliance":0,"overall":0,"sme_interaction":0,"sme_name":response.sme.sme_name,"remarks":'',"training_completed":'Yes',"training_completed_date":'',"certification":'Foundation',"final_assessment_score":0,"percentage_complete":'0',"spoc":response.programManager.program_manager_name,"default_end_date":false,"actual_training_completed_date":response.sme.enddate,"feedback_given":false} 
-        const feedback_given_list =  response.feedback_given_list;
-        const feedback_notgiven_list =  response.no_feedback_given_list.map(list => {
-          return { ...list, ...levels } 
+        const nonfeedback_levels = {"training_id":e.target.value,"attendance":0,"sme_session_interaction":0,"theory":0,"hands_on":0,"hands_on_performance":0,"assessment":'0',"assessment_schedule_compliance":0,"overall":0,"sme_interaction":0,"sme_name":response.sme.sme_name,"remarks":'',"training_completed":'Yes',"training_completed_date":'',"certification":'Foundation',"final_assessment_score":0,"percentage_complete":'0',"spoc":response.programManager.program_manager_name,"default_end_date":true,"actual_training_completed_date":response.sme.enddate,"feedback_given":false} 
+          
+        const feedback_levels = {"default_end_date":false,"actual_training_completed_date":response.sme.enddate,"feedback_given":true} 
+
+        const feedback_given_list =  response.feedback_given_list.map(list1 => {
+          return { ...list1, ...feedback_levels } 
         })
+       
+        const feedback_notgiven_list =  response.no_feedback_given_list.map(list => {
+          return { ...list, ...nonfeedback_levels } 
+        })
+        
+
         const newdata = [...feedback_notgiven_list, ...feedback_given_list]
+        console.log(newdata);
         const excelDataArray =  newdata.map(list => {
           return {"Training Name":e.target.label,"First Name":list.first_name,"Last Name":list.last_name,"SAP ID":list.sap_id,"Contact No":list.phone_number,"Email Id":list.email,"SME Name":list.sme_name,"SPOC":list.spoc,"Training Completed Date":list.training_completed_date,"Training Completed":list.training_completed,"Remarks":list.remarks,"SME Interaction":list.sme_interaction,"SME Session Interaction":list.sme_session_interaction,"Theory":list.theory,"Hands On":list.hands_on,"Hands On Performance":list.hands_on_performance,"Certification":list.certification,"Attendance":list.attendance,"Assessment %":list.assessment,"Assessment Schedule Compliance":list.assessment_schedule_compliance,"OverAll %":list.overall,"% Completed":list.percentage_complete}
         })
+       
         this.setState({
           data: newdata,
           excelData:excelDataArray,
           selected: [],
           training_id:e.target.value, 
           selectedTraining: e.target,
-          snackVariant: 'success',
+          snackvariant: 'success',
           snackBarOpen: true,
-          snackMsg: "Candidates Loaded Successfully"
+          snackmsg: "Candidates Loaded Successfully"
         })
       } else {
         this.setState({
@@ -378,9 +399,9 @@ class TrainingFeedback extends React.Component {
           selected: [],
           training_id:'',
           selectedTraining: null,
-          snackVariant: 'error',
+          snackvariant: 'error',
           snackBarOpen: true,
-          snackMsg: "No Candidates Found"
+          snackmsg: "No Candidates Found"
         })
       }
     });
@@ -389,7 +410,7 @@ class TrainingFeedback extends React.Component {
 
   render() {
     const { classes } = this.props;
-    const { data, excelData, order, orderBy, selected, rowsPerPage, page, trainingListVal, selectedTraining, snackVariant, snackBarOpen, snackMsg } = this.state;
+    const { data, excelData, order, orderBy, selected, rowsPerPage, page, trainingListVal, selectedTraining, snackvariant, snackBarOpen, snackmsg } = this.state;
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, data.length - page * rowsPerPage);
 
     return (
@@ -399,7 +420,7 @@ class TrainingFeedback extends React.Component {
       <Grid container spacing={3} >
       <Grid item md={4}>
         <FormControl variant="outlined" className={classes.formControl}>
-            
+            <label>Training List</label>
             <SelectOne
               value={selectedTraining ? selectedTraining : null}
               id="training"
@@ -411,7 +432,7 @@ class TrainingFeedback extends React.Component {
 
           </FormControl>
           </Grid>
-          { excelData !== '' && 
+          { excelData != '' && 
           <Grid item md={8}>
             <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '10px 0'}}>
             <ExportCSV csvData={excelData} fileName={"Candiate Feedback List"} />
@@ -448,41 +469,36 @@ class TrainingFeedback extends React.Component {
                       selected={isSelected}
                     >
 
-                    {(n.feedback_given === false) ? (
                       <TableCell padding="checkbox" className={classes.stickyColumnCell}>
                         <Checkbox color="primary" checked={isSelected} onClick={event => this.handleClick(event, n.id, n.first_name)} />
                       </TableCell>
-                    ) : (
-                      <TableCell padding="checkbox" className={classes.stickyColumnCell}>
-                      <Checkbox disabled inputProps={{ 'aria-label': 'disabled checkbox' }} />
+                    
+                      <TableCell component="th" scope="row" padding="none" className={classes.stickyColumnCellName}>
+                        {n.first_name}
                       </TableCell>
-                    )}
-                    <TableCell style={{padding: 8}} component="th" scope="row" padding="none" className={classes.stickyColumnCellName}>
-                    {n.first_name}
-                      </TableCell>
-                      <TableCell style={{padding: 8}}>{n.attendance}</TableCell>
-                      <TableCell style={{padding: 8}}>{n.sme_session_interaction}</TableCell>
-                      <TableCell style={{padding: 8}}>{n.theory}</TableCell>
-                      <TableCell style={{padding: 8}}>{n.hands_on}</TableCell>
-                      <TableCell style={{padding: 8}}>{n.hands_on_performance}</TableCell>
-                      <TableCell style={{padding: 8}}>{n.assessment}</TableCell>
-                      <TableCell style={{padding: 8}}>{n.assessment_schedule_compliance}</TableCell>
-                      <TableCell style={{padding: 8}}>{n.overall}</TableCell>
-                      <TableCell style={{padding: 8}}>{n.sme_interaction}</TableCell>
-                      <TableCell style={{padding: 8}}>{n.sme_name}</TableCell>
-                      <TableCell style={{padding: 8}}>{n.remarks}</TableCell>
-                      <TableCell style={{padding: 8}}>{n.training_completed}</TableCell>
-                      <TableCell style={{padding: 8}}>{n.training_completed_date}</TableCell>
-                      <TableCell style={{padding: 8}}>{n.certification}</TableCell>
-                      <TableCell style={{padding: 8}}>{n.final_assessment_score}</TableCell>
-                      <TableCell style={{padding: 8}}>{n.percentage_complete}</TableCell>
-                      <TableCell style={{padding: 8}}>{n.spoc}</TableCell>
+                      <TableCell >{n.attendance}</TableCell>
+                      <TableCell >{n.sme_session_interaction}</TableCell>
+                      <TableCell >{n.theory}</TableCell>
+                      <TableCell >{n.hands_on}</TableCell>
+                      <TableCell >{n.hands_on_performance}</TableCell>
+                      <TableCell >{n.assessment}</TableCell>
+                      <TableCell >{n.assessment_schedule_compliance}</TableCell>
+                      <TableCell >{n.overall}</TableCell>
+                      <TableCell >{n.sme_interaction}</TableCell>
+                      <TableCell >{n.sme_name}</TableCell>
+                      <TableCell >{n.remarks}</TableCell>
+                      <TableCell >{n.training_completed}</TableCell>
+                      <TableCell >{n.training_completed_date}</TableCell>
+                      <TableCell >{n.certification}</TableCell>
+                      <TableCell >{n.final_assessment_score}</TableCell>
+                      <TableCell >{n.percentage_complete}</TableCell>
+                      <TableCell >{n.spoc}</TableCell>
 
                     </TableRow>
                   );
                 })}
               {emptyRows > 0 && (
-                <TableRow style={{ height: 100 }}>
+                <TableRow style={{ height: 49 * emptyRows }}>
                   <TableCell colSpan={6} />
                 </TableRow>
               )}
@@ -490,7 +506,7 @@ class TrainingFeedback extends React.Component {
           </Table>
         </div>
         <TablePagination
-          rowsPerPageOptions={[10, 25]}
+          rowsPerPageOptions={[5, 10, 25]}
           component="div"
           count={data.length}
           rowsPerPage={rowsPerPage}
@@ -506,7 +522,7 @@ class TrainingFeedback extends React.Component {
         />
         </TableContainer>
         {snackBarOpen &&
-            <SnackBar onCloseSnackBar={this.onCloseSnackBar} snackBarOpen={snackBarOpen} snackmsg={snackMsg} snackvariant={snackVariant} />}
+            <SnackBar onCloseSnackBar={this.onCloseSnackBar} snackBarOpen={snackBarOpen} snackmsg={snackmsg} snackvariant={snackvariant} />}
       </Paper>
       </div>
     );

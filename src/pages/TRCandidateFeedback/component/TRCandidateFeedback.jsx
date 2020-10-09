@@ -54,7 +54,7 @@ const styles = (theme) => ({
     padding: '10px 20px'
   },
   tableheader: {
-    backgroundColor: '#E0E0E0'
+    backgroundColor: '#E0E0E0',
   },
   stickyColumnHeader: { position: 'sticky', left: 0, zIndex: 1, background: '#E0E0E0' },
   stickyColumnHeaderName: { position: 'sticky', left: 46, zIndex: 1, background: '#E0E0E0' },
@@ -86,6 +86,7 @@ class TrainingFeedback extends React.Component {
       this.props.history.push('/candidateFeedbackList')
     } else {
       const users = this.props.location.state.data;
+      console.log(users);
       this.setState({ data: users })
     }
   }
@@ -106,6 +107,7 @@ class TrainingFeedback extends React.Component {
   }
 
   inputFieldChange = (e, list) => {
+    console.log(list);
     const { data } = this.state;
     list.value = e.target.value;
     if (e.target.name === 'assessment' || e.target.name === 'percentage_complete' || e.target.name === 'final_assessment_score') {
@@ -121,8 +123,8 @@ class TrainingFeedback extends React.Component {
 
   submitForm = (e) => {
     const { data } = this.state;
-    let error = 0;
-    data.forEach(element => {
+    // let error = 0;
+    /* data.forEach(element => {
       console.log(element);
       if (element.attendance === 0 || element.sme_session_interaction === 0 || element.theory === 0 || element.hands_on === 0 || element.hands_on_performance === 0 || element.assessment_schedule_compliance === 0 || element.overall === 0 || element.sme_interaction === 0 || element.assessment === 0 || element.percentage_complete === 0 || element.sme_name === '' || element.remarks === '' || element.final_assessment_score === '' || element.spoc === '') {
         error = error + 1;
@@ -136,7 +138,7 @@ class TrainingFeedback extends React.Component {
         element.training_completed_date = moment(element.training_completed_date).format("YYYY-MM-DD");
       }
     });
-    if (error === 0) {
+    if (error === 0) { */
       let reqObj = {
         data: this.state.data,
         created_by: 1,
@@ -158,13 +160,13 @@ class TrainingFeedback extends React.Component {
           this.props.history.push('/candidateFeedbackList');
         }
       })
-    } else {
+    /* } else {
       this.setState({
         snackvariant: 'error',
         snackBarOpen: true,
         snackmsg: "Plaese fill all values"
       })
-    }
+    } */
   }
 
   CancelAction = () => {
@@ -189,24 +191,22 @@ class TrainingFeedback extends React.Component {
             Candidate Feedback
             </Typography>
           <Typography variant="h6" className="text-left" gutterBottom>
-            SME Name: {data.length > 0 ? data[0].sme_name : '-'}
+          <b>SME Name:</b> {data.length > 0 ? data[0].sme_name : '-'} &emsp; &emsp;  <b>SPOC: </b> {data.length > 0 ? data[0].spoc : '-'}
           </Typography>
-          <Typography variant="h6" className="text-left" gutterBottom>
-            SPOC: {data.length > 0 ? data[0].spoc : '-'}
-          </Typography>
+         
           <TableContainer component={Paper}>
             <Table className={classes.table} aria-label="simple table">
               <TableHead className={classes.tableheader} >
-                <TableRow>
-                  {['Name', 'Attendance', 'SME session Interaction', 'Theory', 'Hands-on', 'Hands-on Performance', 'Assessment %', 'Assessment Schedule Compliance', 'Overall', 'SMEs Interaction', 'Remarks', 'Training Completed', 'Training Complete Date', 'Certification', 'Final Score', '% complete'].map((val, index) =>
-                    <TableCell key={val} style={{ padding: 8 }} className={index === 0 ? classes.stickyColumnCell : ''}>{val}</TableCell>
+                <TableRow >
+                  {['Name', 'Attendance', 'SME session Interaction', 'Theory', 'Hands-on', 'Hands-on Performance', 'Assessment %', 'Assessment Schedule Compliance', 'Overall', 'SMEs Interaction', 'Remarks', 'Completed', 'Completed On Time', 'Certification', 'Final Score', '% complete'].map((val, index) =>
+                    <TableCell key={val} style={{ padding: 8, fontSize:"15px" }}  className={index === 0 ? classes.stickyColumnCell : ''}>{val}</TableCell>
                   )}
                 </TableRow>
               </TableHead>
               <TableBody>
                 {data.map((row) => (
                   <TableRow key={row.id}>
-                    <TableCell style={{ padding: 8 }} component="th" scope="row" className={classes.stickyColumnCellName}>
+                    <TableCell style={{ padding: 8, fontSize:"13px" }} component="th" scope="row" className={classes.stickyColumnCellName}>
                       {row.first_name}
                     </TableCell>
                     <TableCell style={{ padding: 8 }} >
@@ -400,13 +400,13 @@ class TrainingFeedback extends React.Component {
                             minDate={new Date()}
                             disabled={true}
                             name="actual_training_completed_date"
-                            onChange={(e) => this.inputFieldChange(e, row)}
                             input={<BootstrapInput />}
                           />
                         }
                         {row.default_end_date === false &&
+                        
                           <DateTimePicker
-                            value={row.training_completed_date}
+                            value={row.training_completed_date === '' ? '' : new Date(row.training_completed_date)}
                             maxDays={90}
                             minDate={new Date()}
                             name="training_completed_date"

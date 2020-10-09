@@ -1,12 +1,27 @@
 import React, { Component } from 'react'
 import {
-  Paper, Typography, List, Button, Grid, ListItem, InputBase, ListItemIcon, Checkbox, Divider, Card, CardHeader, 
+  Paper, Typography, List, Grid, ListItem, InputBase, ListItemIcon, Checkbox,
   ListItemText, IconButton, withStyles, Dialog, DialogTitle, TextField, DialogActions, DialogContent
 } from '@material-ui/core';
-import SearchIcon from '@material-ui/icons/Search';
-import SnackBar from '../../../components/UI_Component/SnackBar/SnackBar';
+import Button from '@material-ui/core/Button';
 import SelectOne from '../../../components/UI_Component/Select/SelectOne';
+// import '../scss/BatchFormation.scss'
+import SearchIcon from '@material-ui/icons/Search';
 
+import green from '@material-ui/core/colors/green';
+import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import ErrorIcon from '@material-ui/icons/Error';
+
+import SnackBar from '../../../components/UI_Component/SnackBar/SnackBar';
+
+import Divider from "@material-ui/core/Divider";
+import Card from "@material-ui/core/Card";
+import CardHeader from "@material-ui/core/CardHeader";
+
+const variantIcon = {
+  success: CheckCircleIcon,
+  error: ErrorIcon,
+};
 
 const styles = (theme) => ({
   paperRoot: {
@@ -156,7 +171,7 @@ class BatchFormation extends Component {
         });
         this.setState({ batchDetailsList: batchList, candidatesList: this.candidatesList, selectall: false, left: [], right: [], query: '', formIsValid: true });
       } else {
-        this.setState({ snackBarOpen: true, snackmsg: 'Something went Wrong. Please try again later', snackvariant: "error" })
+        this.setState({ batchDetailsList: [], snackBarOpen: true, snackmsg: 'No Batches Found', snackvariant: "error" })
       }
     })
   }
@@ -178,7 +193,7 @@ class BatchFormation extends Component {
         });
         this.checkAllFieldsValidbatch();
       } else {
-        this.setState({ snackBarOpen: true, snackmsg: 'Something went Wrong. Please try again later', snackvariant: "error" })
+        this.setState({ snackBarOpen: true, snackmsg: 'No Candidates Found', snackvariant: "error" })
       }
     });
   }
@@ -461,6 +476,10 @@ class BatchFormation extends Component {
             {selectedTraining && <Button variant="contained" className={classes.addBtn} onClick={this.addBatch} color="primary">
               Add
             </Button>}
+        </Grid>
+        </Grid>
+        <Grid item md className={classes.searchAddGrid}>
+          
             {(this.left.length > 0 || this.right.length > 0) &&
               <Paper component="form" className={classes.searchRoot}>
                 <InputBase
@@ -475,8 +494,6 @@ class BatchFormation extends Component {
               </Paper>
             }
           </Grid>
-        </Grid>
-
         {selectedTraining && batchSelected &&
           <Grid
             container
@@ -518,7 +535,7 @@ class BatchFormation extends Component {
           open={showAddBatchModal}
           onClose={this.handleModalClose}
         >
-          <DialogTitle id="form-dialog-title">Add new Batch</DialogTitle>
+          <DialogTitle id="form-dialog-title">Add Batch</DialogTitle>
           <DialogContent >
             <div style={{ display: 'flex' }}>
               <Typography style={{ padding: '15px 15px 10px 0' }}>Batch Name:</Typography>
@@ -545,7 +562,7 @@ class BatchFormation extends Component {
             </div>
           </DialogContent>
           <DialogActions>
-            <Button onClick={this.handleModalClose} variant="contained" color="primary">
+            <Button onClick={this.handleModalClose} variant="contained" >
               Cancel
             </Button>
             <Button onClick={this.handleModalSubmit} disabled={newBatchName === '' || newBatchCount === ''} variant="contained" color="primary">

@@ -47,7 +47,6 @@ const styles = (theme) => ({
   },
   gridRoot: {
     flexGrow: 1,
-    marginTop: 20,
   },
   listRoot: {
     width: '100%',
@@ -84,7 +83,8 @@ const styles = (theme) => ({
     padding: "15px 20px"
   },
   searchAlign: {
-    float: 'right'
+    float: 'right',
+    padding: "30px 30px"
   }
 });
 
@@ -225,7 +225,7 @@ class CandidateSelection extends Component {
 
   insertCandidates = () => {
 
-    const {  right, selectedTraining } = this.state;
+    const { candidatesList, right, selectedTraining } = this.state;
 
     const candidateIDs = [];
     right.forEach((candidate) => {
@@ -236,7 +236,8 @@ class CandidateSelection extends Component {
 
     const user_id = 1;
 
-    if (candidateIDs.length !== 0) {
+    if (candidateIDs.length != 0) {
+
       const reqObj = {
         trainingId: selectedTraining.value,
         createdby: user_id,
@@ -409,8 +410,8 @@ class CandidateSelection extends Component {
   };
 
   render() {
-    const { classes } = this.props;
-    const { trainingList, selectedTraining, candidatesList, snackbaropen, snackmsg, snackvariant, query, checked, left, right } = this.state;
+    const { classes, variant } = this.props;
+    const { trainingList, selectedTraining, candidatesList, snackbaropen, snackmsg, snackvariant, query, selectall, checked, left, right } = this.state;
     this.leftChecked = this.intersection(checked, left);
     this.rightChecked = this.intersection(checked, right);
     this.CandidateIDs = [];
@@ -429,7 +430,7 @@ class CandidateSelection extends Component {
           </Typography>
           <div className={classes.selectOne}>
             {/* <Typography variant="body1" className={classes.trainingTitle}>Training List </Typography > */}
-            <Grid item xs={12} sm={4} md={4} style={{ 'display': 'inline-block' }}>
+            <Grid item xs={12} sm={6}  md={6} style={{ 'display': 'inline-block' }}>
             <label>Training List</label>
               <SelectOne
                 className="inline"
@@ -443,8 +444,8 @@ class CandidateSelection extends Component {
                 errorMessage={this.state.errors.training === "" ? null : this.state.errors.training}
               />
             </Grid>
-            {(this.left.length > 0 || this.right.length > 0) && <Grid item xs={12} sm={6} md={4}
-              style={{ 'display': 'inline-block' }} className={classes.searchAlign}>
+            {(this.left.length > 0 || this.right.length > 0) && <Grid item xs={12} sm={6} md={6}
+               className={classes.searchAlign}>
               <Paper component="form" className={classes.searchRoot}>
                 <InputBase
                   className={classes.input}
@@ -476,7 +477,7 @@ class CandidateSelection extends Component {
               alignItems="center"
               className={classes.gridRoot}
             >
-              <Grid item xs={12} sm={5}>{this.customList("Non-Registered", left)}</Grid>
+              <Grid style={{paddingTop:0}} item xs={12} sm={5}>{this.customList("Non-Registered", left)}</Grid>
               <Grid item xs={12} sm={2}>
                 <Grid container direction="column" alignItems="center">
                   <Button
@@ -501,7 +502,7 @@ class CandidateSelection extends Component {
                     </Button>
                 </Grid>
               </Grid>
-              <Grid item xs={12} sm={5}>{this.customList("Registered", right)}</Grid>
+              <Grid style={{paddingTop:0}} item xs={12} sm={5}>{this.customList("Registered", right)}</Grid>
             </Grid>
 
           }
