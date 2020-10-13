@@ -18,6 +18,9 @@ const styles = (theme) => ({
     margin: '20px auto',
     padding: '10px 20px'
   },
+    root: {
+      fontSize: '1rem',
+    }
 });
 
 class TrainingType extends React.Component {
@@ -237,18 +240,33 @@ class TrainingType extends React.Component {
             style={{ boxShadow: 'none', border: 'solid 1px #ccc' }}
             options={{
               actionsColumnIndex: -1,
-              pageSizeOptions: []
+              pageSizeOptions: [],
+              headerStyle: {
+                backgroundColor: '#E0E0E0',
+                whiteSpace: 'nowrap',
+                whiteSpace: 'nowrap',
+                lineHeight :'15px',
+                fontSize: '16px',
+                color:'#212529',
+                zIndex: 0
+              },
+              rowStyle: {
+                lineHeight :'15px',
+                fontSize:'13px',
+                whiteSpace: 'nowrap',
+                fontSize: '14px'
+              }
             }}
-          actions={[
+           actions={[
             {
               icon: 'add',
               tooltip: 'Add Training Type',
               isFreeAction: true,
-              disabled : false,
+              // disabled : true,
               onClick: (event) => this.setState({ showTrainingModal: true })
             },
-          ]}
-           editable={{
+          ]} 
+          editable={{
             onRowUpdate: (newData, oldData) =>
               new Promise((resolve) => {
                 resolve();
