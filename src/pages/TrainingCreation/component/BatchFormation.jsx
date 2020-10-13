@@ -77,7 +77,7 @@ const styles = (theme) => ({
     overflow: "auto"
   },
   button: {
-    margin: theme.spacing(1,0),
+    margin: theme.spacing(1, 0),
   },
   bottomBtn: {
     justifyContent: 'flex-end',
@@ -144,12 +144,12 @@ class BatchFormation extends Component {
   }
 
   selectTrainingChange = (selectedTraining) => {
-  
+
     this.setState({ selectedTraining: selectedTraining.target, candidatesList: [], batchSelected: null });
     this.getBatchList(selectedTraining.target.value);
     this.checkAllFieldsValidbatch();
   }
-  
+
   getBatchList = (training_id) => {
     const reqObj = { training_id };
     this.props.getBatchList(reqObj).then((response) => {
@@ -167,13 +167,13 @@ class BatchFormation extends Component {
     })
   }
   onChangeBatch = (batchSelected) => {
-    
+
     this.setState({ batchSelected: batchSelected.target });
     const reqObj = {
       training_id: this.state.selectedTraining.value,
       batch_id: batchSelected.target.value
     }
-   
+
     this.props.getCandidateMapList(reqObj).then((response) => {
       if (response && response.errCode === 200) {
         this.candidatesList = [...response.batchCandidate, ...response.nonBatchCnadidate];
@@ -189,15 +189,13 @@ class BatchFormation extends Component {
     });
   }
   checkAllFieldsValidbatch = () => {
-    const{selectedTraining , batchSelected,formIsValid } = this.state;
-    console.log("--Console1--",selectedTraining);
-    console.log("--Console2--",batchSelected);
-
-    if(selectedTraining && batchSelected){
-      this.setState({formIsValid : true });
+    const { selectedTraining, batchSelected, formIsValid } = this.state;
+    if (selectedTraining && batchSelected) {
+      this.setState({ formIsValid: true });
     }
     this.props.checkAllFieldsValidBF(formIsValid);
   }
+
   handleCandidateSelection = (e, list) => {
     const { candidatesList, selectedTraining } = this.state;
     const candidateIndex = candidatesList && candidatesList.findIndex((lst) => list.id === lst.id);
@@ -381,7 +379,7 @@ class BatchFormation extends Component {
                     inputProps={{ "aria-labelledby": labelId }}
                   />
                 </ListItemIcon>
-                <ListItemText id={labelId} primary={value.first_name} secondary={value.email}/>
+                <ListItemText id={labelId} primary={value.first_name} secondary={value.email} />
               </ListItem>
             );
           })}
@@ -417,9 +415,9 @@ class BatchFormation extends Component {
     this.setState({ showAddBatchModal: false, newBatchName: '', newBatchCount: '' })
   }
 
-  onCloseSnackBar = () =>{
-    this.setState({snackBarOpen:false});
-}
+  onCloseSnackBar = () => {
+    this.setState({ snackBarOpen: false });
+  }
 
   render() {
     const { classes } = this.props;
@@ -467,24 +465,24 @@ class BatchFormation extends Component {
             {selectedTraining && <Button variant="contained" className={classes.addBtn} onClick={this.addBatch} color="primary">
               Add
             </Button>}
-        </Grid>
+          </Grid>
         </Grid>
         <Grid item md className={classes.searchAddGrid}>
-          
-            {(this.left.length > 0 || this.right.length > 0) &&
-              <Paper component="form" className={classes.searchRoot}>
-                <InputBase
-                  className={classes.input}
-                  placeholder="Search "
-                  onChange={this.searchCandidate}
-                  value={query}
-                />
-                <IconButton disabled className={classes.iconButton} aria-label="search">
-                  <SearchIcon />
-                </IconButton>
-              </Paper>
-            }
-          </Grid>
+
+          {(this.left.length > 0 || this.right.length > 0) &&
+            <Paper component="form" className={classes.searchRoot}>
+              <InputBase
+                className={classes.input}
+                placeholder="Search "
+                onChange={this.searchCandidate}
+                value={query}
+              />
+              <IconButton disabled className={classes.iconButton} aria-label="search">
+                <SearchIcon />
+              </IconButton>
+            </Paper>
+          }
+        </Grid>
         {selectedTraining && batchSelected &&
           <Grid
             container
@@ -516,9 +514,9 @@ class BatchFormation extends Component {
             <Grid item xs={12} sm={5}>{this.customList("Registered", right)}</Grid>
           </Grid>
         }
-        
-        {snackBarOpen && <SnackBar snackBarOpen={snackBarOpen} snackmsg={snackmsg} snackvariant={snackvariant} 
-                     onCloseSnackBar={this.onCloseSnackBar} />}
+
+        {snackBarOpen && <SnackBar snackBarOpen={snackBarOpen} snackmsg={snackmsg} snackvariant={snackvariant}
+          onCloseSnackBar={this.onCloseSnackBar} />}
         <Dialog
           disableBackdropClick
           maxWidth="xs"

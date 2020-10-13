@@ -1,5 +1,5 @@
 import React, { Fragment } from 'react';
-import { AppBar, Tabs, Tab, Paper, withStyles, Typography, Card, CardContent, CardActions, Button, List, ListItem, ListItemText, Checkbox, Dialog, DialogActions, DialogContent, DialogContentText, Grid, DialogTitle, Radio, RadioGroup, FormControlLabel, IconButton, Toolbar, Slide, InputBase, Divider, Box} from '@material-ui/core';
+import { AppBar, Tabs, Tab, Paper, withStyles, Typography, Card, CardContent, CardActions, Button, List, ListItem, ListItemText, Checkbox, Dialog, DialogActions, DialogContent, DialogContentText, Grid, DialogTitle, Radio, RadioGroup, FormControlLabel, IconButton, Toolbar, Slide, InputBase, Divider, Box } from '@material-ui/core';
 import SelectOne from '../../../components/UI_Component/Select/SelectOne';
 import SnackBar from '../../../components/UI_Component/SnackBar/SnackBar';
 import HomeContainer from '../../Home/container/HomeContainer';
@@ -28,7 +28,7 @@ const styles = theme => ({
     alignItems: 'center',
     border: 'solid 1px lightgrey',
     height: 40,
-    width: '250px'
+    width: 225
   },
   paginator: {
     justifyContent: "center",
@@ -60,9 +60,9 @@ class Curriculum extends React.Component {
       isFormValid: false,
       isMasterTable: false,
       query: '',
-      itemsPerPage:7,
+      itemsPerPage: 7,
       page: 1,
-      }
+    }
     this.trainingCurriculumlist = [];
   }
 
@@ -120,7 +120,6 @@ class Curriculum extends React.Component {
         this.trainingCurriculumlist = TempCurri;
         this.setState({ curriculumList: response.arrRes, trainingCurriculumlist: TempCurri, isMasterTable: response.isMaster });
         if (training_id && selectedRadio && selectedRadio !== 'upload') {
-          console.log("----isMaster---", response.isMaster)
           if (response.isMaster) {
             this.setState({ isFormValid: true });
             this.props.checkAllFieldsValidCF(true);
@@ -135,13 +134,11 @@ class Curriculum extends React.Component {
 
   handleChange = (event, newValue) => {
     const actuallist = this.trainingCurriculumlist;
-    this.setState({ tabValue: newValue, query: '', trainingCurriculumlist: actuallist, page: 1});
+    this.setState({ tabValue: newValue, query: '', trainingCurriculumlist: actuallist, page: 1 });
   };
 
   handleClickOpen = () => {
-
     this.setState({ openDialog: true });
-
   };
 
   handleClose = () => {
@@ -165,19 +162,16 @@ class Curriculum extends React.Component {
       curriculumData: finalTopic,
       created_by: 1,
       skill_id: selectedTraining.skillsID
-
     }
-    console.log(reqObj);
     this.submitCurriculum(reqObj);
 
   }
 
   submitCurriculum = (reqObj) => {
-
     this.props.submitCurriculum(reqObj).then((response) => {
       if (response && response.errCode === 200) {
         console.log(response);
-        this.setState({ openDialog: false, trainingCurriculumlist: [], selectedTraining: null, skillList: [], snackBarOpen: true, snackmsg: 'Curriculum has been incorprated successfully ', snackvariant: "success", isFormValid: false });
+        this.setState({ openDialog: false, selectedRadio: null, trainingCurriculumlist: [], selectedTraining: null, skillList: [], snackBarOpen: true, snackmsg: 'Curriculum has been incorprated successfully ', snackvariant: "success", isFormValid: false });
       } else {
         this.setState({ snackBarOpen: true, snackmsg: 'Something went Wrong. Please try again later', snackvariant: "error" })
       }
@@ -193,7 +187,6 @@ class Curriculum extends React.Component {
   };
 
   handleUpload = event => {
-
     let uploadFlag = (event.target.value === 'upload') ? true : false;
     let disBtn = false;
     if (this.state.selectedTraining && event.target.value && event.target.value !== 'upload') {
@@ -202,7 +195,7 @@ class Curriculum extends React.Component {
       disBtn = false;
     }
     this.setState({ selectedRadio: event.target.value, isUpload: uploadFlag, isFormValid: disBtn });
-    this.props.checkAllFieldsValidCF(disBtn);
+    this.props.checkAllFieldsValidCF(true);
   }
 
   showCurriculumUpload = () => {
@@ -213,29 +206,28 @@ class Curriculum extends React.Component {
     this.setState({ showCurriculumUpload: false });
   }
 
-
   searchCurriculum = (e) => {
     const query = e.target.value;
     const lowerCaseQuery = query.toLowerCase();
     const searchedCurriculumList = (query
-      ?  this.trainingCurriculumlist.filter((list) =>
+      ? this.trainingCurriculumlist.filter((list) =>
         list['name']
           .toLowerCase()
           .includes(lowerCaseQuery)
       )
       : this.trainingCurriculumlist);
-   
+
     this.setState({ trainingCurriculumlist: searchedCurriculumList, query });
   }
   handlePageChange = (event, value) => {
-    this.setState({ page: value});
+    this.setState({ page: value });
   };
 
   render() {
     const { classes } = this.props;
-    const { tabValue, skillList, selectedTraining, trainingList, trainingCurriculumlist, snackBarOpen, snackmsg, snackvariant, isUpload, selectedRadio, showCurriculumUpload, query,itemsPerPage, page } = this.state;
+    const { tabValue, skillList, selectedTraining, trainingList, trainingCurriculumlist, snackBarOpen, snackmsg, snackvariant, isUpload, selectedRadio, showCurriculumUpload, query, itemsPerPage, page } = this.state;
     const skillFilter = trainingCurriculumlist.filter(curList => curList.skill_id === tabValue);
-    const noOfPages = (skillFilter.length > 0 ) ? Math.ceil(skillFilter.length / itemsPerPage) : 0;
+    const noOfPages = (skillFilter.length > 0) ? Math.ceil(skillFilter.length / itemsPerPage) : 0;
     const title = 'Curriculum Upload';
     const curriculumUpload = true;
     return (
@@ -310,17 +302,17 @@ class Curriculum extends React.Component {
             <Card square className={classes.root} variant="outlined">
               <CardContent>
                 <Typography className={classes.title} color="textSecondary" gutterBottom>
-                    <Paper component="form" className={classes.searchRoot}>
-                      <InputBase
-                        className={classes.input}
-                        placeholder="Search "
-                        onChange={this.searchCurriculum}
-                        value={query}
-                      />
-                      <IconButton disabled className={classes.iconButton} aria-label="search">
-                        <SearchIcon />
-                      </IconButton>
-                  </Paper>
+                  {skillFilter.length > 0 && <Paper component="form" className={classes.searchRoot}>
+                    <InputBase
+                      className={classes.input}
+                      placeholder="Search "
+                      onChange={this.searchCurriculum}
+                      value={query}
+                    />
+                    <IconButton disabled className={classes.iconButton} aria-label="search">
+                      <SearchIcon />
+                    </IconButton>
+                  </Paper>}
                   {!isUpload && selectedRadio && skillFilter && skillFilter.length > 0 &&
                     <List >
                       {skillFilter.slice((page - 1) * itemsPerPage, page * itemsPerPage).map(value => {
@@ -337,29 +329,26 @@ class Curriculum extends React.Component {
                         );
                       })}
                     </List>}
-
                   {skillFilter.length === 0 &&
-                    <Typography color='error'> No Data Found </Typography>
+                    <Typography paragraph color='error' gutterBottom align='center'> No Data Found </Typography>
                   }
-
                   <Divider />
-
-                  <Box component="span">
-                  <Pagination
-                    count={noOfPages}
-                    page={page}
-                    onChange={this.handlePageChange}
-                    defaultPage={1}
-                    color="primary"
-                    size="large"
-                    showFirstButton
-                    showLastButton
-                    classes={{ ul: classes.paginator }}
-                  />
-                </Box>
+                  {skillFilter.length > 0 && <Box component="span">
+                    <Pagination
+                      count={noOfPages}
+                      page={page}
+                      onChange={this.handlePageChange}
+                      defaultPage={1}
+                      color="primary"
+                      size="large"
+                      showFirstButton
+                      showLastButton
+                      classes={{ ul: classes.paginator }}
+                    />
+                  </Box>}
                 </Typography>
               </CardContent>
-              <CardActions>
+              {/* <CardActions>
                 <Button
                   variant="outlined"
                   size="small"
@@ -367,7 +356,7 @@ class Curriculum extends React.Component {
                   onClick={this.handleClickOpen}
                   aria-label="move selected left"
                 >  Submit </Button>
-              </CardActions>
+              </CardActions> */}
             </Card>
           </Fragment>}
 
@@ -416,9 +405,7 @@ class Curriculum extends React.Component {
                               return null
                             })}
                           </List>}
-
                         {skillFilter.length === 0 && <Typography color='error'> No Data Found </Typography>}
-
                       </Typography>
                     </CardContent>
                   </Card>

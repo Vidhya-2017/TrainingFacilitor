@@ -38,7 +38,7 @@ class Login extends React.Component{
             if (this.validateform()) {
                 localStorage.setItem("token", 1)
                 localStorage.setItem("user", this.state.username)
-                this.props.history.push('/home')
+                this.props.history.push('/trainingCreation')
             }
         }      
        

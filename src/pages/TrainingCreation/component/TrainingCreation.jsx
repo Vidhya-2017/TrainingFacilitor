@@ -172,7 +172,7 @@ class TrainingCreation extends React.Component {
         if (queryStr.tId > 0) {
           this.getEditTrainingData(queryStr.tId);
         } else {
-          this.setState({ snackBarOpen: true, snackmsg: "Data loaded successfully", snackvariant: "success" });
+          // this.setState({ snackBarOpen: true, snackmsg: "Data loaded successfully", snackvariant: "success" });
         }
 
       } else {
@@ -184,7 +184,6 @@ class TrainingCreation extends React.Component {
 
   getAccount = async () => {
     const result = await this.props.getAccount();
-    //console.log(result);
     if (result && result.errCode === 200) {
       const accountList = result.arrRes.map(list => {
         return {
@@ -198,25 +197,6 @@ class TrainingCreation extends React.Component {
       const errorArr = [];
       return errorArr;
     }
-    /* return this.props.getAccount().then(response => {
-       if (response && response.errCode === 200) {
-         const accountList = response.arrRes.map(list => {
-           return {
-             value: list.id,
-             id: list.id,
-             label: list.account_name
-           }
-         });
-         console.log("--accountList--",accountList)
-          this.setState({ accountList,snackBarOpen: true,
-           snackmsg: "Data loaded successfully",
-           snackvariant:"success" }); 
-          
-       } else {
-         //this.setState({ snackBarOpen: true, snackmsg: 'Something went Wrong. Please try again later.', snackvariant:"error"})
-       }
-      
-     }) */
   }
   getLocation = async () => {
     const result = await this.props.getLocation();
@@ -626,15 +606,8 @@ class TrainingCreation extends React.Component {
         }
       });
     } else if (this.state.activeStep === 3) {
-      console.log("STEP", this.state.activeStep)
       this.curriculumRef.current.handleClickOpen();
-      /* await this.curriculumRef.current.handleClickOpen().then(res => {
-        if (res === 200) {
-          this.setState(prev => ({ openDialog: true }));
-        } 
-      });*/
     } else if (this.state.activeStep < 3) {
-      console.log('-isFormSubmittedSuccess-again-');
       this.setState(prev => ({ activeStep: prev.activeStep + 1, CRFormIsValid: false, batchDetailsList: [], eventSelected: null }));
     }
   }
@@ -685,7 +658,6 @@ class TrainingCreation extends React.Component {
     this.setState({ BFFormIsValid })
   }
   checkAllFieldsValidCF = (CFFormIsValid) => {
-    console.log("Creation", CFFormIsValid)
     this.setState({ CFFormIsValid })
   }
   onCloseSnackBar = () => {
