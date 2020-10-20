@@ -54,6 +54,7 @@ class SkillList extends React.Component {
       curriculumListVal: [],
       showAddSkillModal: false,
       showAddCurriculumModal: false,
+      hideDeleteButton: false,
       newSkillName: '',
       newCurriculumName: '',
       snackBarOpen: false,
@@ -61,7 +62,8 @@ class SkillList extends React.Component {
       updated_by: '',
       snackmsg: '',
       skillId: '',
-      curriculumUpload: false
+      curriculumUpload: false,
+      selectedData:[]
     }
     this.curriculumListVal = [];
     this.columnFields = [
@@ -98,19 +100,20 @@ class SkillList extends React.Component {
     this.setState({ snackBarOpen: false });
   }
 
-  getCurriculumList() {
+  getCurriculumList(refresh= false) {
     this.props.getCurriculumList().then((response) => {
       if (response && response.errCode === 200) {
         this.curriculumListVal = response.arrRes;
-        /* this.setState({
-          // curriculumListVal: response.arrRes,
-          snackvariant: 'success',
-          snackBarOpen: true,
-          snackmsg: "Curriculum Data loaded successfully"
-        }) */
+        if(refresh) {
+          const filteredCurriculum = this.curriculumListVal.filter((skill) =>
+          skill.skill_id === this.state.skillId
+        )
+        this.setState({
+          curriculumListVal: filteredCurriculum
+        })
+        }
       } else {
         this.setState({
-          // curriculumListVal: [],
           snackvariant: 'error',
           snackBarOpen: true,
           snackmsg: "Error in loading Skill Data"
@@ -391,7 +394,33 @@ class SkillList extends React.Component {
 
     });
   }
+//  Multidelete
+multideleteCurriculum = id => {
+   const filteredItems = this.state.curriculumListVal.filter((item) => item.id !== id);
+   this.setState({ filteredItems: filteredItems });
+  const reqObj = {
+    id: id,
+  }
+   this.props.multidelCurriculum(reqObj).then(response => {
+     if (response && response.errCode === 200) {
+      this.setState({
+        curriculumListVal: filteredItems,
+        snackvariant: 'success',
+        snackBarOpen: true,
+        snackmsg: "Curriculum name deleted successfully",
+      });
+      this.getCurriculumList(true);
+     }
+    else {
+      this.setState({
+        snackvariant: 'error',
+        snackBarOpen: true,
+        snackmsg: "Error in Curiculum name deletion"
+      });
+    }
 
+   });
+}
   handleSkillChange = (e) => {
     const filteredCurriculum = this.curriculumListVal.filter((skill) =>
       skill.skill_id === e.target.value
@@ -417,7 +446,6 @@ class SkillList extends React.Component {
     const { classes } = this.props;
     const uploadtitle = 'Curriculum Upload';
     const skillcurriculumUpload = true;
-
     let title = 'Curriculum Upload', disabled = false;
 
     if (delSkill === true) {
@@ -431,8 +459,14 @@ class SkillList extends React.Component {
         title = 'Add Skill Name'
       }
     }
-
-
+      const handleDeleteRows = (event, rowData) => {
+        let selectedData = [];
+        rowData.forEach(rd => {
+         selectedData.push(rd.id);
+        });
+         this.setState({selectedData:selectedData});
+         this.multideleteCurriculum(selectedData);
+      };
     return (
       <div className="SkillList_container">
         <Dialog
@@ -562,18 +596,41 @@ class SkillList extends React.Component {
             style={{ boxShadow: 'none', border: 'solid 1px #ccc' }}
             options={{
               actionsColumnIndex: -1,
-              pageSizeOptions: []
+              pageSizeOptions: [],
+              selection: true,
+              headerStyle: {
+                backgroundColor: '#E0E0E0',
+                whiteSpace: 'nowrap',
+                whiteSpace: 'nowrap',
+                lineHeight :'15px',
+                fontSize: '16px',
+                color:'#212529',
+                zIndex: 0
+              },
+              rowStyle: {
+                lineHeight :'15px',
+                fontSize:'13px',
+                whiteSpace: 'nowrap',
+                fontSize: '14px'
+              }
             }}
-            actions={skillId ? [
+             actions={
+             skillId ? [
               {
                 icon: 'add',
                 tooltip: 'Add Curriculum Name',
                 isFreeAction: true,
                 onClick: (event) => this.setState({ showAddCurriculumModal: true }),
-                disabled: selectedSkillVal === '' || selectedSkillVal === undefined
+                disabled: (selectedSkillVal === '' || selectedSkillVal === undefined) 
               },
+              {
+                icon: 'delete',
+                tooltip: "Multiple Delete",
+                onClick: handleDeleteRows
+              }
+            ] : []
+          }
 
-            ] : []}
             editable={curriculumListVal.length > 0 ? {
               onRowUpdate: (newData, oldData) =>
                 new Promise((resolve) => {

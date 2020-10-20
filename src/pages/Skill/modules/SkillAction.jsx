@@ -73,5 +73,14 @@ export const SkillAction = {
     catch (error) {
       return (error.response);
     }
+  },
+  multidelCurriculum: async (data) => {
+    try {
+      const response = await clients.axiosAPI.post('/MultiDeleteCurriculum.php', data);
+      return (response.data);
+    }
+    catch (error) {
+      return (error.response);
+    }
   }
 }

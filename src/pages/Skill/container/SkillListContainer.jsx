@@ -13,6 +13,7 @@ const mapDispatchToProps = (dispatch) => {
     addCurriculum: SkillAction.addCurriculum,
     editCurriculum: SkillAction.editCurriculum,
     delCurriculum: SkillAction.delCurriculum,
+    multidelCurriculum: SkillAction.multidelCurriculum
   };
 };
 
